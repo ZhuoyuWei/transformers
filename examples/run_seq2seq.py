@@ -47,6 +47,8 @@ from utils_summarization import (
     compute_token_type_ids,
 )
 
+from utils_seq2seq import (ChemistryDataset,)
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
@@ -63,7 +65,7 @@ def set_seed(args):
 
 
 def load_and_cache_examples(args, tokenizer):
-    dataset = CNNDailyMailDataset(tokenizer, data_dir=args.data_dir)
+    dataset = ChemistryDataset(tokenizer, data_dir=args.data_dir)
     return dataset
 
 
