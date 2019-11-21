@@ -421,6 +421,13 @@ def main():
         help="Max seq length for output",
     )
 
+    parser.add_argument(
+        "--trained_checkpoints",
+        default="",
+        type=str,
+        help="trained_checkpoints",
+    )
+
     parser.add_argument("--seed", default=42, type=int)
     args = parser.parse_args()
 
@@ -492,7 +499,7 @@ def main():
     # Evaluate the model
     results = {}
     if args.do_evaluate:
-        checkpoints = []
+        checkpoints = [args.trained_checkpoints]
         logger.info("Evaluate the following checkpoints: %s", checkpoints)
         for checkpoint in checkpoints:
             encoder_checkpoint = os.path.join(checkpoint, "encoder")
