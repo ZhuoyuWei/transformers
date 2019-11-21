@@ -313,7 +313,10 @@ def evaluate(args, model, tokenizer, prefix=""):
             lm_loss = outputs[0]
             predicted_scores=outputs[1].argmax(-1).cpu().numpy().tolist()
             for idx in predicted_scores:
-                fout.write(' '.join(map(str,idx))+'\n')
+                tokens=[]
+                for id in idx:
+                    tokens.append(tokenizer.ids_to_tokens.get(id, tokenizer.unk_token))
+                fout.write(' '.join(tokens)+'\n')
 
             #print('debug by zhuoyu, predicted_scores size={}'.format(predicted_scores.size()))
             eval_loss += lm_loss.mean().item()
