@@ -315,7 +315,7 @@ def evaluate(args, model, tokenizer, prefix=""):
             for idx in predicted_scores:
                 fout.write(' '.join(map(str,idx))+'\n')
 
-            print('debug by zhuoyu, predicted_scores size={}'.format(predicted_scores.size()))
+            #print('debug by zhuoyu, predicted_scores size={}'.format(predicted_scores.size()))
             eval_loss += lm_loss.mean().item()
         nb_eval_steps += 1
 
