@@ -311,6 +311,8 @@ def evaluate(args, model, tokenizer, prefix=""):
                 decoder_lm_labels=lm_labels,
             )
             lm_loss = outputs[0]
+            predicted_scores=outputs[1]
+            print('debug by zhuoyu, predicted_scores size={}'.format(predicted_scores.size()))
             eval_loss += lm_loss.mean().item()
         nb_eval_steps += 1
 
@@ -329,6 +331,9 @@ def evaluate(args, model, tokenizer, prefix=""):
         for key in sorted(result.keys()):
             logger.info("  %s = %s", key, str(result[key]))
             writer.write("%s = %s\n" % (key, str(result[key])))
+
+    with open(os.path.join(args.output_dir,"dev.res"),'w',encoding='utf-8') as fout:
+
 
     return result
 
