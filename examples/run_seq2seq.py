@@ -294,6 +294,8 @@ def evaluate(args, model, tokenizer, prefix=""):
     fout=open(os.path.join(args.output_dir,"dev.res"),'w',encoding='utf-8')
     for batch in tqdm(eval_dataloader, desc="Evaluating"):
         source, target, encoder_mask, decoder_mask, lm_labels = batch
+        print('[SOURCE]: {}'.format(source))
+        print('[TARGET]: {}'.format(target))
 
         source = source.to(args.device)
         target = target.to(args.device)
