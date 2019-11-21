@@ -67,32 +67,32 @@ def load_and_cache_examples(args, tokenizer):
     return dataset
 
 
-def collate(data, tokenizer, block_size):
+def collate(data, tokenizer, input_block_size,output_block_size):
     """ List of tuple as an input. """
-    # remove the files with empty an story/summary, encode and fit to block
-    data = filter(lambda x: not (len(x[0]) == 0 or len(x[1]) == 0), data)
-    data = [
-        encode_for_summarization(story, summary, tokenizer) for story, summary in data
-    ]
-    data = [
-        (
-            fit_to_block_size(story, block_size, tokenizer.pad_token_id),
-            fit_to_block_size(summary, block_size, tokenizer.pad_token_id),
-        )
-        for story, summary in data
-    ]
+    inputs=[]
+    outputs=[]
+    for i,example in enumerate(data):
+        input=tokenizer.build_inputs_with_special_tokens(tokenizer.encode(example.input_text))
+        input=fit_to_block_size(input, input_block_size, tokenizer.pad_token_id)
+        inputs.append(input)
+        if output is not None:
+            output=tokenizer.build_inputs_with_special_tokens(tokenizer.encode(example.output_text))
+        else:
+            output=[0]
+        output=fit_to_block_size(output, output_block_size, tokenizer.pad_token_id)
+        outputs.append(output)
 
-    stories = torch.tensor([story for story, summary in data])
-    summaries = torch.tensor([summary for story, summary in data])
-    encoder_token_type_ids = compute_token_type_ids(stories, tokenizer.cls_token_id)
-    encoder_mask = build_mask(stories, tokenizer.pad_token_id)
-    decoder_mask = build_mask(summaries, tokenizer.pad_token_id)
-    lm_labels = build_lm_labels(summaries, tokenizer.pad_token_id)
+
+
+    inputs = torch.tensor(inputs)
+    outputs = torch.tensor(outputs)
+    encoder_mask = build_mask(inputs, tokenizer.pad_token_id)
+    decoder_mask = build_mask(outputs, tokenizer.pad_token_id)
+    lm_labels = build_lm_labels(outputs, tokenizer.pad_token_id)
 
     return (
-        stories,
-        summaries,
-        encoder_token_type_ids,
+        inputs,
+        outputs,
         encoder_mask,
         decoder_mask,
         lm_labels,
@@ -169,7 +169,8 @@ def train(args, model, tokenizer):
     args.train_batch_size = args.per_gpu_train_batch_size * max(1, args.n_gpu)
     train_dataset = load_and_cache_examples(args, tokenizer)
     train_sampler = RandomSampler(train_dataset)
-    model_collate_fn = functools.partial(collate, tokenizer=tokenizer, block_size=512)
+    model_collate_fn = functools.partial(collate, tokenizer=tokenizer,
+                                         input_block_size=args.input_block_size,ouput_block_size=args.output_block_size)
     train_dataloader = DataLoader(
         train_dataset,
         sampler=train_sampler,
@@ -218,11 +219,11 @@ def train(args, model, tokenizer):
     for _ in train_iterator:
         epoch_iterator = tqdm(train_dataloader, desc="Iteration", disable=True)
         for step, batch in enumerate(epoch_iterator):
-            source, target, encoder_token_type_ids, encoder_mask, decoder_mask, lm_labels = batch
+            source, target, encoder_mask, decoder_mask, lm_labels = batch
+
 
             source = source.to(args.device)
             target = target.to(args.device)
-            encoder_token_type_ids = encoder_token_type_ids.to(args.device)
             encoder_mask = encoder_mask.to(args.device)
             decoder_mask = decoder_mask.to(args.device)
             lm_labels = lm_labels.to(args.device)
@@ -231,7 +232,6 @@ def train(args, model, tokenizer):
             outputs = model(
                 source,
                 target,
-                encoder_token_type_ids=encoder_token_type_ids,
                 encoder_attention_mask=encoder_mask,
                 decoder_attention_mask=decoder_mask,
                 decoder_lm_labels=lm_labels,
@@ -405,6 +405,19 @@ def main():
         type=int,
         help="Batch size per GPU/CPU for training.",
     )
+    parser.add_argument(
+        "--input_block_size",
+        default=256,
+        type=int,
+        help="Max seq length for input",
+    )
+    parser.add_argument(
+        "--output_block_size",
+        default=64,
+        type=int,
+        help="Max seq length for output",
+    )
+
     parser.add_argument("--seed", default=42, type=int)
     args = parser.parse_args()
 
