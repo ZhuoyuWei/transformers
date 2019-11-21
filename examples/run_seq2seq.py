@@ -332,7 +332,7 @@ def evaluate(args, model, tokenizer, prefix=""):
             logger.info("  %s = %s", key, str(result[key]))
             writer.write("%s = %s\n" % (key, str(result[key])))
 
-    with open(os.path.join(args.output_dir,"dev.res"),'w',encoding='utf-8') as fout:
+    #with open(os.path.join(args.output_dir,"dev.res"),'w',encoding='utf-8') as fout:
 
 
     return result
