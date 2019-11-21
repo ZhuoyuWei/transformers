@@ -240,7 +240,7 @@ def train(args, model, tokenizer):
             )
 
             loss = outputs[0]
-            print(loss)
+            #print(loss)
             if args.gradient_accumulation_steps > 1:
                 loss /= args.gradient_accumulation_steps
 
