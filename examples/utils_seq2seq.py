@@ -3,7 +3,7 @@ import sys
 import logging
 import csv
 import torch
-from torch import Dataset
+from torch.utils.data import Dataset
 
 
 '''
