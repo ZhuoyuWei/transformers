@@ -403,6 +403,12 @@ def main():
         help="Total number of training epochs to perform.",
     )
     parser.add_argument(
+        "--per_gpu_eval_batch_size",
+        default=4,
+        type=int,
+        help="Batch size per GPU/CPU for eval.",
+    )
+    parser.add_argument(
         "--per_gpu_train_batch_size",
         default=4,
         type=int,
