@@ -172,7 +172,7 @@ def train(args, model, tokenizer):
     train_dataset = load_and_cache_examples(args, tokenizer)
     train_sampler = RandomSampler(train_dataset)
     model_collate_fn = functools.partial(collate, tokenizer=tokenizer,
-                                         input_block_size=args.input_block_size,ouput_block_size=args.output_block_size)
+                                         input_block_size=args.input_block_size,output_block_size=args.output_block_size)
     train_dataloader = DataLoader(
         train_dataset,
         sampler=train_sampler,
