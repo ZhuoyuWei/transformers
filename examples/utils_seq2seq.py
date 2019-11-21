@@ -70,15 +70,22 @@ class ChemistryProcessor(DataProcessor):
 
     def _create_examples(self, lines, type):
         """Creates examples for the training and dev sets."""
-
+        '''
         examples = [
             InputExample(
                 example_id=line[0],
                 input_text=line[1],
                 output_text=line[2] if len(line) > 2 else None
             ) for line in lines
-        ]
-
+        ]'''
+        examples=[]
+        for line in lines:
+            print('debug line = {}'.format(len(line)))
+            examples.append(InputExample(
+                example_id=line[0],
+                input_text=line[1],
+                output_text=line[2] if len(line) > 2 else None
+            ))
         return examples
 
 class ChemistryDataset(Dataset):
