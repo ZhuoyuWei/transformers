@@ -64,8 +64,8 @@ def set_seed(args):
 # ------------
 
 
-def load_and_cache_examples(args, tokenizer):
-    dataset = ChemistryDataset(tokenizer, data_dir=args.data_dir)
+def load_and_cache_examples(args, tokenizer, prefix="train"):
+    dataset = ChemistryDataset(tokenizer, prefix=prefix, data_dir=args.data_dir)
     return dataset
 
 
@@ -169,7 +169,7 @@ def train(args, model, tokenizer):
 
     # Load the data
     args.train_batch_size = args.per_gpu_train_batch_size * max(1, args.n_gpu)
-    train_dataset = load_and_cache_examples(args, tokenizer)
+    train_dataset = load_and_cache_examples(args, tokenizer, "train")
     train_sampler = RandomSampler(train_dataset)
     model_collate_fn = functools.partial(collate, tokenizer=tokenizer,
                                          input_block_size=args.input_block_size,output_block_size=args.output_block_size)
@@ -273,10 +273,12 @@ def evaluate(args, model, tokenizer, prefix=""):
     set_seed(args)
 
     args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, args.n_gpu)
-    eval_dataset = load_and_cache_examples(args, tokenizer, evaluate=True)
+    eval_dataset = load_and_cache_examples(args, tokenizer, prefix="dev")
     eval_sampler = SequentialSampler(eval_dataset)
+    model_collate_fn = functools.partial(collate, tokenizer=tokenizer,
+                                         input_block_size=args.input_block_size,output_block_size=args.output_block_size)
     eval_dataloader = DataLoader(
-        eval_dataset, sampler=eval_sampler, batch_size=args.eval_batch_size
+        eval_dataset, sampler=eval_sampler, batch_size=args.eval_batch_size,collate_fn=model_collate_fn,
     )
 
     # multi-gpu evaluate
@@ -291,11 +293,11 @@ def evaluate(args, model, tokenizer, prefix=""):
     model.eval()
 
     for batch in tqdm(eval_dataloader, desc="Evaluating"):
-        source, target, encoder_token_type_ids, encoder_mask, decoder_mask, lm_labels = batch
+        source, target, encoder_mask, decoder_mask, lm_labels = batch
 
         source = source.to(args.device)
         target = target.to(args.device)
-        encoder_token_type_ids = encoder_token_type_ids.to(args.device)
+
         encoder_mask = encoder_mask.to(args.device)
         decoder_mask = decoder_mask.to(args.device)
         lm_labels = lm_labels.to(args.device)
@@ -304,7 +306,6 @@ def evaluate(args, model, tokenizer, prefix=""):
             outputs = model(
                 source,
                 target,
-                encoder_token_type_ids=encoder_token_type_ids,
                 encoder_attention_mask=encoder_mask,
                 decoder_attention_mask=decoder_mask,
                 decoder_lm_labels=lm_labels,
