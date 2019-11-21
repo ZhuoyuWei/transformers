@@ -311,7 +311,7 @@ def evaluate(args, model, tokenizer, prefix=""):
                 decoder_lm_labels=lm_labels,
             )
             lm_loss = outputs[0]
-            predicted_scores=outputs[1].argmax(-1).numpy().tolist()
+            predicted_scores=outputs[1].argmax(-1).cpu().numpy().tolist()
             for idx in predicted_scores:
                 fout.write(' '.join(map(str,predicted_scores[idx]))+'\n')
 
