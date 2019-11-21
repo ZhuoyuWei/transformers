@@ -164,6 +164,10 @@ class PreTrainedEncoderDecoder(nn.Module):
 
         We save the encoder' and decoder's parameters in two separate directories.
         """
+        if not os.path.exists(os.path.join(save_directory, "encoder")):
+            os.makedirs(os.path.join(save_directory, "encoder"))
+        if not os.path.exists(os.path.join(save_directory, "decoder")):
+            os.makedirs(os.path.join(save_directory, "decoder"))
         self.encoder.save_pretrained(os.path.join(save_directory, "encoder"))
         self.decoder.save_pretrained(os.path.join(save_directory, "decoder"))
 
