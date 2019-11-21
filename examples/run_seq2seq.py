@@ -510,6 +510,8 @@ def main():
             model.to(args.device)
             results = "placeholder"
 
+            evaluate(args,model,tokenizer,"test")
+
     return results
 
 
