@@ -284,8 +284,8 @@ def evaluate(args, model, tokenizer, prefix=""):
     )
 
     # multi-gpu evaluate
-    if args.n_gpu > 1:
-        model = torch.nn.DataParallel(model)
+    #if args.n_gpu > 1:
+    #    model = torch.nn.DataParallel(model)
 
     logger.info("***** Running evaluation {} *****".format(prefix))
     logger.info("  Num examples = %d", len(eval_dataset))
@@ -550,9 +550,10 @@ def main():
         for checkpoint in checkpoints:
             encoder_checkpoint = os.path.join(checkpoint, "encoder")
             decoder_checkpoint = os.path.join(checkpoint, "decoder")
-            model = PreTrainedEncoderDecoder.from_pretrained(
-                encoder_checkpoint, decoder_checkpoint
-            )
+            #model = PreTrainedEncoderDecoder.from_pretrained(
+            #    encoder_checkpoint, decoder_checkpoint
+            #)
+            model = Model2Model.from_pretrained(encoder_checkpoint,decoder_checkpoint)
             model.to(args.device)
             results = "placeholder"
 
