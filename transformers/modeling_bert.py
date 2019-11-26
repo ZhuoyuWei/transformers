@@ -367,6 +367,11 @@ class BertEncoder(nn.Module):
         self.layer = nn.ModuleList([BertLayer(config) for _ in range(config.num_hidden_layers)])
 
     def forward(self, hidden_states, attention_mask=None, head_mask=None, encoder_hidden_states=None, encoder_attention_mask=None):
+        print('encoder: hidden_states={}, attention_mask={}'
+              ',encoder_hidden_states={}, encoder_attention_mask={}'.format(hidden_states.size(),
+                                                                            attention_mask.size() if attention_mask is not None else None,
+                                                                            encoder_hidden_states.size() if encoder_hidden_states is not None else None,
+                                                                            encoder_attention_mask.size() if encoder_attention_mask is not None else None))
         all_hidden_states = ()
         all_attentions = ()
         for i, layer_module in enumerate(self.layer):
