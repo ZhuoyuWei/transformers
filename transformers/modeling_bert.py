@@ -711,6 +711,8 @@ class BertModel(BertPreTrainedModel):
         else:
             head_mask = [None] * self.config.num_hidden_layers
 
+        print('debug in bert: input_ids={}'.format(input_ids.size()))
+
         embedding_output = self.embeddings(input_ids=input_ids, position_ids=position_ids, token_type_ids=token_type_ids, inputs_embeds=inputs_embeds)
         encoder_outputs = self.encoder(embedding_output,
                                        attention_mask=extended_attention_mask,
