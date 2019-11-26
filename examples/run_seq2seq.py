@@ -553,7 +553,7 @@ def main():
             #model = PreTrainedEncoderDecoder.from_pretrained(
             #    encoder_checkpoint, decoder_checkpoint
             #)
-            model = Model2Model.from_pretrained(encoder_checkpoint,decoder_checkpoint)
+            model = Model2Model.from_pretrained(encoder_checkpoint)
             model.to(args.device)
             results = "placeholder"
 
