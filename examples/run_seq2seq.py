@@ -231,6 +231,8 @@ def train(args, model, tokenizer):
             lm_labels = lm_labels.to(args.device)
 
             model.train()
+            print('debug by zhuoyu: source = {}'.format(source))
+            print('debug by zhuoyu: target = {}'.format(target))
             outputs = model(
                 source,
                 target,
