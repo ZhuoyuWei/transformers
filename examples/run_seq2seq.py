@@ -293,9 +293,11 @@ def evaluate(args, model, tokenizer, prefix=""):
     eval_loss = 0.0
     nb_eval_steps = 0
     model.eval()
-
+    fout=open(os.path.join(args.output_dir,"dev.res"),'w',encoding='utf-8')
     for batch in tqdm(eval_dataloader, desc="Evaluating"):
         source, target, encoder_mask, decoder_mask, lm_labels = batch
+        print('[SOURCE]: {}'.format(source))
+        print('[TARGET]: {}'.format(target))
 
         source = source.to(args.device)
         target = target.to(args.device)
@@ -313,6 +315,14 @@ def evaluate(args, model, tokenizer, prefix=""):
                 decoder_lm_labels=lm_labels,
             )
             lm_loss = outputs[0]
+            predicted_scores=outputs[1].argmax(-1).cpu().numpy().tolist()
+            for idx in predicted_scores:
+                tokens=[]
+                for id in idx:
+                    tokens.append(tokenizer.ids_to_tokens.get(id, tokenizer.unk_token))
+                fout.write(' '.join(tokens)+'\n')
+
+            #print('debug by zhuoyu, predicted_scores size={}'.format(predicted_scores.size()))
             eval_loss += lm_loss.mean().item()
         nb_eval_steps += 1
 
@@ -331,6 +341,10 @@ def evaluate(args, model, tokenizer, prefix=""):
         for key in sorted(result.keys()):
             logger.info("  %s = %s", key, str(result[key]))
             writer.write("%s = %s\n" % (key, str(result[key])))
+
+    #with open(os.path.join(args.output_dir,"dev.res"),'w',encoding='utf-8') as fout:
+    fout.flush()
+    fout.close()
 
     return result
 
