@@ -80,7 +80,7 @@ def collate(data, tokenizer, input_block_size,output_block_size):
         if example.output_text is not None:
             output=tokenizer.build_inputs_with_special_tokens(tokenizer.encode(example.output_text))
         else:
-            output=[0]
+            output=tokenizer.build_inputs_with_special_tokens([])
         output=fit_to_block_size(output, output_block_size, tokenizer.pad_token_id)
         outputs.append(output)
 
@@ -231,8 +231,8 @@ def train(args, model, tokenizer):
             lm_labels = lm_labels.to(args.device)
 
             model.train()
-            print('debug by zhuoyu: source = {}'.format(source))
-            print('debug by zhuoyu: target = {}'.format(target))
+            #print('debug by zhuoyu: source = {}'.format(source))
+            #print('debug by zhuoyu: target = {}'.format(target))
             outputs = model(
                 source,
                 target,
@@ -296,8 +296,8 @@ def evaluate(args, model, tokenizer, prefix=""):
     fout=open(os.path.join(args.output_dir,"dev.res"),'w',encoding='utf-8')
     for batch in tqdm(eval_dataloader, desc="Evaluating"):
         source, target, encoder_mask, decoder_mask, lm_labels = batch
-        print('[SOURCE]: {}'.format(source))
-        print('[TARGET]: {}'.format(target))
+        #print('[SOURCE]: {}'.format(source))
+        #print('[TARGET]: {}'.format(target))
 
         source = source.to(args.device)
         target = target.to(args.device)
@@ -307,23 +307,44 @@ def evaluate(args, model, tokenizer, prefix=""):
         lm_labels = lm_labels.to(args.device)
 
         with torch.no_grad():
-            outputs = model(
-                source,
-                target,
-                encoder_attention_mask=encoder_mask,
-                decoder_attention_mask=decoder_mask,
-                decoder_lm_labels=lm_labels,
-            )
-            lm_loss = outputs[0]
-            predicted_scores=outputs[1].argmax(-1).cpu().numpy().tolist()
-            for idx in predicted_scores:
-                tokens=[]
-                for id in idx:
-                    tokens.append(tokenizer.ids_to_tokens.get(id, tokenizer.unk_token))
-                fout.write(' '.join(tokens)+'\n')
 
-            #print('debug by zhuoyu, predicted_scores size={}'.format(predicted_scores.size()))
-            eval_loss += lm_loss.mean().item()
+            if isinstance(model,Model2Model):
+                outputs_ids=model.decoding(
+                    source,
+                    target,
+                    encoder_attention_mask=encoder_mask,
+                    decoder_attention_mask=decoder_mask,
+                    decoder_lm_labels=None,
+                )
+                for idx in outputs_ids:
+                    tokens = []
+                    for id in idx:
+                        tokens.append(tokenizer.ids_to_tokens.get(id, tokenizer.unk_token))
+                    fout.write(' '.join(tokens) + '\n')
+
+            else:
+                outputs = model(
+                    source,
+                    target,
+                    encoder_attention_mask=encoder_mask,
+                    decoder_attention_mask=decoder_mask,
+                    decoder_lm_labels=lm_labels,
+                )
+
+                lm_loss = outputs[0]
+                predicted_scores = outputs[1].argmax(-1).cpu().numpy().tolist()
+                for idx in predicted_scores:
+                    tokens = []
+                    for id in idx:
+                        tokens.append(tokenizer.ids_to_tokens.get(id, tokenizer.unk_token))
+                    fout.write(' '.join(tokens) + '\n')
+
+                # print('debug by zhuoyu, predicted_scores size={}'.format(predicted_scores.size()))
+                eval_loss += lm_loss.mean().item()
+
+
+
+
         nb_eval_steps += 1
 
     eval_loss = eval_loss / nb_eval_steps
@@ -480,6 +501,9 @@ def main():
     model = Model2Model.from_pretrained(
         args.model_name_or_path, decoder_model=decoder_model
     )
+    #model = Model2Model.from_pretrained(
+    #    args.model_name_or_path, decoder_model=None
+    #)
 
     # Setup logging
     logging.basicConfig(
