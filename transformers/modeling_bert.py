@@ -375,6 +375,7 @@ class BertEncoder(nn.Module):
 
             layer_outputs = layer_module(hidden_states, attention_mask, head_mask[i], encoder_hidden_states, encoder_attention_mask)
             hidden_states = layer_outputs[0]
+            print('the {}th hidden states = {}'.format(i,hidden_states.size()))
 
             if self.output_attentions:
                 all_attentions = all_attentions + (layer_outputs[1],)
@@ -714,6 +715,9 @@ class BertModel(BertPreTrainedModel):
         print('debug in bert: input_ids={}'.format(input_ids.size()))
 
         embedding_output = self.embeddings(input_ids=input_ids, position_ids=position_ids, token_type_ids=token_type_ids, inputs_embeds=inputs_embeds)
+
+        print('debug embedding={}'.format(embedding_output.size()))
+
         encoder_outputs = self.encoder(embedding_output,
                                        attention_mask=extended_attention_mask,
                                        head_mask=head_mask,
