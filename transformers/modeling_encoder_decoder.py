@@ -357,6 +357,7 @@ class Model2Model(PreTrainedEncoderDecoder):
             "attention_mask", None
         )
         decoder_input_ids=decoder_input_ids[:,:1]
+        print('debug decoder_input_ids={}'.format(decoder_input_ids.size()))
         for step in range(10):
             decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
             decoder_ids=decoder_outputs[0].argmax(dim=-1)
