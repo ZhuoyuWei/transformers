@@ -298,6 +298,7 @@ def evaluate(args, model, tokenizer, prefix=""):
     nb_eval_steps = 0
     model.eval()
     fout=open(os.path.join(args.output_dir,"dev.res"),'w',encoding='utf-8')
+    fdebug=open(os.path.join(args.output_dir,"dev.debug.res"),'w',encoding='utf-8')
     for batch in tqdm(eval_dataloader, desc="Evaluating"):
         source, target, encoder_mask, decoder_mask, lm_labels = batch
         #print('[SOURCE]: {}'.format(source))
@@ -319,6 +320,7 @@ def evaluate(args, model, tokenizer, prefix=""):
                     encoder_attention_mask=encoder_mask,
                     decoder_attention_mask=decoder_mask,
                     decoder_lm_labels=lm_labels,
+                    fdebug=fdebug,
                 )
                 print('outputs size: {}'.format(outputs_ids.size()))
                 outputs_ids =outputs_ids.cpu().numpy()
@@ -338,6 +340,7 @@ def evaluate(args, model, tokenizer, prefix=""):
                     encoder_attention_mask=encoder_mask,
                     decoder_attention_mask=decoder_mask,
                     decoder_lm_labels=lm_labels,
+                    fdebug=fdebug,
                 )
 
                 lm_loss = outputs[0]
@@ -375,7 +378,8 @@ def evaluate(args, model, tokenizer, prefix=""):
     #with open(os.path.join(args.output_dir,"dev.res"),'w',encoding='utf-8') as fout:
     fout.flush()
     fout.close()
-
+    fdebug.flush()
+    fdebug.close()
     return result
 
 

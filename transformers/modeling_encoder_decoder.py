@@ -200,6 +200,7 @@ class PreTrainedEncoderDecoder(nn.Module):
             if not argument.startswith("encoder_")
             and not argument.startswith("decoder_")
         }
+        fdebug=kwargs['fdebug']
         kwargs_decoder = kwargs_common.copy()
         kwargs_encoder = kwargs_common.copy()
         kwargs_encoder.update(
@@ -220,6 +221,10 @@ class PreTrainedEncoderDecoder(nn.Module):
         # Encode if needed (training, first prediction pass)
         encoder_hidden_states = kwargs_encoder.pop("hidden_states", None)
         #print('encoder_hidden_states={}'.format(encoder_hidden_states))
+        if not self.training:
+            torch.set_printoptions(profile="full")
+            fdebug.write('{}'.format(encoder_hidden_states)+'\n')
+
         if encoder_hidden_states is None:
             encoder_outputs = self.encoder(encoder_input_ids, **kwargs_encoder)
             encoder_hidden_states = encoder_outputs[
@@ -266,6 +271,7 @@ class PreTrainedEncoderDecoder(nn.Module):
             if not argument.startswith("encoder_")
             and not argument.startswith("decoder_")
         }
+        fdebug=kwargs['fdebug']
         kwargs_decoder = kwargs_common.copy()
         kwargs_encoder = kwargs_common.copy()
         kwargs_encoder.update(
@@ -297,7 +303,8 @@ class PreTrainedEncoderDecoder(nn.Module):
         print(encoder_input_ids)
         print('encoder hidden states')
         print(encoder_hidden_states)
-
+        torch.set_printoptions(profile="full")
+        fdebug.write('{}'.format(encoder_hidden_states) + '\n')
         # Decode
         kwargs_decoder["encoder_hidden_states"] = encoder_hidden_states
         kwargs_decoder["encoder_attention_mask"] = kwargs_encoder.get(
