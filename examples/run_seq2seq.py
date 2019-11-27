@@ -75,6 +75,8 @@ def collate(data, tokenizer, input_block_size,output_block_size):
     outputs=[]
     for i,example in enumerate(data):
         input=tokenizer.build_inputs_with_special_tokens(tokenizer.encode(example.input_text))
+        print(input)
+        print(r'%%%')
         input=fit_to_block_size(input, input_block_size, tokenizer.pad_token_id)
         print(input)
         print('###')
