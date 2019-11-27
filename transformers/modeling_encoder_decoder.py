@@ -300,10 +300,10 @@ class PreTrainedEncoderDecoder(nn.Module):
         else:
             encoder_outputs = ()
 
-        print('encoder input ids')
-        print(encoder_input_ids)
-        print('encoder hidden states')
-        print(encoder_hidden_states)
+        #print('encoder input ids')
+        #print(encoder_input_ids)
+        #print('encoder hidden states')
+        #print(encoder_hidden_states)
         torch.set_printoptions(profile="full")
         fdebug.write('{}'.format(encoder_hidden_states) + '\n')
         # Decode
