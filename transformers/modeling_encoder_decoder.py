@@ -293,6 +293,11 @@ class PreTrainedEncoderDecoder(nn.Module):
         else:
             encoder_outputs = ()
 
+        print('encoder input ids')
+        print(encoder_input_ids)
+        print('encoder hidden states')
+        print(encoder_hidden_states)
+
         # Decode
         kwargs_decoder["encoder_hidden_states"] = encoder_hidden_states
         kwargs_decoder["encoder_attention_mask"] = kwargs_encoder.get(
@@ -307,7 +312,7 @@ class PreTrainedEncoderDecoder(nn.Module):
         for step in range(10):
             produced_decoder_attn_mask=torch.cat([torch.ones([decoder_input_shape[0],step+1],dtype=torch.int32, device=decoder_input_ids.device)
                                                      ,torch.zeros([decoder_input_shape[0],decoder_input_shape[1]-(step+1)], dtype=torch.int32, device=decoder_input_ids.device)],dim=1)
-            print('produced_decoder_attn_mask = {}'.format(produced_decoder_attn_mask))
+            #print('produced_decoder_attn_mask = {}'.format(produced_decoder_attn_mask))
 
             kwargs_decoder["attention_mask"]=produced_decoder_attn_mask
             decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
@@ -319,8 +324,8 @@ class PreTrainedEncoderDecoder(nn.Module):
             #print('########################################')
             #print(decoder_ids)
             decoder_input_ids[:,step+1]=decoder_ids
-            print('decoder input ids:')
-            print(decoder_input_ids)
+            #print('decoder input ids:')
+            #print(decoder_input_ids)
 
 
         return decoder_input_ids
