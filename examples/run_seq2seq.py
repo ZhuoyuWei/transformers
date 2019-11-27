@@ -312,7 +312,7 @@ def evaluate(args, model, tokenizer, prefix=""):
 
         with torch.no_grad():
 
-            if True:
+            if False:
                 outputs_ids=model.decoding(
                     source,
                     target,
@@ -507,7 +507,8 @@ def main():
     # Load pretrained model and tokenizer. The decoder's weights are randomly initialized.
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
     config = BertConfig.from_pretrained(args.model_name_or_path)
-    decoder_model = BertForMaskedLM(config)
+    #decoder_model = BertForMaskedLM(config)
+    decoder_model = BertForMaskedLM.from_pretrained(args.model_name_or_path)
     model = Model2Model.from_pretrained(
         args.model_name_or_path, decoder_model=decoder_model
     )
