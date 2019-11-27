@@ -363,8 +363,8 @@ class Model2Model(PreTrainedEncoderDecoder):
 
 
         for step in range(10):
-            produced_decoder_attn_mask=torch.cat([torch.ones([decoder_input_shape[0],step+1], device=decoder_input_shape.device)
-                                                     ,torch.zeros([decoder_input_shape[0],decoder_input_shape[1]-(step+1)], device=decoder_input_shape.device)],dim=1)
+            produced_decoder_attn_mask=torch.cat([torch.ones([decoder_input_shape[0],step+1], device=decoder_input_ids.device)
+                                                     ,torch.zeros([decoder_input_shape[0],decoder_input_shape[1]-(step+1)], device=decoder_input_ids.device)],dim=1)
             #print('produced_decoder_attn_mask = {}'.format(produced_decoder_attn_mask.size()))
             kwargs_decoder["attention_mask"]=produced_decoder_attn_mask
             decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
