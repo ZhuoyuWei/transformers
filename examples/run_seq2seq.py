@@ -555,11 +555,11 @@ def main():
         for checkpoint in checkpoints:
             encoder_checkpoint = os.path.join(checkpoint, "encoder")
             decoder_checkpoint = os.path.join(checkpoint, "decoder")
-            model = PreTrainedEncoderDecoder.from_pretrained(
-                encoder_checkpoint, decoder_checkpoint
-            )
+            #model = PreTrainedEncoderDecoder.from_pretrained(
+            #    encoder_checkpoint, decoder_checkpoint
+            #)
             #model = Model2Model.from_pretrained(encoder_checkpoint)
-            model.to(args.device)
+            #model.to(args.device)
             results = "placeholder"
 
             evaluate(args,model,tokenizer,"test")
