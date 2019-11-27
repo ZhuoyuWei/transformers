@@ -312,7 +312,7 @@ def evaluate(args, model, tokenizer, prefix=""):
 
         with torch.no_grad():
 
-            if False:
+            if args.decoding_type=='decoding':
                 outputs_ids=model.decoding(
                     source,
                     target,
@@ -478,6 +478,13 @@ def main():
         default="",
         type=str,
         help="trained_checkpoints",
+    )
+
+    parser.add_argument(
+        "--decoding_type",
+        default="pnt",
+        type=str,
+        help="",
     )
 
     parser.add_argument("--seed", default=42, type=int)
