@@ -171,7 +171,7 @@ class PreTrainedEncoderDecoder(nn.Module):
         self.encoder.save_pretrained(os.path.join(save_directory, "encoder"))
         self.decoder.save_pretrained(os.path.join(save_directory, "decoder"))
 
-    def forward(self, encoder_input_ids, decoder_input_ids, fdebug, **kwargs):
+    def forward(self, encoder_input_ids, decoder_input_ids, fdebug=None, **kwargs):
         """ The forward pass on a seq2eq depends what we are performing:
 
         - During training we perform one forward pass through both the encoder
@@ -222,7 +222,7 @@ class PreTrainedEncoderDecoder(nn.Module):
         # Encode if needed (training, first prediction pass)
         encoder_hidden_states = kwargs_encoder.pop("hidden_states", None)
         #print('encoder_hidden_states={}'.format(encoder_hidden_states))
-        if not self.training:
+        if fdebug is not None:
             torch.set_printoptions(profile="full")
             fdebug.write('{}'.format(encoder_hidden_states)+'\n')
 
