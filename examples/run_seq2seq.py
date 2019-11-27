@@ -308,7 +308,7 @@ def evaluate(args, model, tokenizer, prefix=""):
 
         with torch.no_grad():
 
-            if isinstance(model,Model2Model):
+            if True:
                 outputs_ids=model.decoding(
                     source,
                     target,
@@ -318,12 +318,12 @@ def evaluate(args, model, tokenizer, prefix=""):
                 )
                 outputs_ids =outputs_ids.cpu().numpy()
                 for idx in outputs_ids:
-                    print(idx)
-                    print('###')
+                    #print(idx)
+                    #print('###')
                     tokens = []
                     for id in idx:
-                        print('{}\t{}'.format(id,type(id)))
-                        tokens.append(tokenizer.ids_to_tokens.get(id, tokenizer.unk_token))
+                        #print('{}\t{}'.format(id,type(id)))
+                        tokens.append(tokenizer.ids_to_tokens.get(int(id), tokenizer.unk_token))
                     fout.write(' '.join(tokens) + '\n')
 
             else:
@@ -555,10 +555,10 @@ def main():
         for checkpoint in checkpoints:
             encoder_checkpoint = os.path.join(checkpoint, "encoder")
             decoder_checkpoint = os.path.join(checkpoint, "decoder")
-            #model = PreTrainedEncoderDecoder.from_pretrained(
-            #    encoder_checkpoint, decoder_checkpoint
-            #)
-            model = Model2Model.from_pretrained(encoder_checkpoint)
+            model = PreTrainedEncoderDecoder.from_pretrained(
+                encoder_checkpoint, decoder_checkpoint
+            )
+            #model = Model2Model.from_pretrained(encoder_checkpoint)
             model.to(args.device)
             results = "placeholder"
 
