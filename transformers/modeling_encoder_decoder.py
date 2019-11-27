@@ -200,7 +200,8 @@ class PreTrainedEncoderDecoder(nn.Module):
             if not argument.startswith("encoder_")
             and not argument.startswith("decoder_")
         }
-        fdebug=kwargs['fdebug']
+        print(kwargs_common)
+        fdebug=kwargs_common['fdebug']
         kwargs_decoder = kwargs_common.copy()
         kwargs_encoder = kwargs_common.copy()
         kwargs_encoder.update(
