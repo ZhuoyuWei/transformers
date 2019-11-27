@@ -75,20 +75,23 @@ def collate(data, tokenizer, input_block_size,output_block_size):
     outputs=[]
     for i,example in enumerate(data):
         #input=tokenizer.build_inputs_with_special_tokens(tokenizer.encode(example.input_text))
-        print(example.input_text)
+        #print(example.input_text)
         input=tokenizer.encode(example.input_text)
-        print(input)
-        print(r'%%%')
+        #print(input)
+        #print(r'%%%')
         input=fit_to_block_size(input, input_block_size, tokenizer.pad_token_id)
-        print(input)
-        print('###')
+        #print(input)
+        #
 
         inputs.append(input)
         if example.output_text is not None:
-            output=tokenizer.build_inputs_with_special_tokens(tokenizer.encode(example.output_text))
+            #output=tokenizer.build_inputs_with_special_tokens(tokenizer.encode(example.output_text))
+            output=tokenizer.encode(example.output_text)
         else:
             output=tokenizer.build_inputs_with_special_tokens([])
         output=fit_to_block_size(output, output_block_size, tokenizer.pad_token_id)
+        print(output)
+        print('###')
         outputs.append(output)
     exit(-1)
 
