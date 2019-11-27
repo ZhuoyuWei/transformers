@@ -312,7 +312,7 @@ def evaluate(args, model, tokenizer, prefix=""):
 
         with torch.no_grad():
 
-            if False:
+            if True:
                 outputs_ids=model.decoding(
                     source,
                     target,
