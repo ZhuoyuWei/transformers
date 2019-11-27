@@ -197,7 +197,7 @@ def train(args, model, tokenizer):
     #lr = {"encoder": 0.002, "decoder": 0.2}
     lr = {"encoder": 5e-4, "decoder": 5e-4}
     #warmup_steps = {"encoder": 20000, "decoder": 10000}
-    warmup_steps = {"encoder": 0, "decoder": 0}
+    warmup_steps = {"encoder": 5, "decoder": 5}
     optimizer = BertSumOptimizer(model, lr, warmup_steps)
 
     # Train
