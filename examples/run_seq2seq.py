@@ -318,7 +318,7 @@ def evaluate(args, model, tokenizer, prefix=""):
                     target,
                     encoder_attention_mask=encoder_mask,
                     decoder_attention_mask=decoder_mask,
-                    decoder_lm_labels=None,
+                    decoder_lm_labels=lm_labels,
                 )
                 print('outputs size: {}'.format(outputs_ids.size()))
                 outputs_ids =outputs_ids.cpu().numpy()
