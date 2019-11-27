@@ -319,6 +319,8 @@ class PreTrainedEncoderDecoder(nn.Module):
             #print('########################################')
             #print(decoder_ids)
             decoder_input_ids[:,step+1]=decoder_ids
+            print('decoder input ids:')
+            print(decoder_input_ids)
 
 
         return decoder_input_ids
