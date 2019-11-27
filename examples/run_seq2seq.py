@@ -317,6 +317,8 @@ def evaluate(args, model, tokenizer, prefix=""):
                     decoder_lm_labels=None,
                 )
                 for idx in outputs_ids:
+                    print(idx)
+                    print('###')
                     tokens = []
                     for id in idx:
                         tokens.append(tokenizer.ids_to_tokens.get(id, tokenizer.unk_token))

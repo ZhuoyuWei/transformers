@@ -687,8 +687,8 @@ class BertModel(BertPreTrainedModel):
                 batch_size, seq_length = input_shape
                 seq_ids = torch.arange(seq_length, device=device)
                 causal_mask = seq_ids[None, None, :].repeat(batch_size, seq_length, 1) <= seq_ids[None, :, None]
-                print('debug device: causal_mask={}'.format(causal_mask.device))
-                print('debug device: attention_mask={}'.format(attention_mask.device))
+                #print('debug device: causal_mask={}'.format(causal_mask.device))
+                #print('debug device: attention_mask={}'.format(attention_mask.device))
                 extended_attention_mask = causal_mask[:, None, :, :] * attention_mask[:, None, None, :]
             else:
                 extended_attention_mask = attention_mask[:, None, None, :]
