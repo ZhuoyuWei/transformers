@@ -321,6 +321,7 @@ def evaluate(args, model, tokenizer, prefix=""):
                     print('###')
                     tokens = []
                     for id in idx:
+                        print('{}\t{}'.format(id,type(id)))
                         tokens.append(tokenizer.ids_to_tokens.get(id, tokenizer.unk_token))
                     fout.write(' '.join(tokens) + '\n')
 
