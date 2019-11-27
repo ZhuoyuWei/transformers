@@ -369,8 +369,8 @@ class Model2Model(PreTrainedEncoderDecoder):
             kwargs_decoder["attention_mask"]=produced_decoder_attn_mask
             decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
             decoder_ids=decoder_outputs[0].argmax(dim=-1)
-            decoder_ids=decoder_ids[:,-1:]
-            decoder_input_ids=torch.cat([decoder_input_ids,decoder_ids],dim=1)
+            decoder_ids=decoder_ids[:,-1]
+            decoder_input_ids[:,step+1]=decoder_ids
 
 
         return decoder_input_ids
