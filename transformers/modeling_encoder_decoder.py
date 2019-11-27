@@ -371,6 +371,7 @@ class Model2Model(PreTrainedEncoderDecoder):
 
         for step in range(10):
             produced_decoder_attn_mask=build_mask(decoder_input_ids,0)
+            print('produced_decoder_attn_mask = {}'.format(produced_decoder_attn_mask.size()))
             kwargs_decoder["attention_mask"]=produced_decoder_attn_mask
             decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
             decoder_ids=decoder_outputs[0].argmax(dim=-1)
