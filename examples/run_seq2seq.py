@@ -316,6 +316,7 @@ def evaluate(args, model, tokenizer, prefix=""):
                     decoder_attention_mask=decoder_mask,
                     decoder_lm_labels=None,
                 )
+                outputs.cpu().numpy()
                 for idx in outputs_ids:
                     print(idx)
                     print('###')
