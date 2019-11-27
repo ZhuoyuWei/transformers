@@ -493,6 +493,7 @@ def main():
     else:
         args.device = torch.device("cuda")
         args.n_gpu = torch.cuda.device_count()
+        print(args.n_gpu)
 
     # Load pretrained model and tokenizer. The decoder's weights are randomly initialized.
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
