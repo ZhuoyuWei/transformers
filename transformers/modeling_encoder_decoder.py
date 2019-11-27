@@ -358,12 +358,20 @@ class Model2Model(PreTrainedEncoderDecoder):
         )
         #add attention_msk to kwarfs_decoder
         decoder_input_ids=decoder_input_ids[:,:1]
-        global_decoder_mask=kwargs_decoder.get(
-            "attention_mask", None
-        )
         print('debug decoder_input_ids={}'.format(decoder_input_ids.size()))
+
+        def build_mask(sequence, pad_token):
+            """ Builds the mask. The attention mechanism will only attend to positions
+            with value 1. """
+            mask = torch.ones_like(sequence)
+            idx_pad_tokens = sequence == pad_token
+            mask[idx_pad_tokens] = 0
+            return mask
+
+
         for step in range(10):
-            kwargs_decoder["encoder_attention_mask"]
+            produced_decoder_attn_mask=build_mask(decoder_input_ids,0)
+            kwargs_decoder["attention_mask"]=produced_decoder_attn_mask
             decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
             decoder_ids=decoder_outputs[0].argmax(dim=-1)
             decoder_ids=decoder_ids[:,-1:]
