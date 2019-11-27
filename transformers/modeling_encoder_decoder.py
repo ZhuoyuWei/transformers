@@ -219,7 +219,7 @@ class PreTrainedEncoderDecoder(nn.Module):
 
         # Encode if needed (training, first prediction pass)
         encoder_hidden_states = kwargs_encoder.pop("hidden_states", None)
-        print('encoder_hidden_states={}'.format(encoder_hidden_states))
+        #print('encoder_hidden_states={}'.format(encoder_hidden_states))
         if encoder_hidden_states is None:
             encoder_outputs = self.encoder(encoder_input_ids, **kwargs_encoder)
             encoder_hidden_states = encoder_outputs[

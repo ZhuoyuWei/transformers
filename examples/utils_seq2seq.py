@@ -80,7 +80,7 @@ class ChemistryProcessor(DataProcessor):
         ]'''
         examples=[]
         for line in lines:
-            print('debug line = {}'.format(len(line)))
+            #print('debug line = {}'.format(len(line)))
             examples.append(InputExample(
                 example_id=line[0],
                 input_text=line[1],

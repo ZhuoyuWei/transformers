@@ -222,6 +222,8 @@ def train(args, model, tokenizer):
         epoch_iterator = tqdm(train_dataloader, desc="Iteration", disable=True)
         for step, batch in enumerate(epoch_iterator):
             source, target, encoder_mask, decoder_mask, lm_labels = batch
+            print('source: {}'.format(source))
+            print('target: {}'.format(target))
 
 
             source = source.to(args.device)
