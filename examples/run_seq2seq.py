@@ -75,13 +75,13 @@ def collate(data, tokenizer, input_block_size,output_block_size):
     outputs=[]
     for i,example in enumerate(data):
         #input=tokenizer.build_inputs_with_special_tokens(tokenizer.encode(example.input_text))
-        print(example.input_text)
+        #print(example.input_text)
         input=tokenizer.encode(example.input_text)
         #print(input)
-        print(r'%%% 1')
+        #print(r'%%% 1')
         input=fit_to_block_size(input, input_block_size, tokenizer.pad_token_id)
-        print(input)
-        print('###')
+        #print(input)
+        #print('###')
 
         inputs.append(input)
         if example.output_text is not None:
@@ -90,13 +90,13 @@ def collate(data, tokenizer, input_block_size,output_block_size):
         else:
             output=tokenizer.build_inputs_with_special_tokens([])
         output=fit_to_block_size(output, output_block_size, tokenizer.pad_token_id)
-        print(example.output_text)
-        print(r'%%% 2')
-        print(output)
-        print('### 2')
+        #print(example.output_text)
+        #print(r'%%% 2')
+        #print(output)
+        #print('### 2')
 
         outputs.append(output)
-    exit(-1)
+    #exit(-1)
 
 
     inputs = torch.tensor(inputs)
