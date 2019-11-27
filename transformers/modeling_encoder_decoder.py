@@ -316,7 +316,7 @@ class PreTrainedEncoderDecoder(nn.Module):
 
             kwargs_decoder["attention_mask"]=produced_decoder_attn_mask
             decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
-            decoder_ids=decoder_outputs[0].argmax(dim=-1)
+            decoder_ids=decoder_outputs[1].argmax(dim=-1)
             decoder_ids=decoder_ids[:,step]
             #print('decoder_input_ids shape = {}'.format(decoder_input_ids.size()))
             #print('decoder_output_ids shape = {}'.format(decoder_ids.size()))
