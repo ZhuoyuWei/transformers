@@ -171,7 +171,7 @@ class PreTrainedEncoderDecoder(nn.Module):
         self.encoder.save_pretrained(os.path.join(save_directory, "encoder"))
         self.decoder.save_pretrained(os.path.join(save_directory, "decoder"))
 
-    def forward(self, encoder_input_ids, decoder_input_ids, **kwargs):
+    def forward(self, encoder_input_ids, decoder_input_ids, fdebug, **kwargs):
         """ The forward pass on a seq2eq depends what we are performing:
 
         - During training we perform one forward pass through both the encoder
@@ -200,8 +200,8 @@ class PreTrainedEncoderDecoder(nn.Module):
             if not argument.startswith("encoder_")
             and not argument.startswith("decoder_")
         }
-        print(kwargs_common)
-        fdebug=kwargs_common['fdebug']
+        #print(kwargs_common)
+        #fdebug=kwargs_common['fdebug']
         kwargs_decoder = kwargs_common.copy()
         kwargs_encoder = kwargs_common.copy()
         kwargs_encoder.update(
@@ -243,7 +243,7 @@ class PreTrainedEncoderDecoder(nn.Module):
 
         return decoder_outputs + encoder_outputs
 
-    def decoding(self, encoder_input_ids, decoder_input_ids, **kwargs):
+    def decoding(self, encoder_input_ids, decoder_input_ids, fdebug, **kwargs):
         """ The forward pass on a seq2eq depends what we are performing:
 
         - During training we perform one forward pass through both the encoder
@@ -272,7 +272,7 @@ class PreTrainedEncoderDecoder(nn.Module):
             if not argument.startswith("encoder_")
             and not argument.startswith("decoder_")
         }
-        fdebug=kwargs['fdebug']
+        #fdebug=kwargs['fdebug']
         kwargs_decoder = kwargs_common.copy()
         kwargs_encoder = kwargs_common.copy()
         kwargs_encoder.update(
