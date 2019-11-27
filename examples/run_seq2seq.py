@@ -313,7 +313,7 @@ def evaluate(args, model, tokenizer, prefix=""):
                     source,
                     target,
                     encoder_attention_mask=encoder_mask,
-                    decoder_attention_mask=None,
+                    decoder_attention_mask=decoder_mask,
                     decoder_lm_labels=None,
                 )
                 for idx in outputs_ids:

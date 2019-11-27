@@ -357,10 +357,13 @@ class Model2Model(PreTrainedEncoderDecoder):
             "attention_mask", None
         )
         #add attention_msk to kwarfs_decoder
-        kwargs_decoder["attention_mask"] = None
-        decoder_input_ids=decoder_input_ids[:,:2]
+        decoder_input_ids=decoder_input_ids[:,:1]
+        global_decoder_mask=kwargs_decoder.get(
+            "attention_mask", None
+        )
         print('debug decoder_input_ids={}'.format(decoder_input_ids.size()))
         for step in range(10):
+            kwargs_decoder["encoder_attention_mask"]
             decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
             decoder_ids=decoder_outputs[0].argmax(dim=-1)
             decoder_ids=decoder_ids[:,-1:]

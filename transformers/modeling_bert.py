@@ -344,6 +344,11 @@ class BertLayer(nn.Module):
         self.output = BertOutput(config)
 
     def forward(self, hidden_states, attention_mask=None, head_mask=None, encoder_hidden_states=None, encoder_attention_mask=None):
+        print('layer: hidden_states={}, attention_mask={}'
+              ',encoder_hidden_states={}, encoder_attention_mask={}'.format(hidden_states.size(),
+                                                                            attention_mask.size() if attention_mask is not None else None,
+                                                                            encoder_hidden_states.size() if encoder_hidden_states is not None else None,
+                                                                            encoder_attention_mask.size() if encoder_attention_mask is not None else None))
         self_attention_outputs = self.attention(hidden_states, attention_mask, head_mask)
         attention_output = self_attention_outputs[0]
         outputs = self_attention_outputs[1:]  # add self attentions if we output attention weights
