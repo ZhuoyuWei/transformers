@@ -320,7 +320,7 @@ def evaluate(args, model, tokenizer, prefix=""):
                     encoder_attention_mask=encoder_mask,
                     decoder_attention_mask=decoder_mask,
                     decoder_lm_labels=lm_labels,
-                    fdebug=fdebug,
+                    #fdebug=fdebug,
                 )
                 print('outputs size: {}'.format(outputs_ids.size()))
                 outputs_ids =outputs_ids.cpu().numpy()
@@ -340,7 +340,7 @@ def evaluate(args, model, tokenizer, prefix=""):
                     encoder_attention_mask=encoder_mask,
                     decoder_attention_mask=decoder_mask,
                     decoder_lm_labels=lm_labels,
-                    fdebug=fdebug,
+                    #fdebug=fdebug,
                 )
 
                 lm_loss = outputs[0]
