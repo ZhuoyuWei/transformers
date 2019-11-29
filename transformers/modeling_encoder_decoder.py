@@ -305,7 +305,8 @@ class PreTrainedEncoderDecoder(nn.Module):
         #print('encoder hidden states')
         #print(encoder_hidden_states)
         torch.set_printoptions(profile="full")
-        fdebug.write('{}'.format(encoder_hidden_states) + '\n')
+        if fdebug is not None:
+            fdebug.write('{}'.format(encoder_hidden_states) + '\n')
         # Decode
         kwargs_decoder["encoder_hidden_states"] = encoder_hidden_states
         kwargs_decoder["encoder_attention_mask"] = kwargs_encoder.get(
