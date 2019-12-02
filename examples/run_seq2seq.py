@@ -195,9 +195,9 @@ def train(args, model, tokenizer):
 
     # Prepare the optimizer
     #lr = {"encoder": 0.002, "decoder": 0.2}
-    lr = {"encoder": 5e-4, "decoder": 5e-4}
+    lr = {"encoder": args.encoder_lr, "decoder": args.decoder_lr}
     #warmup_steps = {"encoder": 20000, "decoder": 10000}
-    warmup_steps = {"encoder": 5, "decoder": 5}
+    warmup_steps = {"encoder": args.encoder_warmup, "decoder": args.decoder_warmup}
     optimizer = BertSumOptimizer(model, lr, warmup_steps)
 
     # Train
@@ -489,6 +489,34 @@ def main():
         default="pnt",
         type=str,
         help="",
+    )
+
+    parser.add_argument(
+        "--encoder_lr",
+        default=5e-4,
+        type=float,
+        help="encoder's learning rate",
+    )
+
+    parser.add_argument(
+        "--decoder_lr",
+        default=5e-4,
+        type=float,
+        help="encoder's learning rate",
+    )
+
+    parser.add_argument(
+        "--encoder_warmup",
+        default=10,
+        type=int,
+        help="encoder's learning rate",
+    )
+
+    parser.add_argument(
+        "--decoder_warmup",
+        default=100,
+        type=int,
+        help="encoder's learning rate",
     )
 
     parser.add_argument("--seed", default=42, type=int)
