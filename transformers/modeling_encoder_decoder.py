@@ -377,7 +377,7 @@ class Model2Model(PreTrainedEncoderDecoder):
         by a model-specific keyword (bert, )...
         """
         # self._tie_or_clone_weights(self.encoder, self.decoder)
-        pass
+        self.decoder.bert.embeddings=self.encoder.embeddings
 
     @classmethod
     def from_pretrained(cls, pretrained_model_name_or_path, *args, **kwargs):
