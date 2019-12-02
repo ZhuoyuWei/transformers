@@ -545,11 +545,11 @@ def main():
 
     # Load pretrained model and tokenizer. The decoder's weights are randomly initialized.
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
-    config = BertConfig.from_pretrained(args.model_name_or_path)
-    config.num_hidden_layers=3
-    config.is_decoder=True
-    decoder_model = BertForMaskedLM(config)
-    #decoder_model = BertForMaskedLM.from_pretrained(r'/data/zhuoyu/semantic_parsing/models')
+    #config = BertConfig.from_pretrained(args.model_name_or_path)
+    #config.num_hidden_layers=3
+    #config.is_decoder=True
+    #decoder_model = BertForMaskedLM(config)
+    decoder_model = BertForMaskedLM.from_pretrained(r'/data/zhuoyu/semantic_parsing/models')
     model = Model2Model.from_pretrained(
         args.model_name_or_path, decoder_model=decoder_model
     )
