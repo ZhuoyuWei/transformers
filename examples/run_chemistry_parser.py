@@ -279,7 +279,10 @@ def train(args, model, tokenizer):
                 decoder_lm_labels=feed_lm_labels,
             )
 
-            loss = outputs[0]
+            loss=0
+            for i in range(len(model.decoders)):
+                print('outputs[{}][0] type: {}'.format(i,type(outputs[i][0])))
+                loss += outputs[i][0]
             #print(loss)
             if args.gradient_accumulation_steps > 1:
                 loss /= args.gradient_accumulation_steps
