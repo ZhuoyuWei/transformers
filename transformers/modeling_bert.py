@@ -344,14 +344,22 @@ class BertLayer(nn.Module):
         self.output = BertOutput(config)
 
     def forward(self, hidden_states, attention_mask=None, head_mask=None, encoder_hidden_states=None, encoder_attention_mask=None):
+        #print('layer: hidden_states={}, attention_mask={}'
+        #      ',encoder_hidden_states={}, encoder_attention_mask={}'.format(hidden_states.size(),
+        #                                                                    attention_mask.size() if attention_mask is not None else None,
+        #                                                                    encoder_hidden_states.size() if encoder_hidden_states is not None else None,
+        #                                                                    encoder_attention_mask.size() if encoder_attention_mask is not None else None))
         self_attention_outputs = self.attention(hidden_states, attention_mask, head_mask)
         attention_output = self_attention_outputs[0]
         outputs = self_attention_outputs[1:]  # add self attentions if we output attention weights
+
+        #print('after self attention: attention_output = {}'.format(attention_output.size()))
 
         if self.is_decoder and encoder_hidden_states is not None:
             cross_attention_outputs = self.crossattention(attention_output, attention_mask, head_mask, encoder_hidden_states, encoder_attention_mask)
             attention_output = cross_attention_outputs[0]
             outputs = outputs + cross_attention_outputs[1:]  # add cross attentions if we output attention weights
+            #print('enter decoder')
 
         intermediate_output = self.intermediate(attention_output)
         layer_output = self.output(intermediate_output, attention_output)
@@ -364,9 +372,15 @@ class BertEncoder(nn.Module):
         super(BertEncoder, self).__init__()
         self.output_attentions = config.output_attentions
         self.output_hidden_states = config.output_hidden_states
+        print('debug num hidden layers is {} and is decoder {}'.format(config.num_hidden_layers,config.is_decoder))
         self.layer = nn.ModuleList([BertLayer(config) for _ in range(config.num_hidden_layers)])
 
     def forward(self, hidden_states, attention_mask=None, head_mask=None, encoder_hidden_states=None, encoder_attention_mask=None):
+        #'encoder: hidden_states={}, attention_mask={}'
+        #      ',encoder_hidden_states={}, encoder_attention_mask={}'.format(hidden_states.size(),
+        #                                                                    attention_mask.size() if attention_mask is not None else None,
+        #                                                                    encoder_hidden_states.size() if encoder_hidden_states is not None else None,
+        #                                                                    encoder_attention_mask.size() if encoder_attention_mask is not None else None))
         all_hidden_states = ()
         all_attentions = ()
         for i, layer_module in enumerate(self.layer):
@@ -375,6 +389,7 @@ class BertEncoder(nn.Module):
 
             layer_outputs = layer_module(hidden_states, attention_mask, head_mask[i], encoder_hidden_states, encoder_attention_mask)
             hidden_states = layer_outputs[0]
+            #print('the {}th hidden states = {}'.format(i,hidden_states.size()))
 
             if self.output_attentions:
                 all_attentions = all_attentions + (layer_outputs[1],)
@@ -674,6 +689,8 @@ class BertModel(BertPreTrainedModel):
                 batch_size, seq_length = input_shape
                 seq_ids = torch.arange(seq_length, device=device)
                 causal_mask = seq_ids[None, None, :].repeat(batch_size, seq_length, 1) <= seq_ids[None, :, None]
+                #print('debug device: causal_mask={}'.format(causal_mask.device))
+                #print('debug device: attention_mask={}'.format(attention_mask.device))
                 extended_attention_mask = causal_mask[:, None, :, :] * attention_mask[:, None, None, :]
             else:
                 extended_attention_mask = attention_mask[:, None, None, :]
@@ -711,7 +728,12 @@ class BertModel(BertPreTrainedModel):
         else:
             head_mask = [None] * self.config.num_hidden_layers
 
+        #print('debug in bert: input_ids={}'.format(input_ids.size()))
+
         embedding_output = self.embeddings(input_ids=input_ids, position_ids=position_ids, token_type_ids=token_type_ids, inputs_embeds=inputs_embeds)
+
+        #print('debug embedding={}'.format(embedding_output.size()))
+
         encoder_outputs = self.encoder(embedding_output,
                                        attention_mask=extended_attention_mask,
                                        head_mask=head_mask,

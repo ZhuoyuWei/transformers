@@ -164,10 +164,14 @@ class PreTrainedEncoderDecoder(nn.Module):
 
         We save the encoder' and decoder's parameters in two separate directories.
         """
+        if not os.path.exists(os.path.join(save_directory, "encoder")):
+            os.makedirs(os.path.join(save_directory, "encoder"))
+        if not os.path.exists(os.path.join(save_directory, "decoder")):
+            os.makedirs(os.path.join(save_directory, "decoder"))
         self.encoder.save_pretrained(os.path.join(save_directory, "encoder"))
         self.decoder.save_pretrained(os.path.join(save_directory, "decoder"))
 
-    def forward(self, encoder_input_ids, decoder_input_ids, **kwargs):
+    def forward(self, encoder_input_ids, decoder_input_ids, fdebug=None, **kwargs):
         """ The forward pass on a seq2eq depends what we are performing:
 
         - During training we perform one forward pass through both the encoder
@@ -196,6 +200,79 @@ class PreTrainedEncoderDecoder(nn.Module):
             if not argument.startswith("encoder_")
             and not argument.startswith("decoder_")
         }
+        #print(kwargs_common)
+        #fdebug=kwargs_common['fdebug']
+        kwargs_decoder = kwargs_common.copy()
+        kwargs_encoder = kwargs_common.copy()
+        kwargs_encoder.update(
+            {
+                argument[len("encoder_") :]: value
+                for argument, value in kwargs.items()
+                if argument.startswith("encoder_")
+            }
+        )
+        kwargs_decoder.update(
+            {
+                argument[len("decoder_") :]: value
+                for argument, value in kwargs.items()
+                if argument.startswith("decoder_")
+            }
+        )
+
+        # Encode if needed (training, first prediction pass)
+        encoder_hidden_states = kwargs_encoder.pop("hidden_states", None)
+        #print('encoder_hidden_states={}'.format(encoder_hidden_states))
+        if fdebug is not None:
+            torch.set_printoptions(profile="full")
+            fdebug.write('{}'.format(encoder_hidden_states)+'\n')
+
+        if encoder_hidden_states is None:
+            encoder_outputs = self.encoder(encoder_input_ids, **kwargs_encoder)
+            encoder_hidden_states = encoder_outputs[
+                0
+            ]  # output the last layer hidden state
+        else:
+            encoder_outputs = ()
+
+        # Decode
+        kwargs_decoder["encoder_hidden_states"] = encoder_hidden_states
+        kwargs_decoder["encoder_attention_mask"] = kwargs_encoder.get(
+            "attention_mask", None
+        )
+        decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
+
+        return decoder_outputs + encoder_outputs
+
+    def decoding(self, encoder_input_ids, decoder_input_ids, fdebug=None, **kwargs):
+        """ The forward pass on a seq2eq depends what we are performing:
+
+        - During training we perform one forward pass through both the encoder
+          and decoder;
+        - During prediction, we perform one forward pass through the encoder,
+          and then perform several forward passes with the encoder's hidden
+          state through the decoder to decode a full sequence.
+
+        Therefore, we skip the forward pass on the encoder if an argument named
+        `encoder_hidden_state` is passed to this function.
+
+        Params:
+            encoder_input_ids: ``torch.LongTensor`` of shape ``(batch_size, sequence_length)``
+                Indices of encoder input sequence tokens in the vocabulary.
+            decoder_input_ids: ``torch.LongTensor`` of shape ``(batch_size, sequence_length)``
+                Indices of decoder input sequence tokens in the vocabulary.
+            kwargs: (`optional`) Remaining dictionary of keyword arguments.
+        """
+        # keyword arguments come in 3 flavors: encoder-specific (prefixed by
+        # `encoder_`), decoder-specific (prefixed by `decoder_`) and those
+        # that apply to the model as whole.
+        # We let the specific kwargs override the common ones in case of conflict.
+        kwargs_common = {
+            argument: value
+            for argument, value in kwargs.items()
+            if not argument.startswith("encoder_")
+            and not argument.startswith("decoder_")
+        }
+        #fdebug=kwargs['fdebug']
         kwargs_decoder = kwargs_common.copy()
         kwargs_encoder = kwargs_common.copy()
         kwargs_encoder.update(
@@ -223,14 +300,44 @@ class PreTrainedEncoderDecoder(nn.Module):
         else:
             encoder_outputs = ()
 
+        #print('encoder input ids')
+        #print(encoder_input_ids)
+        #print('encoder hidden states')
+        #print(encoder_hidden_states)
+        torch.set_printoptions(profile="full")
+        if fdebug is not None:
+            fdebug.write('{}'.format(encoder_hidden_states) + '\n')
         # Decode
         kwargs_decoder["encoder_hidden_states"] = encoder_hidden_states
         kwargs_decoder["encoder_attention_mask"] = kwargs_encoder.get(
             "attention_mask", None
         )
-        decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
+        #add attention_msk to kwarfs_decoder
+        #decoder_input_ids=decoder_input_ids[:,:1]
+        decoder_input_shape=decoder_input_ids.size()
+        #print('debug decoder_input_ids={}'.format(decoder_input_shape))
 
-        return decoder_outputs + encoder_outputs
+
+        for step in range(10):
+            produced_decoder_attn_mask=torch.cat([torch.ones([decoder_input_shape[0],step+1],dtype=torch.int32, device=decoder_input_ids.device)
+                                                     ,torch.zeros([decoder_input_shape[0],decoder_input_shape[1]-(step+1)], dtype=torch.int32, device=decoder_input_ids.device)],dim=1)
+            #print('produced_decoder_attn_mask = {}'.format(produced_decoder_attn_mask))
+
+            kwargs_decoder["attention_mask"]=produced_decoder_attn_mask
+            decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
+            decoder_ids=decoder_outputs[1].argmax(dim=-1)
+            decoder_ids=decoder_ids[:,step]
+            #print('decoder_input_ids shape = {}'.format(decoder_input_ids.size()))
+            #print('decoder_output_ids shape = {}'.format(decoder_ids.size()))
+            #print(decoder_input_ids[:,step+1])
+            #print('########################################')
+            #print(decoder_ids)
+            decoder_input_ids[:,step+1]=decoder_ids
+            #print('decoder input ids:')
+            #print(decoder_input_ids)
+
+
+        return decoder_input_ids
 
 
 class Model2Model(PreTrainedEncoderDecoder):
@@ -270,7 +377,7 @@ class Model2Model(PreTrainedEncoderDecoder):
         by a model-specific keyword (bert, )...
         """
         # self._tie_or_clone_weights(self.encoder, self.decoder)
-        pass
+        self.decoder.bert.embeddings=self.encoder.embeddings
 
     @classmethod
     def from_pretrained(cls, pretrained_model_name_or_path, *args, **kwargs):
@@ -290,6 +397,7 @@ class Model2Model(PreTrainedEncoderDecoder):
         )
 
         return model
+
 
 
 class Model2LSTM(PreTrainedEncoderDecoder):
