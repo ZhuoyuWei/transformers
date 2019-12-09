@@ -99,7 +99,7 @@ def collate(data, tokenizer, input_block_size,output_block_size):
             condition_output=tokenizer.encode(example.condition_output)
         else:
             condition_output=tokenizer.build_inputs_with_special_tokens([])
-            condition_output=fit_to_block_size(condition_output, output_block_size, tokenizer.pad_token_id)
+        condition_output=fit_to_block_size(condition_output, output_block_size, tokenizer.pad_token_id)
         condition_outputs.append(condition_output)
 
     question_inputs = torch.tensor(question_inputs)
