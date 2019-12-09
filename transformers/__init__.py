@@ -101,7 +101,7 @@ if is_torch_available():
     from .modeling_camembert import (CamembertForMaskedLM, CamembertModel,
                                 CamembertForSequenceClassification, CamembertForMultipleChoice,
                                 CAMEMBERT_PRETRAINED_MODEL_ARCHIVE_MAP)
-    from .modeling_encoder_decoder import PreTrainedEncoderDecoder, Model2Model
+    from .modeling_encoder_decoder import PreTrainedEncoderDecoder, Model2Model, Model2Models
 
     # Optimization
     from .optimization import (AdamW, get_constant_schedule, get_constant_schedule_with_warmup, get_cosine_schedule_with_warmup,
