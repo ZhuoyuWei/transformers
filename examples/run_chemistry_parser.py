@@ -140,9 +140,12 @@ class BertSumOptimizer(object):
 
     def __init__(self, model, lr, warmup_steps, beta_1=0.99, beta_2=0.999, eps=1e-8):
         self.encoder = model.encoder
-        self.decoder = model.decoder
+        self.decoders = model.decoders
         self.lr = lr
         self.warmup_steps = warmup_steps
+        self.decoders_parameters=[]
+        for decoder in model.decoders:
+            self.decoders_parameters+=decoder.parameters()
 
         self.optimizers = {
             "encoder": Adam(
@@ -152,7 +155,7 @@ class BertSumOptimizer(object):
                 eps=eps,
             ),
             "decoder": Adam(
-                model.decoder.parameters(),
+                self.decoders_parameters,
                 lr=lr["decoder"],
                 betas=(beta_1, beta_2),
                 eps=eps,
