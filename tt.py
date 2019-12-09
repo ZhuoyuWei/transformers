@@ -8,3 +8,8 @@ print(b.size())
 a=torch.arange(10)
 
 print(a)
+
+import json
+jsonstr=r'{"is_decoder":true}'
+jobj=json.loads(jsonstr)
+print(jobj)
