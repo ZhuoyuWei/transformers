@@ -625,9 +625,11 @@ class Model2Models(PreTrainedEncoderDecoder):
         )
         assert len(self.decoders)==len(decoder_input_ids)
         decoder_outputs=[None]*len(self.decoders)
+        decoder_attention_masks=kwargs_decoder.pop("attention_mask",None)
+        decoder_lm_labels=kwargs_decoder.pop("lm_labeks",None)
         for i in range(len(self.decoders)):
-            decoder_outputs[i] = self.decoders[i](decoder_input_ids[i], attention_mask=kwargs_decoder["attention_mask"][i],
-                                                  lm_labels=kwargs_decoder["lm_labels"][i],**kwargs_decoder)
+            decoder_outputs[i] = self.decoders[i](decoder_input_ids[i], attention_mask=decoder_attention_masks[i],
+                                                  lm_labels=decoder_lm_labels[i],**kwargs_decoder)
 
         return decoder_outputs + encoder_outputs
 
