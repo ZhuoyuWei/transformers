@@ -272,11 +272,11 @@ def train(args, model, tokenizer):
             #print('debug by zhuoyu: source = {}'.format(source))
             #print('debug by zhuoyu: target = {}'.format(target))
             outputs = model(
-                source,
-                target,
-                encoder_attention_mask=encoder_mask,
-                decoder_attention_mask=decoder_mask,
-                decoder_lm_labels=lm_labels,
+                feed_source,
+                feed_targets,
+                encoder_attention_mask=feed_encoder_mask,
+                decoder_attention_mask=feed_decoder_masks,
+                decoder_lm_labels=feed_lm_labels,
             )
 
             loss = outputs[0]
