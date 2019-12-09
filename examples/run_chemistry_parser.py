@@ -82,7 +82,7 @@ def collate(data, tokenizer, input_block_size,output_block_size):
     """ List of tuple as an input. """
     question_inputs=[]
     question_varible_outputs=[]
-    condition_output_outputs=[]
+    condition_outputs=[]
     for i,example in enumerate(data):
         question_input=tokenizer.encode(example.question_input)
         question_input=fit_to_block_size(question_input, input_block_size, tokenizer.pad_token_id)
@@ -95,30 +95,30 @@ def collate(data, tokenizer, input_block_size,output_block_size):
         question_varible_output=fit_to_block_size(question_varible_output, output_block_size, tokenizer.pad_token_id)
         question_varible_outputs.append(question_varible_output)
 
-        if example.condition_output_output is not None:
-            condition_output_output=tokenizer.encode(example.condition_output_output)
+        if example.condition_output is not None:
+            condition_output=tokenizer.encode(example.condition_output)
         else:
-            condition_output_output=tokenizer.build_inputs_with_special_tokens([])
-        condition_output_output=fit_to_block_size(condition_output_output, output_block_size, tokenizer.pad_token_id)
-        condition_output_outputs.append(condition_output_output)
+            condition_output=tokenizer.build_inputs_with_special_tokens([])
+            condition_output=fit_to_block_size(condition_output, output_block_size, tokenizer.pad_token_id)
+        condition_outputs.append(condition_output)
 
     question_inputs = torch.tensor(question_inputs)
     question_varible_outputs = torch.tensor(question_varible_outputs)
-    condition_output_outputs = torch.tensor(condition_output_outputs)
+    condition_outputs = torch.tensor(condition_outputs)
 
     question_inputs_mask = build_mask(question_inputs, tokenizer.pad_token_id)
     question_varible_outputs_mask = build_mask(question_varible_outputs, tokenizer.pad_token_id)
-    condition_output_outputs_mask = build_mask(condition_output_outputs, tokenizer.pad_token_id)
+    condition_outputs_mask = build_mask(condition_outputs, tokenizer.pad_token_id)
 
     question_varible_outputs_mask_lm_labels = build_lm_labels(question_varible_outputs_mask, tokenizer.pad_token_id)
-    condition_output_outputs_mask_lm_labels = build_lm_labels(condition_output_outputs_mask, tokenizer.pad_token_id)
+    condition_outputs_mask_lm_labels = build_lm_labels(condition_outputs_mask, tokenizer.pad_token_id)
 
     return (
         question_inputs,
-        [question_varible_outputs,condition_output_outputs],
+        [question_varible_outputs,condition_outputs],
         question_inputs_mask,
-        [question_varible_outputs_mask,condition_output_outputs_mask],
-        [question_varible_outputs_mask_lm_labels,condition_output_outputs_mask_lm_labels],
+        [question_varible_outputs_mask,condition_outputs_mask],
+        [question_varible_outputs_mask_lm_labels,condition_outputs_mask_lm_labels],
     )
 
 
@@ -588,9 +588,10 @@ def main():
     #config.num_hidden_layers=3
     #config.is_decoder=True
     #decoder_model = BertForMaskedLM(config)
-    decoder_model = BertForMaskedLM.from_pretrained(args.decoder_model_name_or_path)
+    decoder_models=[BertForMaskedLM.from_pretrained(args.decoder_model_name_or_path),
+                    BertForMaskedLM.from_pretrained(args.decoder_model_name_or_path)]
     model = Model2Model.from_pretrained(
-        args.encoder_model_name_or_path, decoder_model=decoder_model
+        args.encoder_model_name_or_path, decoder_model=decoder_models
     )
     #model = Model2Model.from_pretrained(
     #    args.model_name_or_path, decoder_model=None
