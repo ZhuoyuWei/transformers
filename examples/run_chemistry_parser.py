@@ -632,7 +632,8 @@ def main():
         print(args.n_gpu)
 
     # Load pretrained model and tokenizer. The decoder's weights are randomly initialized.
-    tokenizer = AutoTokenizer.from_pretrained(args.encoder_model_name_or_path)
+    tokenizer = AutoTokenizer.from_pretrained(args.encoder_model_name_or_path
+                                              ,never_split=['[unused0]','[unused1]','[unused2]'])
     #config = BertConfig.from_pretrained(args.model_name_or_path)
     #config.num_hidden_layers=3
     #config.is_decoder=True
