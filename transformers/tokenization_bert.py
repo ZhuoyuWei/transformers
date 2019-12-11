@@ -180,7 +180,7 @@ class BertTokenizer(PreTrainedTokenizer):
         else:
             #print('debug in tokenization_bert.py input: {}'.format(text))
             split_tokens = self.wordpiece_tokenizer.tokenize(text)
-            #print('debug in tokenization_bert.py output: {}'.format(split_tokens))
+        print('debug in tokenization_bert.py output: {}'.format(split_tokens))
         return split_tokens
 
     def _convert_token_to_id(self, token):
