@@ -722,6 +722,7 @@ class PreTrainedTokenizer(object):
                 or PyTorch torch.Tensor instead of a list of python integers.
             **kwargs: passed to the `self.tokenize()` method
         """
+        print('token input: {}'.format(text))
         encoded_inputs = self.encode_plus(text,
                                           text_pair=text_pair,
                                           max_length=max_length,
@@ -731,6 +732,7 @@ class PreTrainedTokenizer(object):
                                           return_tensors=return_tensors,
                                           **kwargs)
 
+        print('token output: {}'.format(encoded_inputs))
         return encoded_inputs["input_ids"]
 
     def encode_plus(self,
