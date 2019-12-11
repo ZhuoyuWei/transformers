@@ -636,7 +636,7 @@ class Model2Models(PreTrainedEncoderDecoder):
             decoder_outputs[i] = self.decoders[i](decoder_input_ids[i], attention_mask=decoder_attention_masks[i],
                                                   lm_labels=decoder_lm_labels[i],**kwargs_decoder)
 
-        return decoder_outputs + encoder_outputs
+        return decoder_outputs + [encoder_outputs]
 
     def decoding(self, encoder_input_ids, decoder_input_ids, fdebug=None, **kwargs):
         """ The forward pass on a seq2eq depends what we are performing:
