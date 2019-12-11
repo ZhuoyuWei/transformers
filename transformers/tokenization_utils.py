@@ -625,9 +625,12 @@ class PreTrainedTokenizer(object):
             return result
 
         def split_on_tokens(tok_list, text):
+            print('in split_on_tokens {}'.format(text))
             if not text:
                 return []
+            print(tok_list)
             if not tok_list:
+                print('use _token')
                 return self._tokenize(text, **kwargs)
 
             tokenized_text = []
@@ -641,6 +644,7 @@ class PreTrainedTokenizer(object):
                     else:
                         tokenized_text += [sub_text]
                 text_list = tokenized_text
+            print('out of split_on_tokens: {}'.format(text_list))
 
             return list(itertools.chain.from_iterable((self._tokenize(token, **kwargs) if token not \
                     in self.added_tokens_encoder and token not in self.all_special_tokens \
