@@ -323,12 +323,12 @@ def evaluate(args, model, tokenizer, prefix=""):
 
     args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, args.n_gpu)
     eval_dataset = load_and_cache_examples(args, tokenizer, prefix="dev")
-    for example in eval_dataset.examples:
-        print(example.example_id)
-        print(example.question_input)
-        print(example.question_varible_output)
-        print(example.condition_output)
-    exit(-1)
+    #for example in eval_dataset.examples:
+    #    print(example.example_id)
+    #    print(example.question_input)
+    #    print(example.question_varible_output)
+    #    print(example.condition_output)
+    #exit(-1)
     eval_sampler = SequentialSampler(eval_dataset)
     model_collate_fn = functools.partial(collate, tokenizer=tokenizer,
                                          input_block_size=args.input_block_size,output_block_size=args.output_block_size)
