@@ -171,15 +171,16 @@ class BertTokenizer(PreTrainedTokenizer):
         return len(self.vocab)
 
     def _tokenize(self, text):
+        print('in bert token:{}'.format(text))
         split_tokens = []
         if self.do_basic_tokenize:
             for token in self.basic_tokenizer.tokenize(text, never_split=self.all_special_tokens):
                 for sub_token in self.wordpiece_tokenizer.tokenize(token):
                     split_tokens.append(sub_token)
         else:
-            print('debug in tokenization_bert.py input: {}'.format(text))
+            #print('debug in tokenization_bert.py input: {}'.format(text))
             split_tokens = self.wordpiece_tokenizer.tokenize(text)
-            print('debug in tokenization_bert.py output: {}'.format(split_tokens))
+            #print('debug in tokenization_bert.py output: {}'.format(split_tokens))
         return split_tokens
 
     def _convert_token_to_id(self, token):
