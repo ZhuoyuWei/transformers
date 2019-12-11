@@ -404,7 +404,7 @@ def evaluate(args, model, tokenizer, prefix=""):
 
                 ans_seqs=[[],[]]
                 for i in range(len(model.decoders)):
-                    print(outputs[i][1])
+                    print(outputs[i][1].size())
                     predicted_scores=outputs[i][1].argmax(-1).cpu().numpy().tolist()
                     for idx in predicted_scores:
                         tokens = []
