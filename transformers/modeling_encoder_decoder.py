@@ -555,10 +555,13 @@ class Model2Models(PreTrainedEncoderDecoder):
         """
         if not os.path.exists(os.path.join(save_directory, "encoder")):
             os.makedirs(os.path.join(save_directory, "encoder"))
-        if not os.path.exists(os.path.join(save_directory, "decoder")):
-            os.makedirs(os.path.join(save_directory, "decoder"))
         self.encoder.save_pretrained(os.path.join(save_directory, "encoder"))
-        self.decoder.save_pretrained(os.path.join(save_directory, "decoder"))
+
+        for i in range(len(self.decoders)):
+            if not os.path.exists(os.path.join(save_directory, "decoder_{}".format(i))):
+                os.makedirs(os.path.join(save_directory, "decoder_{}".format(i)))
+            self.decoders[i].save_pretrained(os.path.join(save_directory, "decoder_{}".format(i)))
+
 
     def forward(self, encoder_input_ids, decoder_input_ids, fdebug=None, **kwargs):
         """ The forward pass on a seq2eq depends what we are performing:

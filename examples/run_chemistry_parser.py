@@ -287,7 +287,7 @@ def train(args, model, tokenizer):
 
             loss=0
             for i in range(len(model.decoders)):
-                print('outputs[{}][0] type: {}'.format(i,type(outputs[i][0])))
+                #print('outputs[{}][0] type: {}'.format(i,type(outputs[i][0])))
                 loss += outputs[i][0]
             #print(loss)
             if args.gradient_accumulation_steps > 1:
