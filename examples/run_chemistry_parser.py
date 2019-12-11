@@ -347,22 +347,38 @@ def evaluate(args, model, tokenizer, prefix=""):
         #print('[SOURCE]: {}'.format(source))
         #print('[TARGET]: {}'.format(target))
 
-        source = source.to(args.device)
-        target = target.to(args.device)
+        #source = source.to(args.device)
+        #target = target.to(args.device)
 
-        encoder_mask = encoder_mask.to(args.device)
-        decoder_mask = decoder_mask.to(args.device)
-        lm_labels = lm_labels.to(args.device)
+        #encoder_mask = encoder_mask.to(args.device)
+        #decoder_mask = decoder_mask.to(args.device)
+        #lm_labels = lm_labels.to(args.device)
+
+        feed_source = None
+        feed_targets = [None] * len(target)
+        feed_encoder_mask = None
+        feed_decoder_masks = [None] * len(decoder_mask)
+        feed_lm_labels = [None] * len(lm_labels)
+
+        feed_source = source.to(args.device)
+        for i in range(len(target)):
+            feed_targets[i] = target[i].to(args.device)
+
+        feed_encoder_mask = encoder_mask.to(args.device)
+        for i in range(len(decoder_mask)):
+            feed_decoder_masks[i] = decoder_mask[i].to(args.device)
+        for i in range(len(lm_labels)):
+            feed_lm_labels[i] = lm_labels[i].to(args.device)
 
         with torch.no_grad():
 
             if args.decoding_type=='decoding':
                 outputs_ids=model.decoding(
-                    source,
-                    target,
-                    encoder_attention_mask=encoder_mask,
-                    decoder_attention_mask=decoder_mask,
-                    decoder_lm_labels=lm_labels,
+                    feed_source,
+                    feed_targets,
+                    encoder_attention_mask=feed_encoder_mask,
+                    decoder_attention_mask=feed_decoder_masks,
+                    decoder_lm_labels=feed_lm_labels,
                     #fdebug=fdebug,
                 )
                 print('outputs size: {}'.format(outputs_ids.size()))
@@ -378,11 +394,11 @@ def evaluate(args, model, tokenizer, prefix=""):
 
             else:
                 outputs = model(
-                    source,
-                    target,
-                    encoder_attention_mask=encoder_mask,
-                    decoder_attention_mask=decoder_mask,
-                    decoder_lm_labels=lm_labels,
+                    feed_source,
+                    feed_targets,
+                    encoder_attention_mask=feed_encoder_mask,
+                    decoder_attention_mask=feed_decoder_masks,
+                    decoder_lm_labels=feed_lm_labels,
                     #fdebug=fdebug,
                 )
 
