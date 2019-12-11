@@ -625,12 +625,12 @@ class PreTrainedTokenizer(object):
             return result
 
         def split_on_tokens(tok_list, text):
-            print('in split_on_tokens {}'.format(text))
+            #print('in split_on_tokens {}'.format(text))
             if not text:
                 return []
-            print(tok_list)
+            #print(tok_list)
             if not tok_list:
-                print('use _token')
+                #print('use _token')
                 return self._tokenize(text, **kwargs)
 
             tokenized_text = []
@@ -645,6 +645,10 @@ class PreTrainedTokenizer(object):
                         tokenized_text += [sub_text]
                 text_list = tokenized_text
             print('out of split_on_tokens: {}'.format(text_list))
+            for i,token in enumerate(tokenized_text):
+                print('<{}> {}'.format(i,token))
+
+
 
             return list(itertools.chain.from_iterable((self._tokenize(token, **kwargs) if token not \
                     in self.added_tokens_encoder and token not in self.all_special_tokens \
@@ -777,7 +781,7 @@ class PreTrainedTokenizer(object):
         """
 
         def get_input_ids(text):
-            print('in encode plus:{}'.format(text))
+            #print('in encode plus:{}'.format(text))
             if isinstance(text, six.string_types):
                 return self.convert_tokens_to_ids(self.tokenize(text, **kwargs))
             elif isinstance(text, (list, tuple)) and len(text) > 0 and isinstance(text[0], six.string_types):
