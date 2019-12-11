@@ -402,16 +402,24 @@ def evaluate(args, model, tokenizer, prefix=""):
                     #fdebug=fdebug,
                 )
 
-                lm_loss = outputs[0]
-                predicted_scores = outputs[1].argmax(-1).cpu().numpy().tolist()
-                for idx in predicted_scores:
-                    tokens = []
-                    for id in idx:
-                        tokens.append(tokenizer.ids_to_tokens.get(id, tokenizer.unk_token))
-                    fout.write(' '.join(tokens) + '\n')
+                ans_seqs=[[],[]]
+                for i in range(len(model.decoders)):
+                    predicted_scores=outputs[i][1].argmax(-1).cpu().numpy().tolist()
+                    for idx in predicted_scores:
+                        tokens = []
+                        for id in idx:
+                            tokens.append(tokenizer.ids_to_tokens.get(id, tokenizer.unk_token))
+                        ans_seqs[i].append(tokens)
+
+                for i in range(len(ans_seqs[0])):
+                    fout.write('\t'.join([' '.join(ans_seqs[0][i]),' '.join(ans_seqs[1][i])]) + '\n')
+
+
+
+
 
                 # print('debug by zhuoyu, predicted_scores size={}'.format(predicted_scores.size()))
-                eval_loss += lm_loss.mean().item()
+                #eval_loss += lm_loss.mean().item()
 
 
 
