@@ -177,7 +177,9 @@ class BertTokenizer(PreTrainedTokenizer):
                 for sub_token in self.wordpiece_tokenizer.tokenize(token):
                     split_tokens.append(sub_token)
         else:
+            print('debug in tokenization_bert.py input: {}'.format(text))
             split_tokens = self.wordpiece_tokenizer.tokenize(text)
+            print('debug in tokenization_bert.py output: {}'.format(split_tokens))
         return split_tokens
 
     def _convert_token_to_id(self, token):
@@ -427,7 +429,7 @@ class WordpieceTokenizer(object):
         Returns:
           A list of wordpiece tokens.
         """
-        print('debug tokenizaton input:{}'.format(text))
+        #print('debug tokenizaton input:{}'.format(text))
         output_tokens = []
         for token in whitespace_tokenize(text):
             chars = list(token)
@@ -459,7 +461,7 @@ class WordpieceTokenizer(object):
                 output_tokens.append(self.unk_token)
             else:
                 output_tokens.extend(sub_tokens)
-        print('debug tokenizaton output:{}'.format(output_tokens))
+        #print('debug tokenizaton output:{}'.format(output_tokens))
         return output_tokens
 
 
