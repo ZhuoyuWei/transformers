@@ -240,12 +240,12 @@ def train(args, model, tokenizer):
     logger.info("  Total optimization steps = %d", t_total)
 
     model.zero_grad()
-    train_iterator = trange(args.num_train_epochs, desc="Epoch", disable=True)
+    train_iterator = trange(args.num_train_epochs, desc="Epoch", disable=False)
 
     global_step = 0
     tr_loss = 0.0
     for _ in train_iterator:
-        epoch_iterator = tqdm(train_dataloader, desc="Iteration", disable=True)
+        epoch_iterator = tqdm(train_dataloader, desc="Iteration", disable=False)
         for step, batch in enumerate(epoch_iterator):
             source, target, encoder_mask, decoder_mask, lm_labels = batch
             #print('source: {}'.format(source))
@@ -404,6 +404,7 @@ def evaluate(args, model, tokenizer, prefix=""):
 
                 ans_seqs=[[],[]]
                 for i in range(len(model.decoders)):
+                    print(outputs[i][1])
                     predicted_scores=outputs[i][1].argmax(-1).cpu().numpy().tolist()
                     for idx in predicted_scores:
                         tokens = []
