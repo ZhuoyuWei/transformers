@@ -110,8 +110,8 @@ def collate(data, tokenizer, input_block_size,output_block_size):
     question_varible_outputs_mask = build_mask(question_varible_outputs, tokenizer.pad_token_id)
     condition_outputs_mask = build_mask(condition_outputs, tokenizer.pad_token_id)
 
-    question_varible_outputs_mask_lm_labels = build_lm_labels(question_varible_outputs_mask, tokenizer.pad_token_id)
-    condition_outputs_mask_lm_labels = build_lm_labels(condition_outputs_mask, tokenizer.pad_token_id)
+    question_varible_outputs_mask_lm_labels = build_lm_labels(question_varible_outputs, tokenizer.pad_token_id)
+    condition_outputs_mask_lm_labels = build_lm_labels(condition_outputs, tokenizer.pad_token_id)
 
     return (
         question_inputs,
