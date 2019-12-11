@@ -427,7 +427,7 @@ class WordpieceTokenizer(object):
         Returns:
           A list of wordpiece tokens.
         """
-
+        print('debug tokenizaton input:{}'.format(text))
         output_tokens = []
         for token in whitespace_tokenize(text):
             chars = list(token)
@@ -459,6 +459,7 @@ class WordpieceTokenizer(object):
                 output_tokens.append(self.unk_token)
             else:
                 output_tokens.extend(sub_tokens)
+        print('debug tokenizaton output:{}'.format(output_tokens))
         return output_tokens
 
 
