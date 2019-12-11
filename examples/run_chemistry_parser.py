@@ -271,6 +271,12 @@ def train(args, model, tokenizer):
             model.train()
             #print('debug by zhuoyu: source = {}'.format(source))
             #print('debug by zhuoyu: target = {}'.format(target))
+            print('debug by zhuoyu, device:')
+            print('feed source {}'.format(feed_source.device))
+            print('feed target {}'.format([str(feed_target.device) for feed_target in feed_targets]))
+            print('feed encoder mask {}'.format(feed_encoder_mask.device))
+            print('feed decoder masks {}'.format([str(feed_decoder_mask.device) for feed_decoder_mask in feed_decoder_masks]))
+            print('feed lm labels {}'.format([str(feed_lm_label.device) for feed_lm_label in feed_lm_labels]))
             outputs = model(
                 feed_source,
                 feed_targets,
