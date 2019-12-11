@@ -399,6 +399,12 @@ def evaluate(args, model, tokenizer, prefix=""):
                     fout.write(' '.join(tokens) + '\n')
 
             else:
+                print('debug eva input:')
+                print('feed_source={}'.format(feed_source))
+                print('feed_targets={}'.format(feed_targets))
+                print('feed_encoder_mask={}'.format(feed_encoder_mask))
+                print('feed_decoder_masks={}'.format(feed_decoder_masks))
+                print('feed_lm_labels={}'.format(feed_lm_labels))
                 outputs = model(
                     feed_source,
                     feed_targets,
