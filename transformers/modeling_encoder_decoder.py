@@ -421,6 +421,11 @@ class Model2Models(PreTrainedEncoderDecoder):
         self.encoder = encoder
         self.decoders = decoders
 
+    def to(self,device):
+        self.encoder.to(device)
+        for decoder in self.decoders:
+            decoder.to(device)
+
     @classmethod
     def from_pretrained(
         cls,
