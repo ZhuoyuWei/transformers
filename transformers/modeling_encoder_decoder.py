@@ -638,6 +638,7 @@ class Model2Models(PreTrainedEncoderDecoder):
         for i in range(len(self.decoders)):
             decoder_outputs[i] = self.decoders[i](decoder_input_ids[i], attention_mask=decoder_attention_masks[i],
                                                   lm_labels=decoder_lm_labels[i],**kwargs_decoder)
+            print('debug loss[{}]={}'.format(i,decoder_outputs[i][0]))
 
         return decoder_outputs + [encoder_outputs]
 
