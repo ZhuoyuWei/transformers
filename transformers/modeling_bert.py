@@ -903,7 +903,7 @@ class BertForMaskedLM(BertPreTrainedModel):
             outputs = (masked_lm_loss,) + outputs
 
         if lm_labels is not None:
-            print('debug by zhuoyu lm_labels: {}'.format(lm_labels))
+            #print('debug by zhuoyu lm_labels: {}'.format(lm_labels))
             # we are doing next-token prediction; shift prediction scores and input ids by one
             prediction_scores = prediction_scores[:, :-1, :].contiguous()
             lm_labels = lm_labels[:, 1:].contiguous()
