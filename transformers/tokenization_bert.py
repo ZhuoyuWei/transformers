@@ -337,6 +337,8 @@ class BasicTokenizer(object):
 
     def _run_split_on_punc(self, text, never_split=None):
         """Splits punctuation on a piece of text."""
+        print('[RUN_SPLIT] {} in {} is {}'.format(text, never_split,
+                                            never_split is not None and text in never_split))
         if never_split is not None and text in never_split:
             return [text]
         chars = list(text)
