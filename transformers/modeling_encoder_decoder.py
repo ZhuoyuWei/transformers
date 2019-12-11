@@ -419,13 +419,13 @@ class Model2Models(PreTrainedEncoderDecoder):
     def __init__(self, encoder, decoders):
         super(PreTrainedEncoderDecoder, self).__init__()
         self.encoder = encoder
-        self.decoders = decoders
-
+        self.decoders = nn.ModuleList(decoders)
+    '''
     def to(self,device):
         self.encoder.to(device)
         for decoder in self.decoders:
             decoder.to(device)
-
+    '''
     @classmethod
     def from_pretrained(
         cls,
