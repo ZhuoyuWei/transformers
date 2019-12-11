@@ -319,9 +319,10 @@ class BasicTokenizer(object):
             if self.do_lower_case and token not in never_split:
                 token = token.lower()
                 token = self._run_strip_accents(token)
-            split_tokens.extend(self._run_split_on_punc(token,never_split=never_split))
-
+            split_tokens.extend(self._run_split_on_punc(token, never_split=never_split))
+        print('[BASIC OUTPUT]={}'.format(split_tokens))
         output_tokens = whitespace_tokenize(" ".join(split_tokens))
+        print('***[BASIC OUTPUT]={}'.format(output_tokens))
         return output_tokens
 
     def _run_strip_accents(self, text):
