@@ -404,9 +404,23 @@ def evaluate(args, model, tokenizer, prefix=""):
                         batch_tokens.append(tokens)
 
                     tokens_roles.append(batch_tokens)
+
+                def subtoken2token(subtokens):
+                    token=""
+                    tokens=[]
+                    for subtoken in subtokens:
+                        if subtoken.startswith("##"):
+                            token+=subtoken[2:]
+                        else:
+                            if token!="":
+                                tokens.append(token)
+                            token=subtoken
+                    if token!="":
+                        tokens.append(token)
+                    return tokens
                 for i in range(len(tokens_roles[0])):
-                    fout.write('\t'.join([' '.join(tokens_roles[0][i])
-                                             ,' '.join(tokens_roles[1][i])]) + '\n')
+                    fout.write('\t'.join([' '.join(subtoken2token(tokens_roles[0][i]))
+                                             ,' '.join(subtoken2token(tokens_roles[1][i]))]) + '\n')
 
             else:
                 print('debug eva input:')
