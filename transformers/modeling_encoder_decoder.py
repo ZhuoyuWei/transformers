@@ -717,7 +717,7 @@ class Model2Models(PreTrainedEncoderDecoder):
         #print('debug decoder_input_ids={}'.format(decoder_input_shape))
 
 
-        for step in range(128):
+        for step in range(64):
             produced_decoder_attn_mask=torch.cat([torch.ones([decoder_input_shape[0],step+1],dtype=torch.int32, device=decoder_input_ids.device)
                                                      ,torch.zeros([decoder_input_shape[0],decoder_input_shape[1]-(step+1)], dtype=torch.int32, device=decoder_input_ids.device)],dim=1)
             #print('produced_decoder_attn_mask = {}'.format(produced_decoder_attn_mask))
