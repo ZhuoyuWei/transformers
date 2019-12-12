@@ -691,7 +691,16 @@ def main():
         logger.info("Evaluate the following checkpoints: %s", checkpoints)
         for checkpoint in checkpoints:
             encoder_checkpoint = os.path.join(checkpoint, "encoder")
-            decoder_checkpoint = os.path.join(checkpoint, "decoder")
+            decoder_checkpoint_question_varibles = os.path.join(checkpoint, "decoder_0")
+            decoder_checkpoint_conditions = os.path.join(checkpoint, "decoder_1")
+
+            decoder_models = [BertForMaskedLM.from_pretrained(decoder_checkpoint_question_varibles),
+                              BertForMaskedLM.from_pretrained(decoder_checkpoint_conditions)]
+            model = Model2Models.from_pretrained(
+                encoder_checkpoint, decoder_model=decoder_models
+            )
+
+
             #model = PreTrainedEncoderDecoder.from_pretrained(
             #    encoder_checkpoint, decoder_checkpoint
             #)
