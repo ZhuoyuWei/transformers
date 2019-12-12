@@ -379,24 +379,33 @@ def evaluate(args, model, tokenizer, prefix=""):
         with torch.no_grad():
 
             if args.decoding_type=='decoding':
-                outputs_ids=model.decoding(
-                    feed_source,
-                    feed_targets,
-                    encoder_attention_mask=feed_encoder_mask,
-                    decoder_attention_mask=feed_decoder_masks,
-                    decoder_lm_labels=feed_lm_labels,
-                    #fdebug=fdebug,
-                )
-                print('outputs size: {}'.format(outputs_ids.size()))
-                outputs_ids =outputs_ids.cpu().numpy()
-                for idx in outputs_ids:
-                    #print(idx)
-                    #print('###')
-                    tokens = []
-                    for id in idx:
-                        #print('{}\t{}'.format(id,type(id)))
-                        tokens.append(tokenizer.ids_to_tokens.get(int(id), tokenizer.unk_token))
-                    fout.write(' '.join(tokens) + '\n')
+                tokens_roles=[]
+                for i in range(len(feed_targets)):
+                    outputs_ids=model.decoding(
+                        feed_source,
+                        feed_targets[i],
+                        encoder_attention_mask=feed_encoder_mask,
+                        decoder_attention_mask=feed_decoder_masks[i],
+                        decoder_lm_labels=feed_lm_labels[i],
+                        #fdebug=fdebug,
+                    )
+                    print('outputs size: {}'.format(outputs_ids.size()))
+                    outputs_ids =outputs_ids.cpu().numpy()
+
+
+                    batch_tokens=[]
+                    for idx in outputs_ids:
+                        tokens = []
+                        for id in idx:
+                            #print('{}\t{}'.format(id,type(id)))
+                            tokens.append(tokenizer.ids_to_tokens.get(int(id), tokenizer.unk_token))
+
+                        batch_tokens.append(tokens)
+
+                    tokens_roles.append(batch_tokens)
+                for i in range(tokens_roles[0]):
+                    fout.write('\t'.join([' '.join(tokens_roles[0][i])
+                                             ,' '.join(tokens_roles[1][i])]) + '\n')
 
             else:
                 print('debug eva input:')
