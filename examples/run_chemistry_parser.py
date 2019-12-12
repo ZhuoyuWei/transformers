@@ -387,6 +387,7 @@ def evaluate(args, model, tokenizer, prefix=""):
                         encoder_attention_mask=feed_encoder_mask,
                         decoder_attention_mask=feed_decoder_masks[i],
                         decoder_lm_labels=feed_lm_labels[i],
+                        decoder=model.decoders[i]
                         #fdebug=fdebug,
                     )
                     print('outputs size: {}'.format(outputs_ids.size()))
