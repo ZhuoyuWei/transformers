@@ -665,13 +665,15 @@ def main():
     logger.info("Training/evaluation parameters %s", args)
 
     # Train the model
-    model.to(args.device)
+
+    if not os.path.exists(args.output_dir):
+            os.makedirs(args.output_dir)
     if args.do_train:
+        model.to(args.device)
         global_step, tr_loss = train(args, model, tokenizer)
         logger.info(" global_step = %s, average loss = %s", global_step, tr_loss)
 
-        if not os.path.exists(args.output_dir):
-            os.makedirs(args.output_dir)
+
 
         logger.info("Saving model checkpoint to %s", args.output_dir)
 
