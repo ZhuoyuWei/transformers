@@ -404,7 +404,7 @@ def evaluate(args, model, tokenizer, prefix=""):
                         batch_tokens.append(tokens)
 
                     tokens_roles.append(batch_tokens)
-                for i in range(tokens_roles[0]):
+                for i in range(len(tokens_roles[0])):
                     fout.write('\t'.join([' '.join(tokens_roles[0][i])
                                              ,' '.join(tokens_roles[1][i])]) + '\n')
 
