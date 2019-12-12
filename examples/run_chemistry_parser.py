@@ -700,6 +700,7 @@ def main():
                 encoder_checkpoint, decoder_model=decoder_models
             )
 
+            model.to(args.device)
 
             #model = PreTrainedEncoderDecoder.from_pretrained(
             #    encoder_checkpoint, decoder_checkpoint
