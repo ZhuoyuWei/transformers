@@ -58,6 +58,7 @@ class ChemistryProcessor(DataProcessor):
         return self._create_examples(self._read_csv(os.path.join(data_dir, "test.tsv")), "test")
 
 
+
     def _read_csv(self, input_file):
         with open(input_file, 'r', encoding='utf-8',newline='') as f:
             reader = csv.reader(f,delimiter='\t')
@@ -89,6 +90,14 @@ class ChemistryProcessor(DataProcessor):
                 condition_output=line[3] if len(line) > 3 else None,
             ))
         return examples
+
+
+    def get_examples_from_tsvlines(self,lines):
+        parsed_lines=[]
+        for line in lines:
+            parsed_line=line.strip().split('\t')
+            parsed_lines.append(parsed_line)
+        return self._create_examples(lines,"test")
 
 class ChemistryDataset(Dataset):
     """ Abstracts the dataset used to train seq2seq models.
