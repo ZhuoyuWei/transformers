@@ -686,7 +686,7 @@ def preprocess_line(line):
     return line
 
 def rconvert_c2cs(s):
-    seqs=s.split(' [SEP] ')
+    seqs=s.split('[SEP]')
     cjobj=[]
     for seq in seqs:
         jobj={}
@@ -694,13 +694,13 @@ def rconvert_c2cs(s):
         tokens=seq.split(' ')
         if tokens[0] == '0':
             jobj['type'] = 'physical unit'
-            jobj['value'] = ' '.join(tokens[1:]).replace('[unused3]', '[OF]').replace('[unused1]', '[IN]').replace('[unused2]', '[=]')
+            jobj['value'] = ' '.join(tokens[1:]).replace('[unused3]', '[OF]').replace('[unused1]', '[IN]').replace('[unused2]', '[=]').replace('[UNK]','').strip(' ')
         elif tokens[0] == '1':
             jobj['type'] = 'chemical equation'
-            jobj['value'] = ' '.join(tokens[1:])
+            jobj['value'] = ' '.join(tokens[1:]).replace('[unused3]', '[OF]').replace('[unused1]', '[IN]').replace('[unused2]', '[=]').replace('[UNK]','').strip(' ')
         elif tokens[0] == '2':
             jobj['type'] = 'other'
-            jobj['value'] = ' '.join(tokens[1:])
+            jobj['value'] = ' '.join(tokens[1:]).replace('[unused3]', '[OF]').replace('[unused1]', '[IN]').replace('[unused2]', '[=]').replace('[UNK]','').strip(' ')
         else:
             print('c wrong = [{}] in [{}]'.format(seq,s))
         cjobj.append(jobj)
