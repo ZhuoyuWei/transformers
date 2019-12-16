@@ -23,7 +23,7 @@ import random
 import sys
 import uuid
 sys.path.append(r'../')
-
+os.environ["CUDA_VISIBLE_DEVICES"]="5"
 
 import numpy as np
 from tqdm import tqdm, trange
@@ -797,7 +797,9 @@ def parse_oneline(line,args,model,tokenizer,processor):
     print(question_varible)
     print(conditions)
 
-    return question_varible,conditions
+    json_res={"question_varible":question_varible,"conditions":conditions}
+
+    return json_res
 
 def main():
 
@@ -807,8 +809,22 @@ def main():
     parse_oneline(line,args,model,tokenizer,processor)
 
 
+def web_serving():
+    args, model, tokenizer, processor = init()
+    import flask,json
+    server=flask.Flask(__name__)
 
+
+
+    @server.route('/parse', methods=['get', 'post'])
+    def parse():
+        line = flask.request.values.get('q')
+        json_res=parse_oneline(line, args, model, tokenizer, processor)
+        return json.dumps(json_res, ensure_ascii=False)
+
+    server.run(debug=True,port=36521)
 
 
 if __name__ == "__main__":
-    main()
+    #main()
+    web_serving()
