@@ -822,7 +822,7 @@ def web_serving():
         json_res=parse_oneline(line, args, model, tokenizer, processor)
         return json.dumps(json_res, ensure_ascii=False)
 
-    server.run(debug=True,port=36521)
+    server.run(debug=True,host='0.0.0.0',port=36521)
 
 
 if __name__ == "__main__":
