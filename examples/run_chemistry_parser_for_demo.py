@@ -495,14 +495,14 @@ def init():
         "--data_dir",
         default=None,
         type=str,
-        required=True,
+        required=False,
         help="The input training data file (a text file).",
     )
     parser.add_argument(
         "--output_dir",
         default=None,
         type=str,
-        required=True,
+        required=False,
         help="The output directory where the model predictions and checkpoints will be written.",
     )
 
