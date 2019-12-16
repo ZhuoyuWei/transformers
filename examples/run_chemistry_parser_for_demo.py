@@ -589,7 +589,7 @@ def init():
 
     parser.add_argument(
         "--trained_checkpoints",
-        default="/data/zhuoyu/semantic_parsing/chemistry_parser_binary",
+        default="/data/zhuoyu/semantic_parsing/chemistry_bert_parser_binary",
         type=str,
         help="trained_checkpoints",
     )
