@@ -596,7 +596,7 @@ def init():
 
     parser.add_argument(
         "--decoding_type",
-        default="pnt",
+        default="decoding",
         type=str,
         help="",
     )
