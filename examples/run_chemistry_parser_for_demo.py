@@ -763,7 +763,7 @@ def main():
 
     #test
     args, model, tokenizer, processor=init()
-
+    line="How many moles of sodium carbonate are present in 6.80 grams of sodium carbonate?"
     parse_oneline(line,args,model,tokenizer,processor)
 
 
