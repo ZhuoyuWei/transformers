@@ -685,6 +685,43 @@ def preprocess_line(line):
     line='\t'.join([str(uuid.uuid1()),line.strip()])
     return line
 
+def rconvert_c2cs(s):
+    seqs=s.split(' [SEP] ')
+    cjobj=[]
+    for seq in seqs:
+        jobj={}
+        seq=seq.strip(' ')
+        tokens=seq.split(' ')
+        if tokens[0] == '0':
+            jobj['type'] = 'physical unit'
+            jobj['value'] = ' '.join(tokens[1:]).replace('[unused3]', '[OF]').replace('[unused1]', '[IN]').replace('[unused2]', '[=]')
+        elif tokens[0] == '1':
+            jobj['type'] = 'chemical equation'
+            jobj['value'] = ' '.join(tokens[1:])
+        elif tokens[0] == '2':
+            jobj['type'] = 'other'
+            jobj['value'] = ' '.join(tokens[1:])
+        else:
+            print('c wrong = [{}] in [{}]'.format(seq,s))
+        cjobj.append(jobj)
+    return cjobj
+
+def rconvert_q2qjson(q):
+    q=q.split(' [SEP] ')[0]
+    tokens=q.split(' ')
+    qobjs=[]
+    qobj={}
+    if tokens[0] == '0':
+        qobj['type']='physical unit'
+        qobj['value'] = ' '.join(tokens[1:]).replace('[unused3]', '[OF]').replace('[unused1]', '[IN]').replace('[unused2]', '[=]')
+    elif tokens[0]=='1':
+        qobj['type'] = 'other'
+        qobj['value'] = ' '.join(tokens[1:])
+    else:
+        print('q wrong = {}'.format(q))
+    qobjs.append(qobj)
+    return qobjs
+
 def parse_oneline(line,args,model,tokenizer,processor):
 
     model_line=preprocess_line(line)
@@ -753,9 +790,12 @@ def parse_oneline(line,args,model,tokenizer,processor):
                 results.append('\t'.join([' '.join(subtoken2token(tokens_roles[0][i]))
                                          , ' '.join(subtoken2token(tokens_roles[1][i]))]) + '\n')
     print(results)
-    question_varible=None
-    conditions=None
+    ss=results[0].split('\t')
+    question_varible = rconvert_q2qjson(ss[0].replace('[CLS]', '').replace(' [PAD]', '').strip())
+    conditions = rconvert_c2cs(ss[1].replace('[CLS]', '').replace(' [PAD]', '').strip())
 
+    print(question_varible)
+    print(conditions)
 
     return question_varible,conditions
 
