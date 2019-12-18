@@ -85,8 +85,9 @@ def collate(data, tokenizer, input_block_size,output_block_size):
     question_varible_outputs=[]
     condition_outputs=[]
     for i,example in enumerate(data):
-        print('EXAMPLE DEBUGING={}'.format(example))
+        print('EXAMPLE DEBUGING={}'.format(example.question_input))
         question_input=tokenizer.encode(example.question_input)
+        print('EXAMPLE DEBUGING after ={}'.format(question_input))
         question_input=fit_to_block_size(question_input, input_block_size, tokenizer.pad_token_id)
         question_inputs.append(question_input)
 
