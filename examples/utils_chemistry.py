@@ -97,6 +97,7 @@ class ChemistryProcessor(DataProcessor):
         for line in lines:
             parsed_line=line.strip().split('\t')
             parsed_lines.append(parsed_line)
+            print('Debug parsed line = {}'.format(parsed_line))
         return self._create_examples(lines,"test")
 
 class ChemistryDataset(Dataset):

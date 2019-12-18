@@ -686,6 +686,7 @@ def init():
 
 def preprocess_line(line):
     line='\t'.join([str(uuid.uuid1()),line.strip()])
+    print('debug in preprocess_line line=[{}]'.format(line))
     return line
 
 def rconvert_c2cs(s):
