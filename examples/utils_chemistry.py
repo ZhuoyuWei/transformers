@@ -98,7 +98,7 @@ class ChemistryProcessor(DataProcessor):
             parsed_line=line.strip().split('\t')
             parsed_lines.append(parsed_line)
             print('Debug parsed line = {}'.format(parsed_line))
-        return self._create_examples(lines,"test")
+        return self._create_examples(parsed_lines,"test")
 
 class ChemistryDataset(Dataset):
     """ Abstracts the dataset used to train seq2seq models.
