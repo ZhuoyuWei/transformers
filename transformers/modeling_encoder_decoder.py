@@ -738,7 +738,10 @@ class Model2Models(PreTrainedEncoderDecoder):
 
         return decoder_input_ids
 
-
+    def eval(self):
+        self.encoder.eval()
+        for decoder in self.decoders:
+            decoder.eval()
 
 class Model2LSTM(PreTrainedEncoderDecoder):
     @classmethod
