@@ -804,7 +804,7 @@ def parse_oneline(line,args,model,tokenizer,processor):
     print(question_varible)
     print(conditions)
 
-    json_res={"question_varible":question_varible,"conditions":conditions}
+    json_res={"question_variable":question_varible,"conditions":conditions}
 
     return json_res
 
