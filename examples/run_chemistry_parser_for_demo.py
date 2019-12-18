@@ -736,6 +736,8 @@ def parse_oneline(line,args,model,tokenizer,processor):
     feed_decoder_masks = [None] * len(decoder_mask)
     feed_lm_labels = [None] * len(lm_labels)
 
+
+
     feed_source = source.to(args.device)
     for i in range(len(target)):
         feed_targets[i] = target[i].to(args.device)
@@ -746,6 +748,7 @@ def parse_oneline(line,args,model,tokenizer,processor):
     for i in range(len(lm_labels)):
         feed_lm_labels[i] = lm_labels[i].to(args.device)
     results=[]
+    print('debug by zhuoyu in parser: feed_sources: {}'.format(feed_source))
     with torch.no_grad():
         if args.decoding_type == 'decoding':
             tokens_roles = []
@@ -820,6 +823,7 @@ def web_serving():
     @server.route('/parse', methods=['get', 'post'])
     def parse():
         line = flask.request.values.get('q')
+        print('debug by zhuoyu: q={}'.format(line))
         json_res=parse_oneline(line, args, model, tokenizer, processor)
         return json.dumps(json_res, ensure_ascii=False)
 
