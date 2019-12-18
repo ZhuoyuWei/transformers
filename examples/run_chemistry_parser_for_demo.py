@@ -676,6 +676,7 @@ def init():
     )
 
     model.to(args.device)
+    model.eval()
 
     processor=ChemistryProcessor()
 
