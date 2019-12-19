@@ -625,9 +625,12 @@ class PreTrainedTokenizer(object):
             return result
 
         def split_on_tokens(tok_list, text):
+            #print('in split_on_tokens {}'.format(text))
             if not text:
                 return []
+            #print(tok_list)
             if not tok_list:
+                #print('use _token')
                 return self._tokenize(text, **kwargs)
 
             tokenized_text = []
@@ -641,6 +644,11 @@ class PreTrainedTokenizer(object):
                     else:
                         tokenized_text += [sub_text]
                 text_list = tokenized_text
+            print('out of split_on_tokens: {}'.format(text_list))
+            for i,token in enumerate(tokenized_text):
+                print('<{}> {}'.format(i,token))
+
+
 
             return list(itertools.chain.from_iterable((self._tokenize(token, **kwargs) if token not \
                     in self.added_tokens_encoder and token not in self.all_special_tokens \
@@ -722,6 +730,7 @@ class PreTrainedTokenizer(object):
                 or PyTorch torch.Tensor instead of a list of python integers.
             **kwargs: passed to the `self.tokenize()` method
         """
+        #print('token input: {}'.format(text))
         encoded_inputs = self.encode_plus(text,
                                           text_pair=text_pair,
                                           max_length=max_length,
@@ -731,6 +740,7 @@ class PreTrainedTokenizer(object):
                                           return_tensors=return_tensors,
                                           **kwargs)
 
+        #print('token output: {}'.format(encoded_inputs))
         return encoded_inputs["input_ids"]
 
     def encode_plus(self,
@@ -771,6 +781,7 @@ class PreTrainedTokenizer(object):
         """
 
         def get_input_ids(text):
+            #print('in encode plus:{}'.format(text))
             if isinstance(text, six.string_types):
                 return self.convert_tokens_to_ids(self.tokenize(text, **kwargs))
             elif isinstance(text, (list, tuple)) and len(text) > 0 and isinstance(text[0], six.string_types):
