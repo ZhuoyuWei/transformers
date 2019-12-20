@@ -5,6 +5,7 @@ echo "RUN GLUE"
 EXP_ID=$1
 EXP_MODEL_NAME=$2 #['bert',...]
 EXP_MODEL_PRETRAINED=$3 #['bert-large-uncased']
+BATCH_SIZE=$4
 
 #mkdir output dir
 WDATA_DIR=/data/zhuoyu/glue/wdata
@@ -50,8 +51,8 @@ python ./examples/run_glue.py \
     --do_lower_case \
     --data_dir $GLUE_DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
-    --per_gpu_eval_batch_size=32   \
-    --per_gpu_train_batch_size=32   \
+    --per_gpu_eval_batch_size=$BATCH_SIZE   \
+    --per_gpu_train_batch_size=$BATCH_SIZE   \
     --learning_rate 2e-5 \
     --num_train_epochs 3.0 \
     --output_dir $OUTPUT_DIR/$TASK_NAME/
@@ -69,8 +70,8 @@ python ./examples/run_glue.py \
     --do_lower_case \
     --data_dir $GLUE_DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
-    --per_gpu_eval_batch_size=32   \
-    --per_gpu_train_batch_size=32   \
+    --per_gpu_eval_batch_size=$BATCH_SIZE   \
+    --per_gpu_train_batch_size=$BATCH_SIZE   \
     --learning_rate 2e-5 \
     --num_train_epochs 3.0 \
     --output_dir $OUTPUT_DIR/$TASK_NAME/
@@ -87,8 +88,8 @@ python ./examples/run_glue.py \
     --do_lower_case \
     --data_dir $GLUE_DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
-    --per_gpu_eval_batch_size=32   \
-    --per_gpu_train_batch_size=32   \
+    --per_gpu_eval_batch_size=$BATCH_SIZE   \
+    --per_gpu_train_batch_size=$BATCH_SIZE   \
     --learning_rate 2e-5 \
     --num_train_epochs 3.0 \
     --output_dir $OUTPUT_DIR/$TASK_NAME/
@@ -106,8 +107,8 @@ python ./examples/run_glue.py \
     --do_lower_case \
     --data_dir $GLUE_DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
-    --per_gpu_eval_batch_size=32   \
-    --per_gpu_train_batch_size=32   \
+    --per_gpu_eval_batch_size=$BATCH_SIZE   \
+    --per_gpu_train_batch_size=$BATCH_SIZE   \
     --learning_rate 2e-5 \
     --num_train_epochs 3.0 \
     --output_dir $OUTPUT_DIR/$TASK_NAME/
@@ -124,8 +125,8 @@ python ./examples/run_glue.py \
     --do_lower_case \
     --data_dir $GLUE_DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
-    --per_gpu_eval_batch_size=32   \
-    --per_gpu_train_batch_size=32   \
+    --per_gpu_eval_batch_size=$BATCH_SIZE   \
+    --per_gpu_train_batch_size=$BATCH_SIZE   \
     --learning_rate 2e-5 \
     --num_train_epochs 3.0 \
     --output_dir $OUTPUT_DIR/$TASK_NAME/
@@ -143,8 +144,8 @@ python ./examples/run_glue.py \
     --do_lower_case \
     --data_dir $GLUE_DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
-    --per_gpu_eval_batch_size=32   \
-    --per_gpu_train_batch_size=32   \
+    --per_gpu_eval_batch_size=$BATCH_SIZE   \
+    --per_gpu_train_batch_size=$BATCH_SIZE   \
     --learning_rate 2e-5 \
     --num_train_epochs 3.0 \
     --output_dir $OUTPUT_DIR/$TASK_NAME/
@@ -161,8 +162,8 @@ python ./examples/run_glue.py \
     --do_lower_case \
     --data_dir $GLUE_DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
-    --per_gpu_eval_batch_size=32   \
-    --per_gpu_train_batch_size=32   \
+    --per_gpu_eval_batch_size=$BATCH_SIZE   \
+    --per_gpu_train_batch_size=$BATCH_SIZE   \
     --learning_rate 2e-5 \
     --num_train_epochs 3.0 \
     --output_dir $OUTPUT_DIR/$TASK_NAME/
@@ -180,8 +181,8 @@ python ./examples/run_glue.py \
     --do_lower_case \
     --data_dir $GLUE_DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
-    --per_gpu_eval_batch_size=32   \
-    --per_gpu_train_batch_size=32   \
+    --per_gpu_eval_batch_size=$BATCH_SIZE   \
+    --per_gpu_train_batch_size=$BATCH_SIZE   \
     --learning_rate 2e-5 \
     --num_train_epochs 3.0 \
     --output_dir $OUTPUT_DIR/$TASK_NAME/
@@ -198,8 +199,8 @@ python ./examples/run_glue.py \
     --do_lower_case \
     --data_dir $GLUE_DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
-    --per_gpu_eval_batch_size=32   \
-    --per_gpu_train_batch_size=32   \
+    --per_gpu_eval_batch_size=$BATCH_SIZE   \
+    --per_gpu_train_batch_size=$BATCH_SIZE   \
     --learning_rate 2e-5 \
     --num_train_epochs 3.0 \
     --output_dir $OUTPUT_DIR/$TASK_NAME/
