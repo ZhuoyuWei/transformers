@@ -26,7 +26,7 @@ cp /data/zhuoyu/glue/data.zip $DATA_DIR/
 cd $DATA_DIR
 unzip data.zip
 cd ..
-GLUE_DATA_DIR=$DATA_DIR/data
+GLUE_DATA_DIR=$DATA_DIR
 
 #download code and install requirements
 mkdir code
