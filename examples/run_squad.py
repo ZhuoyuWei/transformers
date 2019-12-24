@@ -446,6 +446,7 @@ def main():
                              "See details at https://nvidia.github.io/apex/amp.html")
     parser.add_argument('--server_ip', type=str, default='', help="Can be used for distant debugging.")
     parser.add_argument('--server_port', type=str, default='', help="Can be used for distant debugging.")
+    parser.add_argument('--attn_activator', type=str, default='softmax', help="The activation function in Attention")
     args = parser.parse_args()
 
     if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train and not args.overwrite_output_dir:
