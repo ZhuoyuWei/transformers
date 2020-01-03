@@ -63,7 +63,7 @@ class FiniteStateAutomata:
     def get_next_state(self,input):
         print('cur:{}'.format(self.cur_state))
         next_states=self.transitions.get(self.cur_state)
-        self.cur_state=next_states.get(self.inversed_condition_map[input])
+        self.cur_state=next_states.get(self.condition_map[input])
         return self.cur_state
 
     def get_vocab_index(self,state):
