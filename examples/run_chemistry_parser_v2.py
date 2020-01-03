@@ -50,6 +50,8 @@ from utils_summarization import (
 )
 
 from utils_chemistry import (ChemistryDataset,)
+
+from finite_state_automata import FiniteStateAutomata
 '''
 class InputExample(object):
     def __init__(self,example_id,question_input,question_varible_output=None,condition_output=None):
@@ -82,8 +84,8 @@ def set_seed(args):
 # ------------
 
 
-def load_and_cache_examples(args, tokenizer, prefix="train"):
-    dataset = ChemistryDataset(tokenizer, prefix=prefix, data_dir=args.data_dir,version=args.decoder_version)
+def load_and_cache_examples(args, tokenizer, prefix="train",fsa=None):
+    dataset = ChemistryDataset(tokenizer, prefix=prefix, data_dir=args.data_dir,version=args.decoder_version,fsa_or_config=fsa)
     return dataset
 
 
@@ -202,13 +204,13 @@ class BertSumOptimizer(object):
 # ------------
 
 
-def train(args, model, tokenizer):
+def train(args, model, tokenizer,fsa):
     """ Fine-tune the pretrained model on the corpus. """
     set_seed(args)
 
     # Load the data
     args.train_batch_size = args.per_gpu_train_batch_size * max(1, args.n_gpu)
-    train_dataset = load_and_cache_examples(args, tokenizer, "train")
+    train_dataset = load_and_cache_examples(args, tokenizer, "train",fsa=fsa)
     train_sampler = RandomSampler(train_dataset)
     model_collate_fn = functools.partial(collate, tokenizer=tokenizer,
                                          input_block_size=args.input_block_size,output_block_size=args.output_block_size)
@@ -256,6 +258,7 @@ def train(args, model, tokenizer):
 
     model.zero_grad()
     train_iterator = trange(args.num_train_epochs, desc="Epoch", disable=False)
+
 
     global_step = 0
     tr_loss = 0.0
@@ -320,11 +323,11 @@ def train(args, model, tokenizer):
 # ------------
 
 
-def evaluate(args, model, tokenizer, prefix=""):
+def evaluate(args, model, tokenizer, prefix="",fsa=None):
     set_seed(args)
 
     args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, args.n_gpu)
-    eval_dataset = load_and_cache_examples(args, tokenizer, prefix="dev")
+    eval_dataset = load_and_cache_examples(args, tokenizer, prefix="dev",fsa=fsa)
     #for example in eval_dataset.examples:
     #    print(example.example_id)
     #    print(example.question_input)
@@ -520,7 +523,7 @@ def main():
     )
     parser.add_argument(
         "--decoder_model_name_or_path",
-        default="/data/zhuoyu/semantic_parsing/models",
+        default="/data/zhuoyu/semantic_parsing_v2/models",
         type=str,
         help="The model checkpoint to initialize the decoder's weights with.",
     )
@@ -624,6 +627,13 @@ def main():
         help="",
     )
 
+    parser.add_argument(
+        "--fsa_config",
+        default="chemistry_fsa.json",
+        type=str,
+        help="",
+    )
+
     args = parser.parse_args()
 
     if (
@@ -664,6 +674,8 @@ def main():
     #    args.model_name_or_path, decoder_model=None
     #)
 
+    fsa=FiniteStateAutomata.init_from_config(os.path.join(args.decoder_model_name_or_path,args.fsa_config))
+
     # Setup logging
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
@@ -687,7 +699,7 @@ def main():
             os.makedirs(args.output_dir)
     if args.do_train:
         model.to(args.device)
-        global_step, tr_loss = train(args, model, tokenizer)
+        global_step, tr_loss = train(args, model, tokenizer,fsa)
         logger.info(" global_step = %s, average loss = %s", global_step, tr_loss)
 
 
@@ -728,7 +740,7 @@ def main():
             #model.to(args.device)
             results = "placeholder"
 
-            evaluate(args,model,tokenizer,"test")
+            evaluate(args,model,tokenizer,"test",fsa)
 
     return results
 
