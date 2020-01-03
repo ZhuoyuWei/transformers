@@ -78,9 +78,9 @@ class ChemistryProcessor(DataProcessor):
         logger.info("LOOKING AT {} train".format(data_dir))
         csv_buffer=self._read_csv(os.path.join(data_dir, "train.tsv"))
         if self.version == 'v1':
-            return self._create_examples(csv, "train")
+            return self._create_examples(csv_buffer, "train")
         else:
-            return self._create_examples_V2(csv, "train")
+            return self._create_examples_V2(csv_buffer, "train")
 
     def get_dev_examples(self, data_dir):
         """See base class."""
