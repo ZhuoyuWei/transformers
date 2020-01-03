@@ -59,7 +59,7 @@ class FiniteStateAutomata:
         states=jobj["states"]
         start_states=jobj["start_states"]
         end_states=jobj["end_states"]
-        transitions=jobj["transition"]
+        transitions=jobj["transitions"]
         return cls(states=states,
                    start_state=start_states,
                    end_states=end_states,
