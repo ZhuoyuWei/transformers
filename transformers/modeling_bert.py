@@ -1495,7 +1495,8 @@ class BertForMaskedLMSetVocab(BertPreTrainedModel):
         for vocab_size in vocab_sizes:
             self.vocab_sum_size+=vocab_size
 
-        self.vocab_masked_embedding=nn.Embedding(len(vocab_sizes),self.vocab_sum_size)
+        #self.vocab_masked_embedding=nn.Embedding(len(vocab_sizes),self.vocab_sum_size)
+        self.vocab_masked_embedding=torch.ones([len(vocab_sizes),self.vocab_sum_size],dtype=torch.uint8)
 
 
         self.cls = BertOnlyMLMHead(config,vocab_size=self.vocab_sum_size)
@@ -1520,13 +1521,18 @@ class BertForMaskedLMSetVocab(BertPreTrainedModel):
 
         self.cls.predictions.decoder.weight=nn.Parameter(torch.cat(decoder_weigts,dim=0))
         print('successful set vocab of decoder in own tie_weights func')
-        self.vocab_masked_embedding.weight=nn.Parameter(torch.ones(self.vocab_masked_embedding.weight.size(),dtype=torch.uint8))
+        #self.vocab_masked_embedding.weight=nn.Parameter(torch.ones(self.vocab_masked_embedding.weight.size(),dtype=torch.uint8))
         #self.vocab_masked_embedding.weight.requires_grad = False
         offset = 0
         for i in range(len(self.vocab_sizes)):
-            self.vocab_masked_embedding.weight[i,offset: offset + self.vocab_sizes[i]]=0
+            self.vocab_masked_embedding[i,offset: offset + self.vocab_sizes[i]]=0
             offset += self.vocab_sizes[i]
 
+        #self.vocab_masked_embedding.to(next(self.parameters()).device)
+
+    def to(self,*args, **kwargs):
+        super().to(args,kwargs)
+        self.vocab_masked_embedding.to(args,kwargs)
 
     def init_vocab_embedding(self):
         '''
@@ -1573,7 +1579,7 @@ class BertForMaskedLMSetVocab(BertPreTrainedModel):
             lm_labels = lm_labels[:, 1:].contiguous()
 
             if vocab_mask_index:
-                vocab_mask=self.vocab_masked_embedding(vocab_mask_index)
+                vocab_mask=self.vocab_masked_embedding.index_fill(vocab_mask_index.view(-1)).view(list(vocab_mask_index.size())+[-1])
                 prediction_scores=prediction_scores.masked_fill(vocab_mask,-10000.0)
 
             loss_fct = CrossEntropyLoss(ignore_index=-1)

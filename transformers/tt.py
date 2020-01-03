@@ -1,34 +1,15 @@
 import torch
 
-a= torch.nn.Parameter(torch.zeros([5,10]))
+a=torch.rand(5,10)
 print(a)
 
+b=torch.tensor([[0,1],[2,3]])
 
-nnb=torch.nn.Linear(5,6)
+c=a.index_select(0,b.view([-1]))
 
-print(nnb.weight)
+print('b size={}'.format(b.size()))
 
-nnb.weight=torch.nn.Parameter(a[:,2:8])
+c=c.view(list(b.size())+[-1])
 
-print(nnb.weight)
-
-a[:,3]=1
-
-print(a)
-print('********************************************')
-print(nnb.weight)
-
-a=torch.nn.Parameter(torch.zeros([5,10]))
-
-print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-
-print(a)
-print('********************************************')
-print(nnb.weight)
-
-p1=torch.nn.Parameter(torch.rand(4,5))
-p2=torch.nn.Parameter(torch.rand(2,5))
-
-p3=torch.cat([p1,p2],dim=0)
-print('********************************************')
-print(p3)
+print(c.size())
+print(c)
