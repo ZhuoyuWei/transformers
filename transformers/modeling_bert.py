@@ -1515,7 +1515,7 @@ class BertForMaskedLMSetVocab(BertPreTrainedModel):
         #decoder_weigts.append(self.bert.embeddings.position_embeddings.weight)
         offset=1
         for i in range(0,len(self.vocab_sizes)):
-            decoder_weigts.self.bert.embeddings.word_embeddings.weight[offset:offset+self.vocab_sizes[i],:]
+            decoder_weigts.append(self.bert.embeddings.word_embeddings.weight[offset:offset+self.vocab_sizes[i],:])
             offset+=self.vocab_sizes[i]
 
         self.cls.predictions.decoder.weight=torch.cat(decoder_weigts,dim=0)
