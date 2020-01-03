@@ -20,6 +20,11 @@ class FiniteStateAutomata:
                 transition_dict[transition["from"]]={}
             transition_dict[transition["from"]][transition["condition"]]=transition["to"]
             state2vocab[transition["from"]]=transition["vocab"]
+
+        print('DEBUG transition_dict')
+        print(transition_dict)
+        print('DEBUG state2vocab')
+        print(state2vocab)
         return transition_dict,state2vocab
 
     def convert_seq_to_states(self,inputs):
