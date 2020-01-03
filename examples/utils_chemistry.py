@@ -5,7 +5,7 @@ import csv
 import torch
 from torch.utils.data import Dataset
 
-from .finite_state_automata import FiniteStateAutomata
+from finite_state_automata import FiniteStateAutomata
 
 
 '''
