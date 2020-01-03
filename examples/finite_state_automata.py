@@ -1,7 +1,7 @@
 import json
 
 class FiniteStateAutomata:
-    def __init__(self,states,start_state,end_states,transitions):
+    def __init__(self,states,start_state,end_states,transitions,condition_map):
         '''
         How to define a grammar or even if-else to build the rule of automata
         '''
@@ -11,6 +11,18 @@ class FiniteStateAutomata:
         self.transitions, self.state2vocab = self._indexing_transitions(transitions)
 
         self.cur_state=self.start_state
+
+        self.condition_map=self._build_inversed_condition_map(condition_map)
+
+    def _build_inversed_condition_map(self,condition_map):
+        inversed_condition_map={}
+        for type in condition_map:
+            instances=condition_map[type]
+            for inst in instances:
+                inversed_condition_map[inst]=type
+        return inversed_condition_map
+
+
 
     def _indexing_transitions(self,transitions):
         transition_dict={}
@@ -51,7 +63,7 @@ class FiniteStateAutomata:
     def get_next_state(self,input):
         print('cur:{}'.format(self.cur_state))
         next_states=self.transitions.get(self.cur_state)
-        self.cur_state=next_states.get(input)
+        self.cur_state=next_states.get(self.inversed_condition_map[input])
         return self.cur_state
 
     def get_vocab_index(self,state):
@@ -66,10 +78,12 @@ class FiniteStateAutomata:
         start_states=jobj["start_states"]
         end_states=jobj["end_states"]
         transitions=jobj["transitions"]
+        condition_map=jobj["condition_map"]
         return cls(states=states,
                    start_state=start_states,
                    end_states=end_states,
-                   transitions=transitions)
+                   transitions=transitions,
+                   condition_map=condition_map)
 
 
 
