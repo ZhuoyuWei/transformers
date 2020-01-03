@@ -141,8 +141,8 @@ class ChemistryProcessor(DataProcessor):
             #print('debug line = {}'.format(len(line)))
             examples.append(InputExampleV2(
                 example_id=line[0],
-                input_text=line[1],
-                output_text=line[2] if len(line) > 2 else None,
+                input=line[1],
+                output=line[2] if len(line) > 2 else None,
                 fsa=self.fsa
             )
             )
