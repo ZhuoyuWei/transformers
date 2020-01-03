@@ -31,7 +31,7 @@ class FiniteStateAutomata:
         index=0
         state_list=[]
         while self.cur_state != self.end_states:
-            if index >= inputs:
+            if index >= len(inputs):
                 break
             self.get_next_state(inputs[index])
             state_list.append(self.cur_state)
