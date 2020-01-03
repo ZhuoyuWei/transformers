@@ -175,10 +175,10 @@ class ChemistryDataset(Dataset):
     [2] https://github.com/abisee/cnn-dailymail/
     """
 
-    def __init__(self, tokenizer, prefix="train", data_dir=""):
+    def __init__(self, tokenizer, prefix="train", data_dir="",version='v1'):
         assert os.path.isdir(data_dir)
         self.tokenizer = tokenizer
-        self.processor=ChemistryProcessor()
+        self.processor=ChemistryProcessor(version=version)
         self.examples=None
         if prefix == "train":
             self.examples=self.processor.get_train_examples(data_dir)

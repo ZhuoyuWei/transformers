@@ -83,7 +83,7 @@ def set_seed(args):
 
 
 def load_and_cache_examples(args, tokenizer, prefix="train"):
-    dataset = ChemistryDataset(tokenizer, prefix=prefix, data_dir=args.data_dir)
+    dataset = ChemistryDataset(tokenizer, prefix=prefix, data_dir=args.data_dir,version=args.decoder_version)
     return dataset
 
 
