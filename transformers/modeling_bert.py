@@ -1478,7 +1478,7 @@ class BertForMultiVocabDecoder(BertPreTrainedModel):
 class BertForMaskedLMSetVocab(BertPreTrainedModel):
 
     def __init__(self, config,vocab_sizes=None):
-        super(BertForMaskedLM, self).__init__(config)
+        super(BertForMaskedLMSetVocab, self).__init__(config)
 
         if vocab_sizes is None:
             #special for chemistry parsing task
