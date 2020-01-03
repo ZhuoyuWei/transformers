@@ -421,6 +421,7 @@ class PreTrainedModel(nn.Module):
                     old_keys.append(key)
                     new_keys.append(new_key)
             for old_key, new_key in zip(old_keys, new_keys):
+                print('new shape = {} and old shape ={}'.format(state_dict[new_key].size(),state_dict[old_key].size()))
                 state_dict[new_key] = state_dict.pop(old_key)
 
             # copy state_dict so _load_from_state_dict can modify it
