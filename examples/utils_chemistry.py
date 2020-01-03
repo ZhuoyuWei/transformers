@@ -40,7 +40,7 @@ class InputExampleV2(object):
 
     def _get_fsa_states(self):
         if self.output:
-            return self.fsa.convert_seq_to_states(self.output)
+            return self.fsa.convert_seq_to_states(self.output.split(' '))
         else:
             return []
 
