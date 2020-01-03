@@ -1518,7 +1518,7 @@ class BertForMaskedLMSetVocab(BertPreTrainedModel):
             decoder_weigts.append(self.bert.embeddings.word_embeddings.weight[offset:offset+self.vocab_sizes[i],:])
             offset+=self.vocab_sizes[i]
 
-        self.cls.predictions.decoder.weight=torch.cat(decoder_weigts,dim=0)
+        self.cls.predictions.decoder.weight=nn.Parameter(torch.cat(decoder_weigts,dim=0))
         print('successful set vocab of decoder in own tie_weights func')
         self.vocab_masked_embedding.weight=nn.Parameter(torch.ones(self.vocab_masked_embedding.weight.size(),dtype=torch.uint8))
         self.vocab_masked_embedding.weight.requires_grad = False
