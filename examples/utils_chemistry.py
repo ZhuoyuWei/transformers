@@ -178,7 +178,7 @@ class ChemistryDataset(Dataset):
     def __init__(self, tokenizer, prefix="train", data_dir="",version='v1',fsa_or_config=None):
         assert os.path.isdir(data_dir)
         self.tokenizer = tokenizer
-        self.processor=ChemistryProcessor(version=version)
+        self.processor=ChemistryProcessor(version=version,fsa_or_config=fsa_or_config)
         self.examples=None
         if prefix == "train":
             self.examples=self.processor.get_train_examples(data_dir)
