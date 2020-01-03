@@ -423,8 +423,17 @@ class PreTrainedModel(nn.Module):
                     old_keys.append(key)
                     new_keys.append(new_key)
             for old_key, new_key in zip(old_keys, new_keys):
-                print('new shape = {} and old shape ={}'.format(new_state_dict[new_key].size(),state_dict[old_key].size()))
+                #print('new shape = {} and old shape ={}'.format(new_state_dict[new_key].size(),state_dict[old_key].size()))
                 state_dict[new_key] = state_dict.pop(old_key)
+
+            filtered_by_shape_state_dict={}
+            for key in state_dict:
+                if key in new_state_dict:
+                    if new_state_dict[key].size() != state_dict[key].size():
+                        continue
+                filtered_by_shape_state_dict[key]=state_dict[key]
+            state_dict=filtered_by_shape_state_dict
+
 
             # copy state_dict so _load_from_state_dict can modify it
             metadata = getattr(state_dict, '_metadata', None)
