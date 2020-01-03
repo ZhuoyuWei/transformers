@@ -37,6 +37,7 @@ from transformers import (
     PreTrainedEncoderDecoder,
     Model2Model,
     Model2Models,
+    BertForMaskedLMSetVocab
 )
 
 from utils_summarization import (
@@ -655,7 +656,7 @@ def main():
     #config.is_decoder=True
     #decoder_model = BertForMaskedLM(config)
 
-    decoder_model=BertForMaskedLM.from_pretrained(args.decoder_model_name_or_path)
+    decoder_model=BertForMaskedLMSetVocab.from_pretrained(args.decoder_model_name_or_path)
     model = Model2Model.from_pretrained(
         args.encoder_model_name_or_path, decoder_model=decoder_model
     )
