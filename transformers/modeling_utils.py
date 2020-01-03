@@ -387,6 +387,8 @@ class PreTrainedModel(nn.Module):
         # Instantiate model.
         model = cls(config, *model_args, **model_kwargs)
 
+        new_state_dict=model.state_dict()
+
         if state_dict is None and not from_tf:
             state_dict = torch.load(resolved_archive_file, map_location='cpu')
 
@@ -421,7 +423,7 @@ class PreTrainedModel(nn.Module):
                     old_keys.append(key)
                     new_keys.append(new_key)
             for old_key, new_key in zip(old_keys, new_keys):
-                print('new shape = {} and old shape ={}'.format(state_dict[new_key].size(),state_dict[old_key].size()))
+                print('new shape = {} and old shape ={}'.format(new_state_dict[new_key].size(),state_dict[old_key].size()))
                 state_dict[new_key] = state_dict.pop(old_key)
 
             # copy state_dict so _load_from_state_dict can modify it
