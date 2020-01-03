@@ -439,28 +439,75 @@ class BertPredictionHeadTransform(nn.Module):
 
 
 class BertLMPredictionHead(nn.Module):
-    def __init__(self, config):
+    def __init__(self, config, vocab_size=None):
         super(BertLMPredictionHead, self).__init__()
         self.transform = BertPredictionHeadTransform(config)
 
         # The output weights are the same as the input embeddings, but there is
         # an output-only bias for each token.
+
+        self.vocab_size = vocab_size if vocab_size else config.vocab_size
+
         self.decoder = nn.Linear(config.hidden_size,
-                                 config.vocab_size,
-                                 bias=False)
+                                     self.vocab_size,
+                                     bias=False)
+        self.bias = nn.Parameter(torch.zeros(self.vocab_size))
 
-        self.bias = nn.Parameter(torch.zeros(config.vocab_size))
 
-    def forward(self, hidden_states):
+
+
+    def forward(self, hidden_states, vocab_mask=None):
         hidden_states = self.transform(hidden_states)
+        if vocab_mask:
+            pass
         hidden_states = self.decoder(hidden_states) + self.bias
         return hidden_states
 
 
+
+class BertMultiMPredictionHead(nn.Module):
+    def __init__(self, config, vocab_size_list):
+        super(BertMultiMPredictionHead, self).__init__()
+        self.transform = BertPredictionHeadTransform(config)
+
+        # The output weights are the same as the input embeddings, but there is
+        # an output-only bias for each token.
+        self.decoders = []
+        self.biases=[]
+        for vocab_size in vocab_size_list:
+            decoder=nn.Linear(config.hidden_size,
+                                 vocab_size,
+                                 bias=False)
+
+            bias = nn.Parameter(torch.zeros(config.vocab_size))
+
+            self.decoders.append(decoder)
+            self.biases.append(bias)
+
+    def forward(self, hidden_states, dict_indexes):
+        hidden_states = self.transform(hidden_states)
+        hidden_shape=hidden_states.size()
+        batch_size=hidden_shape[0]
+        seq_length=hidden_shape[1]
+        new_hidden_states=[]
+        for idx in range(batch_size):
+            new_idx_hidden_states=[]
+            for pos in range(seq_length):
+                idx_pos_hidden_states = hidden_states[idx,pos,:]
+                idx_pos_hidden_states = self.decoders[idx][pos](idx_pos_hidden_states) + self.biases[idx][pos]
+                new_idx_hidden_states.append(idx_pos_hidden_states)
+            new_idx_hidden_states=torch.cat(new_idx_hidden_states,dim=1)
+            new_hidden_states.append(new_idx_hidden_states)
+        new_hidden_states=torch.cat(new_hidden_states,dim=0)
+
+        return new_hidden_states
+
+
 class BertOnlyMLMHead(nn.Module):
-    def __init__(self, config):
+    def __init__(self, config,vocab_size=None):
         super(BertOnlyMLMHead, self).__init__()
-        self.predictions = BertLMPredictionHead(config)
+        self.predictions = BertLMPredictionHead(config,vocab_size=vocab_size)
+        self.vocab_size=vocab_size if vocab_size else config.vocab_size
 
     def forward(self, sequence_output):
         prediction_scores = self.predictions(sequence_output)
@@ -1294,3 +1341,243 @@ class BertForQuestionAnswering(BertPreTrainedModel):
             outputs = (total_loss,) + outputs
 
         return outputs  # (loss), start_logits, end_logits, (hidden_states), (attentions)
+'''
+class BertForMultiVocabDecoder(BertPreTrainedModel):
+    r"""
+        **masked_lm_labels**: (`optional`) ``torch.LongTensor`` of shape ``(batch_size, sequence_length)``:
+            Labels for computing the masked language modeling loss.
+            Indices should be in ``[-1, 0, ..., config.vocab_size]`` (see ``input_ids`` docstring)
+            Tokens with indices set to ``-1`` are ignored (masked), the loss is only computed for the tokens with labels
+            in ``[0, ..., config.vocab_size]``
+        **lm_labels**: (`optional`) ``torch.LongTensor`` of shape ``(batch_size, sequence_length)``:
+            Labels for computing the left-to-right language modeling loss (next word prediction).
+            Indices should be in ``[-1, 0, ..., config.vocab_size]`` (see ``input_ids`` docstring)
+            Tokens with indices set to ``-1`` are ignored (masked), the loss is only computed for the tokens with labels
+            in ``[0, ..., config.vocab_size]``
+
+    Outputs: `Tuple` comprising various elements depending on the configuration (config) and inputs:
+        **masked_lm_loss**: (`optional`, returned when ``masked_lm_labels`` is provided) ``torch.FloatTensor`` of shape ``(1,)``:
+            Masked language modeling loss.
+        **ltr_lm_loss**: (`optional`, returned when ``lm_labels`` is provided) ``torch.FloatTensor`` of shape ``(1,)``:
+            Next token prediction loss.
+        **prediction_scores**: ``torch.FloatTensor`` of shape ``(batch_size, sequence_length, config.vocab_size)``
+            Prediction scores of the language modeling head (scores for each vocabulary token before SoftMax).
+        **hidden_states**: (`optional`, returned when ``config.output_hidden_states=True``)
+            list of ``torch.FloatTensor`` (one for the output of each layer + the output of the embeddings)
+            of shape ``(batch_size, sequence_length, hidden_size)``:
+            Hidden-states of the model at the output of each layer plus the initial embedding outputs.
+        **attentions**: (`optional`, returned when ``config.output_attentions=True``)
+            list of ``torch.FloatTensor`` (one for each layer) of shape ``(batch_size, num_heads, sequence_length, sequence_length)``:
+            Attentions weights after the attention softmax, used to compute the weighted average in the self-attention heads.
+
+    Examples::
+
+        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+        model = BertForMaskedLM.from_pretrained('bert-base-uncased')
+        input_ids = torch.tensor(tokenizer.encode("Hello, my dog is cute")).unsqueeze(0)  # Batch size 1
+        outputs = model(input_ids, masked_lm_labels=input_ids)
+        loss, prediction_scores = outputs[:2]
+
+    """
+    def __init__(self, config):
+        super(BertForMaskedLM, self).__init__(config)
+
+        self.bert = BertModel(config)
+
+        self.decoder_vocab_sizes=[512, #position 0 to 511
+                                  4,   #pu, ce, teminate
+                                  64,  #predicate vocab
+                                  64,  #unit vocab
+                                  ]
+
+        #build separete weights
+        self.decoder_vocab_offset=[]
+        self.decoder_weights=[]
+        vocab_sum=0
+        for i in range(len(self.decoder_vocab_sizes)):
+            self.decoder_vocab_offset.append([vocab_sum,self.decoder_vocab_sizes[i]])
+            vocab_sum+=self.decoder_vocab_sizes[i]
+            self.decoder_weights.append(nn.Parameter(config.hidden_size,self.decoder_vocab_sizes[i]))
+        self.decoder_weight=torch.cat(self.decoder_weights)
+
+
+        #self.cls = BertMultiMPredictionHead(config,vocab_size_list=self.decoder_vocab_sizes)
+        self.train = False
+
+        self.init_weights()
+
+
+    def rebuild_decoder(self):
+        weights=[]
+        vocab_sum=0
+        for i in range(len(self.decoder_vocab_sizes)):
+            vocab_sum+=self.decoder_vocab_sizes[i]
+            weights.append(self.cls.decoders[i].weight)
+        weight=torch.cat(weights,0)
+
+
+
+    def tie_weights(self):
+        for i in range(len(self.decoder_vocab_sizes)):
+            self.decoder_vocab_offset.append([vocab_sum,self.decoder_vocab_sizes[i]])
+            vocab_sum+=self.decoder_vocab_sizes[i]
+            self.decoder_weights.append(nn.Parameter(config.hidden_size,self.decoder_vocab_sizes[i]))
+
+
+    def tie_weights(self):
+        self._tie_or_clone_weights(self.cls.decoders[0].weight, self.bert.embeddings.position_embeddings)
+        self._tie_or_clone_weights(self.cls.decoders[1].weight, self.bert.embeddings.word_embeddings[1:5])
+        self._tie_or_clone_weights(self.cls.decoders[2].weight, self.bert.embeddings.word_embeddings[100:164])
+        self._tie_or_clone_weights(self.cls.decoders[3].weight, self.bert.embeddings.word_embeddings[200:264])
+        if self.train:
+            self.cls.decoders[1].weight.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
+            self.cls.decoders[2].weight.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
+            self.cls.decoders[3].weight.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
+
+
+    def forward(self, input_ids=None, attention_mask=None, token_type_ids=None, position_ids=None, head_mask=None, inputs_embeds=None,
+                masked_lm_labels=None, encoder_hidden_states=None, encoder_attention_mask=None, lm_labels=None, ):
+
+        outputs = self.bert(input_ids,
+                            attention_mask=attention_mask,
+                            token_type_ids=token_type_ids,
+                            position_ids=position_ids,
+                            head_mask=head_mask,
+                            inputs_embeds=inputs_embeds,
+                            encoder_hidden_states=encoder_hidden_states,
+                            encoder_attention_mask=encoder_attention_mask)
+
+        sequence_output = outputs[0]
+        prediction_scores = self.cls(sequence_output)
+
+        outputs = (prediction_scores,) + outputs[2:]  # Add hidden states and attention if they are here
+
+        # Although this may seem awkward, BertForMaskedLM supports two scenarios:
+        # 1. If a tensor that contains the indices of masked labels is provided,
+        #    the cross-entropy is the MLM cross-entropy that measures the likelihood
+        #    of predictions for masked words.
+        # 2. If `lm_labels` is provided we are in a causal scenario where we
+        #    try to predict the next token for each input in the decoder.
+        if masked_lm_labels is not None:
+            loss_fct = CrossEntropyLoss(ignore_index=-1)  # -1 index = padding token
+            masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), masked_lm_labels.view(-1))
+            outputs = (masked_lm_loss,) + outputs
+
+        if lm_labels is not None:
+            #print('debug by zhuoyu lm_labels: {}'.format(lm_labels))
+            # we are doing next-token prediction; shift prediction scores and input ids by one
+            prediction_scores = prediction_scores[:, :-1, :].contiguous()
+            lm_labels = lm_labels[:, 1:].contiguous()
+            loss_fct = CrossEntropyLoss(ignore_index=-1)
+            ltr_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), lm_labels.view(-1))
+            outputs = (ltr_lm_loss,) + outputs
+
+        return outputs  # (masked_lm_loss), (ltr_lm_loss), prediction_scores, (hidden_states), (attentions)
+'''
+
+class BertForMaskedLMSetVocab(BertPreTrainedModel):
+
+    def __init__(self, config,vocab_sizes=None):
+        super(BertForMaskedLM, self).__init__(config)
+
+        if vocab_sizes is None:
+            #special for chemistry parsing task
+            vocab_sizes=[512, #position 0 to 511
+                          4,   #pu, ce, teminate
+                          64,  #predicate vocab
+                          64,  #unit vocab
+                          ]
+
+        self.bert = BertModel(config)
+
+        self.vocab_sizes=vocab_sizes
+        self.vocab_sum_size=0
+        for vocab_size in vocab_sizes:
+            self.vocab_sum_size+=vocab_size
+
+        self.vocab_masked_embedding=nn.Embedding(len(vocab_sizes),self.vocab_sum_size)
+
+
+        self.cls = BertOnlyMLMHead(config,vocab_size=self.vocab_sum_size)
+
+        self.init_weights()
+
+    def get_output_embeddings(self):
+        return None
+
+    def tie_weights(self):
+        '''
+        special for chemistry parsing task
+        :return:
+        '''
+        decoder_weigts=[]
+
+        #decoder_weigts.append(self.bert.embeddings.position_embeddings.weight)
+        offset=1
+        for i in range(0,len(self.vocab_sizes)):
+            decoder_weigts.self.bert.embeddings.word_embeddings.weight[offset:offset+self.vocab_sizes[i],:]
+            offset+=self.vocab_sizes[i]
+
+        self.cls.predictions.decoder.weight=torch.cat(decoder_weigts,dim=0)
+        print('successful set vocab of decoder in own tie_weights func')
+        self.vocab_masked_embedding.weight=nn.Parameter(torch.ones(self.vocab_masked_embedding.weight.size(),dtype=torch.uint8))
+        self.vocab_masked_embedding.weight.requires_grad = False
+        offset = 0
+        for i in range(len(self.vocab_sizes)):
+            self.vocab_masked_embedding.weight[i,offset: offset + self.vocab_sizes[i]]=0
+            offset += self.vocab_sizes[i]
+
+
+    def init_vocab_embedding(self):
+        '''
+        call this function during finetune from pretrained model.
+        :return:
+        '''
+        pass
+
+
+
+
+    def forward(self, input_ids=None, attention_mask=None, token_type_ids=None, position_ids=None, head_mask=None, inputs_embeds=None,
+                masked_lm_labels=None, encoder_hidden_states=None, encoder_attention_mask=None, lm_labels=None, vocab_mask_index=None):
+
+        outputs = self.bert(input_ids,
+                            attention_mask=attention_mask,
+                            token_type_ids=token_type_ids,
+                            position_ids=position_ids,
+                            head_mask=head_mask,
+                            inputs_embeds=inputs_embeds,
+                            encoder_hidden_states=encoder_hidden_states,
+                            encoder_attention_mask=encoder_attention_mask)
+
+        sequence_output = outputs[0]
+        prediction_scores = self.cls(sequence_output)
+
+        outputs = (prediction_scores,) + outputs[2:]  # Add hidden states and attention if they are here
+
+        # Although this may seem awkward, BertForMaskedLM supports two scenarios:
+        # 1. If a tensor that contains the indices of masked labels is provided,
+        #    the cross-entropy is the MLM cross-entropy that measures the likelihood
+        #    of predictions for masked words.
+        # 2. If `lm_labels` is provided we are in a causal scenario where we
+        #    try to predict the next token for each input in the decoder.
+        if masked_lm_labels is not None:
+            loss_fct = CrossEntropyLoss(ignore_index=-1)  # -1 index = padding token
+            masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), masked_lm_labels.view(-1))
+            outputs = (masked_lm_loss,) + outputs
+
+        if lm_labels is not None:
+            #print('debug by zhuoyu lm_labels: {}'.format(lm_labels))
+            # we are doing next-token prediction; shift prediction scores and input ids by one
+            prediction_scores = prediction_scores[:, :-1, :].contiguous()
+            lm_labels = lm_labels[:, 1:].contiguous()
+
+            if vocab_mask_index:
+                vocab_mask=self.vocab_masked_embedding(vocab_mask_index)
+                prediction_scores=prediction_scores.masked_fill(vocab_mask,-10000.0)
+
+            loss_fct = CrossEntropyLoss(ignore_index=-1)
+            ltr_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), lm_labels.view(-1))
+            outputs = (ltr_lm_loss,) + outputs
+
+        return outputs  # (masked_lm_loss), (ltr_lm_loss), prediction_scores, (hidden_states), (attentions)

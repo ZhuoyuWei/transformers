@@ -35,6 +35,7 @@ from transformers import (
     BertForMaskedLM,
     BertConfig,
     PreTrainedEncoderDecoder,
+    Model2Model,
     Model2Models,
 )
 
@@ -55,6 +56,13 @@ class InputExample(object):
         self.question_input=question_input
         self.question_varible_output=question_varible_output
         self.condition_output=condition_output
+        
+        
+class InputExampleV2(object):
+    def __init__(self,example_id,input,output=None,fsa=None):
+        self.example_id=example_id
+        self.input=input
+        self.output=output
 '''
 
 
@@ -80,46 +88,52 @@ def load_and_cache_examples(args, tokenizer, prefix="train"):
 
 def collate(data, tokenizer, input_block_size,output_block_size):
     """ List of tuple as an input. """
-    question_inputs=[]
-    question_varible_outputs=[]
-    condition_outputs=[]
+    inputs=[]
+    outputs=[]
+    vocabs=[]
     for i,example in enumerate(data):
-        question_input=tokenizer.encode(example.question_input)
-        question_input=fit_to_block_size(question_input, input_block_size, tokenizer.pad_token_id)
-        question_inputs.append(question_input)
+        input=tokenizer.encode(example.input)
+        input=fit_to_block_size(input, input_block_size, tokenizer.pad_token_id)
+        inputs.append(input)
 
-        if example.question_varible_output is not None:
-            question_varible_output=tokenizer.encode(example.question_varible_output)
+        if example.output is not None:
+            output=tokenizer.encode(example.output)
         else:
-            question_varible_output=tokenizer.build_inputs_with_special_tokens([])
-        question_varible_output=fit_to_block_size(question_varible_output, output_block_size, tokenizer.pad_token_id)
-        question_varible_outputs.append(question_varible_output)
+            output=tokenizer.build_inputs_with_special_tokens([])
+        output=fit_to_block_size(output, output_block_size, tokenizer.pad_token_id)
+        outputs.append(output)
 
-        if example.condition_output is not None:
-            condition_output=tokenizer.encode(example.condition_output)
+        if example.vocab_indexes is not None:
+            vocab=example.vocab_indexes
         else:
-            condition_output=tokenizer.build_inputs_with_special_tokens([])
-        condition_output=fit_to_block_size(condition_output, output_block_size, tokenizer.pad_token_id)
-        condition_outputs.append(condition_output)
+            vocab=[1]
+        vocabs.append(vocab)
 
-    question_inputs = torch.tensor(question_inputs)
-    question_varible_outputs = torch.tensor(question_varible_outputs)
-    condition_outputs = torch.tensor(condition_outputs)
 
-    question_inputs_mask = build_mask(question_inputs, tokenizer.pad_token_id)
-    question_varible_outputs_mask = build_mask(question_varible_outputs, tokenizer.pad_token_id)
-    condition_outputs_mask = build_mask(condition_outputs, tokenizer.pad_token_id)
 
-    question_varible_outputs_mask_lm_labels = build_lm_labels(question_varible_outputs, tokenizer.pad_token_id)
-    condition_outputs_mask_lm_labels = build_lm_labels(condition_outputs, tokenizer.pad_token_id)
+
+    inputs = torch.tensor(inputs)
+    outputs = torch.tensor(outputs)
+    vocabs = torch.tensor(vocabs)
+
+    inputs_mask = build_mask(inputs, tokenizer.pad_token_id)
+    outputs_mask = build_mask(outputs, tokenizer.pad_token_id)
+    vocabs_mask = build_mask(vocabs, tokenizer.pad_token_id)
+
+    outputs_mask_lm_labels = build_lm_labels(outputs, tokenizer.pad_token_id)
+    vocabs_mask_lm_labels = build_lm_labels(vocabs, tokenizer.pad_token_id)
 
     return (
-        question_inputs,
-        [question_varible_outputs,condition_outputs],
-        question_inputs_mask,
-        [question_varible_outputs_mask,condition_outputs_mask],
-        [question_varible_outputs_mask_lm_labels,condition_outputs_mask_lm_labels],
+        inputs,
+        outputs,
+        vocabs,
+        inputs_mask,
+        outputs_mask,
+        vocabs_mask,
+        outputs_mask_lm_labels,
+        vocabs_mask_lm_labels,
     )
+
 
 
 # ----------
@@ -247,49 +261,36 @@ def train(args, model, tokenizer):
     for _ in train_iterator:
         epoch_iterator = tqdm(train_dataloader, desc="Iteration", disable=False)
         for step, batch in enumerate(epoch_iterator):
-            source, target, encoder_mask, decoder_mask, lm_labels = batch
+            inputs,outputs,vocabs,inputs_mask,outputs_mask,vocabs_mask,outputs_mask_lm_labels,vocabs_mask_lm_labels = batch
             #print('source: {}'.format(source))
             #print('target: {}'.format(target))
 
-            feed_source=None
-            feed_targets=[None]*len(target)
-            feed_encoder_mask=None
-            feed_decoder_masks=[None]*len(decoder_mask)
-            feed_lm_labels=[None]*len(lm_labels)
+            inputs=inputs.to(args.device)
+            outputs=outputs.to(args.device)
+            vocabs=vocabs.to(args.device)
 
-            feed_source = source.to(args.device)
-            for i in range(len(target)):
-                feed_targets[i] = target[i].to(args.device)
+            inputs_mask=inputs_mask.to(args.device)
+            outputs_mask=outputs_mask.to(args.device)
+            vocabs_mask=vocabs_mask.to(args.device)
+
+            outputs_mask_lm_labels=outputs_mask_lm_labels.to(args.device)
+            vocabs_mask_lm_labels=vocabs_mask_lm_labels.to(args.device)
 
 
-            feed_encoder_mask = encoder_mask.to(args.device)
-            for i in range(len(decoder_mask)):
-                feed_decoder_masks[i] = decoder_mask[i].to(args.device)
-            for i in range(len(lm_labels)):
-                feed_lm_labels[i] = lm_labels[i].to(args.device)
 
             model.train()
-            #print('debug by zhuoyu: source = {}'.format(source))
-            #print('debug by zhuoyu: target = {}'.format(target))
-            #print('debug by zhuoyu, device:')
-            #print('feed source {}'.format(feed_source.device))
-            #print('feed target {}'.format([str(feed_target.device) for feed_target in feed_targets]))
-            #print('feed encoder mask {}'.format(feed_encoder_mask.device))
-            #print('feed decoder masks {}'.format([str(feed_decoder_mask.device) for feed_decoder_mask in feed_decoder_masks]))
-            #print('feed lm labels {}'.format([str(feed_lm_label.device) for feed_lm_label in feed_lm_labels]))
+
             outputs = model(
-                feed_source,
-                feed_targets,
-                encoder_attention_mask=feed_encoder_mask,
-                decoder_attention_mask=feed_decoder_masks,
-                decoder_lm_labels=feed_lm_labels,
+                encoder_input_ids=inputs,
+                decoder_input_ids=outputs,
+                decoder_vocab_mask_index=vocabs,
+                encoder_attention_mask=inputs_mask,
+                decoder_attention_mask=outputs_mask,
+                decoder_lm_labels=outputs_mask_lm_labels,
             )
 
-            loss=0
-            for i in range(len(model.decoders)):
-                #print('outputs[{}][0] type: {}'.format(i,type(outputs[i][0])))
-                loss += outputs[i][0]
-            #print(loss)
+            loss=outputs[0]
+
             if args.gradient_accumulation_steps > 1:
                 loss /= args.gradient_accumulation_steps
 
@@ -349,32 +350,22 @@ def evaluate(args, model, tokenizer, prefix=""):
     fout=open(os.path.join(args.output_dir,"dev.res"),'w',encoding='utf-8')
     fdebug=open(os.path.join(args.output_dir,"dev.debug.res"),'w',encoding='utf-8')
     for batch in tqdm(eval_dataloader, desc="Evaluating"):
-        source, target, encoder_mask, decoder_mask, lm_labels = batch
-        #print('[SOURCE]: {}'.format(source))
-        #print('[TARGET]: {}'.format(target))
+        inputs, outputs, vocabs, inputs_mask, outputs_mask, vocabs_mask, outputs_mask_lm_labels, vocabs_mask_lm_labels = batch
 
-        #source = source.to(args.device)
-        #target = target.to(args.device)
+        inputs = inputs.to(args.device)
+        outputs = outputs.to(args.device)
+        vocabs = vocabs.to(args.device)
 
-        #encoder_mask = encoder_mask.to(args.device)
-        #decoder_mask = decoder_mask.to(args.device)
-        #lm_labels = lm_labels.to(args.device)
+        inputs_mask = inputs_mask.to(args.device)
+        outputs_mask = outputs_mask.to(args.device)
+        vocabs_mask = vocabs_mask.to(args.device)
 
-        feed_source = None
-        feed_targets = [None] * len(target)
-        feed_encoder_mask = None
-        feed_decoder_masks = [None] * len(decoder_mask)
-        feed_lm_labels = [None] * len(lm_labels)
+        outputs_mask_lm_labels = outputs_mask_lm_labels.to(args.device)
+        vocabs_mask_lm_labels = vocabs_mask_lm_labels.to(args.device)
 
-        feed_source = source.to(args.device)
-        for i in range(len(target)):
-            feed_targets[i] = target[i].to(args.device)
+        model.train()
 
-        feed_encoder_mask = encoder_mask.to(args.device)
-        for i in range(len(decoder_mask)):
-            feed_decoder_masks[i] = decoder_mask[i].to(args.device)
-        for i in range(len(lm_labels)):
-            feed_lm_labels[i] = lm_labels[i].to(args.device)
+
 
         with torch.no_grad():
 
@@ -423,19 +414,13 @@ def evaluate(args, model, tokenizer, prefix=""):
                                              ,' '.join(subtoken2token(tokens_roles[1][i]))]) + '\n')
 
             else:
-                print('debug eva input:')
-                print('feed_source={}'.format(feed_source))
-                print('feed_targets={}'.format(feed_targets))
-                print('feed_encoder_mask={}'.format(feed_encoder_mask))
-                print('feed_decoder_masks={}'.format(feed_decoder_masks))
-                print('feed_lm_labels={}'.format(feed_lm_labels))
                 outputs = model(
-                    feed_source,
-                    feed_targets,
-                    encoder_attention_mask=feed_encoder_mask,
-                    decoder_attention_mask=feed_decoder_masks,
-                    decoder_lm_labels=feed_lm_labels,
-                    #fdebug=fdebug,
+                    encoder_input_ids=inputs,
+                    decoder_input_ids=outputs,
+                    decoder_vocab_mask_index=vocabs,
+                    encoder_attention_mask=inputs_mask,
+                    decoder_attention_mask=outputs_mask,
+                    decoder_lm_labels=outputs_mask_lm_labels,
                 )
 
                 ans_seqs=[[],[]]
@@ -633,7 +618,7 @@ def main():
 
     parser.add_argument(
         "--decoder_version",
-        default="v1",
+        default="v2",
         type=str,
         help="",
     )
@@ -664,16 +649,15 @@ def main():
         print(args.n_gpu)
 
     # Load pretrained model and tokenizer. The decoder's weights are randomly initialized.
-    tokenizer = AutoTokenizer.from_pretrained(args.encoder_model_name_or_path
-                                              ,never_split=['[unused0]','[unused1]','[unused2]','[unused3]'])
+    tokenizer = AutoTokenizer.from_pretrained(args.encoder_model_name_or_path)
     #config = BertConfig.from_pretrained(args.model_name_or_path)
     #config.num_hidden_layers=3
     #config.is_decoder=True
     #decoder_model = BertForMaskedLM(config)
-    decoder_models=[BertForMaskedLM.from_pretrained(args.decoder_model_name_or_path),
-                    BertForMaskedLM.from_pretrained(args.decoder_model_name_or_path)]
-    model = Model2Models.from_pretrained(
-        args.encoder_model_name_or_path, decoder_model=decoder_models
+
+    decoder_model=BertForMaskedLM.from_pretrained(args.decoder_model_name_or_path)
+    model = Model2Model.from_pretrained(
+        args.encoder_model_name_or_path, decoder_model=decoder_model
     )
     #model = Model2Model.from_pretrained(
     #    args.model_name_or_path, decoder_model=None

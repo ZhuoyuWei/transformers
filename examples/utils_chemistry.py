@@ -31,9 +31,12 @@ class InputExampleV2(object):
 
         self.fsa=fsa
         self.fsa_states=None
-
+        self.vocab_indexes=None
         if self.fsa:
             self.fsa_states=self._get_fsa_states()
+        if self.fsa_states:
+            self.vocab_indexes=self.fsa.get_vocab_for_states(self.fsa_states)
+
 
     def _get_fsa_states(self):
         if self.output:
