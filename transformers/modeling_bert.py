@@ -1587,7 +1587,8 @@ class BertForMaskedLMSetVocab(BertPreTrainedModel):
                 prediction_scores=prediction_scores.masked_fill(vocab_mask,-10000.0)
 
             loss_fct = CrossEntropyLoss(ignore_index=-1)
-            ltr_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), lm_labels.view(-1))
+
+            ltr_lm_loss = loss_fct(prediction_scores.view(-1, self.vocab_sum_size), lm_labels.view(-1))
             outputs = (ltr_lm_loss,) + outputs
 
         return outputs  # (masked_lm_loss), (ltr_lm_loss), prediction_scores, (hidden_states), (attentions)
