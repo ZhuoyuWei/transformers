@@ -100,7 +100,8 @@ def collate(data, tokenizer, input_block_size,output_block_size):
         inputs.append(input)
 
         if example.output is not None:
-            output=tokenizer.encode(example.output)
+            #output=tokenizer.encode(example.output)
+            output=tokenizer.convert_tokens_to_ids(example.output.split())
         else:
             output=tokenizer.build_inputs_with_special_tokens([])
         output=fit_to_block_size(output, output_block_size, tokenizer.pad_token_id)
