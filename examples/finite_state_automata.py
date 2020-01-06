@@ -61,8 +61,8 @@ class FiniteStateAutomata:
             vocab_indexes.append(self.get_vocab_index(state))
 
     def get_next_state(self,input):
-        print('cur:{}, and input:{}'.format(self.cur_state,input))
         next_states=self.transitions.get(self.cur_state)
+        print('cur:{}, and input:{}, next_states:{}'.format(self.cur_state, input,next_states))
         self.cur_state=next_states.get(self.condition_map[input])
         return self.cur_state
 
