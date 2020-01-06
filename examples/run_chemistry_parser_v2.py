@@ -115,7 +115,7 @@ def collate(data, tokenizer, input_block_size,output_block_size):
             vocab=[1]
         vocabs.append(vocab)
 
-    #print(tokenizer.vocab)
+    print(tokenizer.vocab)
     exit(-1)
 
 
