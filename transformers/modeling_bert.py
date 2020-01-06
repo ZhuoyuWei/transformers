@@ -1535,7 +1535,7 @@ class BertForMaskedLMSetVocab(BertPreTrainedModel):
     #    self.vocab_masked_embedding.to(args,kwargs)
 
     def to_for_other(self,device=None):
-        self.vocab_masked_embedding.to(device=device)
+        self.vocab_masked_embedding=self.vocab_masked_embedding.to(device=device)
 
     def init_vocab_embedding(self):
         '''
