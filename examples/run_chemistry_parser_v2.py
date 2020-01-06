@@ -698,6 +698,8 @@ def main():
     if args.do_train:
         model.to(args.device)
         model.decoder.to_for_other(args.device)
+        print('debug model device {}\t{}\t{}'.format(model.device, model.encoder.device, model.decoder.device))
+        exit(-1)
         global_step, tr_loss = train(args, model, tokenizer,fsa)
         logger.info(" global_step = %s, average loss = %s", global_step, tr_loss)
 
