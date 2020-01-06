@@ -105,12 +105,15 @@ def collate(data, tokenizer, input_block_size,output_block_size):
             output=tokenizer.build_inputs_with_special_tokens([])
         output=fit_to_block_size(output, output_block_size, tokenizer.pad_token_id)
         outputs.append(output)
+        print('debug output={}'.format())
 
         if example.vocab_indexes is not None:
             vocab=example.vocab_indexes
         else:
             vocab=[1]
         vocabs.append(vocab)
+
+    exit(-1)
 
 
 
