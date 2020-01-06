@@ -1582,6 +1582,7 @@ class BertForMaskedLMSetVocab(BertPreTrainedModel):
             lm_labels = lm_labels[:, 1:].contiguous()
 
             if vocab_mask_index is not None:
+                print('self.vocab_masked_embedding device {}'.format(self.vocab_masked_embedding.device))
                 vocab_mask=self.vocab_masked_embedding.index_select(0,vocab_mask_index.view(-1)).view(list(vocab_mask_index.size())+[-1])
                 prediction_scores=prediction_scores.masked_fill(vocab_mask,-10000.0)
 
