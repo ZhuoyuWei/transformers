@@ -697,6 +697,7 @@ def main():
             os.makedirs(args.output_dir)
     if args.do_train:
         model.to(args.device)
+        model.decoder.to_for_other(args.device)
         global_step, tr_loss = train(args, model, tokenizer,fsa)
         logger.info(" global_step = %s, average loss = %s", global_step, tr_loss)
 
@@ -730,6 +731,7 @@ def main():
             )
 
             model.to(args.device)
+            model.decoder.to_for_other(args.device)
 
             #model = PreTrainedEncoderDecoder.from_pretrained(
             #    encoder_checkpoint, decoder_checkpoint
