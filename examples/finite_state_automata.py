@@ -22,7 +22,8 @@ class FiniteStateAutomata:
                 inversed_condition_map[inst]=type
         return inversed_condition_map
 
-
+    def reset_states(self):
+        self.cur_state=self.start_state
 
     def _indexing_transitions(self,transitions):
         transition_dict={}
@@ -47,12 +48,14 @@ class FiniteStateAutomata:
         '''
         index=0
         state_list=[]
+        self.reset_states()
         while self.cur_state != self.end_states:
             if index >= len(inputs):
                 break
             self.get_next_state(inputs[index])
             state_list.append(self.cur_state)
             index+=1
+        self.reset_states()
         return state_list
 
     def get_vocab_for_states(self,states):
