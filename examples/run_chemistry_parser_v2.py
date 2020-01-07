@@ -102,7 +102,7 @@ def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_b
 
         if example.output is not None:
             #output=tokenizer.encode(example.output)
-            output=decoder_tokenizer.convert_tokens_to_ids(decoder_tokenizer.whitespace_tokenize(example.output))
+            output=decoder_tokenizer.convert_tokens_to_ids(example.output.strip())
         else:
             output=decoder_tokenizer.build_inputs_with_special_tokens([])
 
