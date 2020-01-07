@@ -1650,6 +1650,8 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             self.vocab_masked_embedding[i,offset: offset + self.vocab_sizes[i]]=0
             offset += self.vocab_sizes[i]
 
+        self.vocab_masked_embedding = self.vocab_masked_embedding.to(dtype=torch.bool)
+
     def to_for_other(self,device=None):
         self.vocab_masked_embedding=self.vocab_masked_embedding.to(device=device)
 
