@@ -90,25 +90,25 @@ def load_and_cache_examples(args, tokenizer, prefix="train",fsa=None):
     return dataset
 
 
-def collate(data, tokenizer, input_block_size,output_block_size):
+def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_block_size):
     """ List of tuple as an input. """
     inputs=[]
     outputs=[]
     vocabs=[]
     for i,example in enumerate(data):
-        input=tokenizer.encode(example.input)
-        input=fit_to_block_size(input, input_block_size, tokenizer.pad_token_id)
+        input=encoder_tokenizer.encode(example.input)
+        input=fit_to_block_size(input, input_block_size, encoder_tokenizer.pad_token_id)
         inputs.append(input)
 
         if example.output is not None:
             #output=tokenizer.encode(example.output)
-            output=tokenizer.convert_tokens_to_ids(example.output.split())
+            output=decoder_tokenizer.convert_tokens_to_ids(decoder_tokenizer.whitespace_tokenize(example.output))
         else:
-            output=tokenizer.build_inputs_with_special_tokens([])
+            output=decoder_tokenizer.build_inputs_with_special_tokens([])
 
 
 
-        output=fit_to_block_size(output, output_block_size, tokenizer.pad_token_id)
+        output=fit_to_block_size(output, output_block_size, decoder_tokenizer.pad_token_id)
         outputs.append(output)
         print('debug output={}'.format(example.output.split()))
         print('debug output={}'.format(output))
@@ -129,12 +129,12 @@ def collate(data, tokenizer, input_block_size,output_block_size):
     outputs = torch.tensor(outputs)
     vocabs = torch.tensor(vocabs)
 
-    inputs_mask = build_mask(inputs, tokenizer.pad_token_id)
-    outputs_mask = build_mask(outputs, tokenizer.pad_token_id)
-    vocabs_mask = build_mask(vocabs, tokenizer.pad_token_id)
+    inputs_mask = build_mask(inputs, encoder_tokenizer.pad_token_id)
+    outputs_mask = build_mask(outputs, decoder_tokenizer.pad_token_id)
+    vocabs_mask = build_mask(vocabs, decoder_tokenizer.pad_token_id)
 
-    outputs_mask_lm_labels = build_lm_labels(outputs, tokenizer.pad_token_id)
-    vocabs_mask_lm_labels = build_lm_labels(vocabs, tokenizer.pad_token_id)
+    outputs_mask_lm_labels = build_lm_labels(outputs, decoder_tokenizer.pad_token_id)
+    vocabs_mask_lm_labels = build_lm_labels(vocabs, decoder_tokenizer.pad_token_id)
 
     return (
         inputs,
@@ -212,15 +212,15 @@ class BertSumOptimizer(object):
 # ------------
 
 
-def train(args, model, tokenizer,fsa):
+def train(args, model, encoder_tokenizer,decoder_tokenizer,fsa):
     """ Fine-tune the pretrained model on the corpus. """
     set_seed(args)
 
     # Load the data
     args.train_batch_size = args.per_gpu_train_batch_size * max(1, args.n_gpu)
-    train_dataset = load_and_cache_examples(args, tokenizer, "train",fsa=fsa)
+    train_dataset = load_and_cache_examples(args, encoder_tokenizer, "train",fsa=fsa)
     train_sampler = RandomSampler(train_dataset)
-    model_collate_fn = functools.partial(collate, tokenizer=tokenizer,
+    model_collate_fn = functools.partial(collate, encoder_tokenizer=encoder_tokenizer,decoder_tokenizer=decoder_tokenizer,
                                          input_block_size=args.input_block_size,output_block_size=args.output_block_size)
     train_dataloader = DataLoader(
         train_dataset,
@@ -331,11 +331,11 @@ def train(args, model, tokenizer,fsa):
 # ------------
 
 
-def evaluate(args, model, tokenizer, prefix="",fsa=None):
+def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=None):
     set_seed(args)
 
     args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, args.n_gpu)
-    eval_dataset = load_and_cache_examples(args, tokenizer, prefix="dev",fsa=fsa)
+    eval_dataset = load_and_cache_examples(args, encoder_tokenizer, prefix="dev",fsa=fsa)
     #for example in eval_dataset.examples:
     #    print(example.example_id)
     #    print(example.question_input)
@@ -343,7 +343,7 @@ def evaluate(args, model, tokenizer, prefix="",fsa=None):
     #    print(example.condition_output)
     #exit(-1)
     eval_sampler = SequentialSampler(eval_dataset)
-    model_collate_fn = functools.partial(collate, tokenizer=tokenizer,
+    model_collate_fn = functools.partial(collate, encoder_tokenizer=encoder_tokenizer,decoder_tokenizer=decoder_tokenizer,
                                          input_block_size=args.input_block_size,output_block_size=args.output_block_size)
     eval_dataloader = DataLoader(
         eval_dataset, sampler=eval_sampler, batch_size=args.eval_batch_size,collate_fn=model_collate_fn,
@@ -442,7 +442,7 @@ def evaluate(args, model, tokenizer, prefix="",fsa=None):
                     for idx in predicted_scores:
                         tokens = []
                         for id in idx:
-                            tokens.append(tokenizer.ids_to_tokens.get(id, tokenizer.unk_token))
+                            tokens.append(decoder_tokenizer.ids_to_tokens.get(id, decoder_tokenizer.unk_token))
                         ans_seqs[i].append(tokens)
 
                 for i in range(len(ans_seqs[0])):
@@ -668,7 +668,8 @@ def main():
         print(args.n_gpu)
 
     # Load pretrained model and tokenizer. The decoder's weights are randomly initialized.
-    tokenizer = AutoTokenizer.from_pretrained(args.encoder_model_name_or_path)
+    encoder_tokenizer = AutoTokenizer.from_pretrained(args.encoder_model_name_or_path)
+    decoder_tokenizer = AutoTokenizer.from_pretrained(args.decoder_model_name_or_path)
     #config = BertConfig.from_pretrained(args.model_name_or_path)
     #config.num_hidden_layers=3
     #config.is_decoder=True
@@ -710,7 +711,7 @@ def main():
         model.decoder.to_for_other(args.device)
         print('debug model device {}\t{}\t{}'.format(next(model.parameters()).device, next(model.encoder.parameters()).device,next(model.decoder.parameters()).device))
 
-        global_step, tr_loss = train(args, model, tokenizer,fsa)
+        global_step, tr_loss = train(args, model, encoder_tokenizer,decoder_tokenizer,fsa)
         logger.info(" global_step = %s, average loss = %s", global_step, tr_loss)
 
 
@@ -723,7 +724,7 @@ def main():
             model.module if hasattr(model, "module") else model
         )  # Take care of distributed/parallel training
         model_to_save.save_pretrained(args.output_dir)
-        tokenizer.save_pretrained(args.output_dir)
+        decoder_tokenizer.save_pretrained(args.output_dir)
         torch.save(args, os.path.join(args.output_dir, "training_arguments.bin"))
 
     # Evaluate the model
@@ -752,7 +753,7 @@ def main():
             #model.to(args.device)
             results = "placeholder"
 
-            evaluate(args,model,tokenizer,"test",fsa)
+            evaluate(args,model,encoder_tokenizer,decoder_tokenizer,"test",fsa)
 
     return results
 
