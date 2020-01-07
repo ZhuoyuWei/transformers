@@ -46,7 +46,7 @@ class FiniteStateAutomata:
         call get_next_state
         :return:
         '''
-        index=0
+        index=1 if inputs[0] == 'start' else 0
         state_list=[]
         self.reset_states()
         while self.cur_state != self.end_states:
