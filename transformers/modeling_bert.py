@@ -1640,7 +1640,8 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
         #self.cls = BertOnlyMLMHead(config)
 
         #self.init_weights()
-
+        print(config.vocab_size)
+        print(type(config))
         print(config)
 
         self.vocab_sum_size=config.vocab_size
