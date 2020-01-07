@@ -1641,6 +1641,8 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
 
         #self.init_weights()
 
+        print(config)
+
         self.vocab_sum_size=config.vocab_size
 
 

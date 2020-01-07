@@ -434,7 +434,7 @@ class PreTrainedModel(nn.Module):
                     if new_state_dict[key].size() != state_dict[key].size():
                         continue
                 filtered_by_shape_state_dict[key]=state_dict[key]
-            state_dict=fil
+            state_dict=filtered_by_shape_state_dict
 
 
             # copy state_dict so _load_from_state_dict can modify it
