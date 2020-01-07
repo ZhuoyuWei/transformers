@@ -1645,7 +1645,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
         self.vocab_sizes=config.vocab_sizes
 
         self.vocab_masked_embedding = torch.ones([len(self.vocab_sizes), self.vocab_sum_size], dtype=torch.uint8)
-        offset = 4 #special token: [PAD] [CLS] [SEP] [UNK]
+        offset = 5 #special token: [PAD] [CLS] [SEP] [UNK]
         for i in range(len(self.vocab_sizes)):
             self.vocab_masked_embedding[i,offset: offset + self.vocab_sizes[i]]=0
             offset += self.vocab_sizes[i]
