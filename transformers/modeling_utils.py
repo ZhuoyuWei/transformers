@@ -385,6 +385,8 @@ class PreTrainedModel(nn.Module):
             resolved_archive_file = None
 
         # Instantiate model.
+        print("CONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIG")
+        print(config)
         model = cls(config, *model_args, **model_kwargs)
 
         new_state_dict=model.state_dict()
@@ -432,7 +434,7 @@ class PreTrainedModel(nn.Module):
                     if new_state_dict[key].size() != state_dict[key].size():
                         continue
                 filtered_by_shape_state_dict[key]=state_dict[key]
-            state_dict=filtered_by_shape_state_dict
+            state_dict=fil
 
 
             # copy state_dict so _load_from_state_dict can modify it
