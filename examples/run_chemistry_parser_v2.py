@@ -105,8 +105,9 @@ def collate(data, tokenizer, input_block_size,output_block_size):
             output=tokenizer.convert_tokens_to_ids(example.output.split())
         else:
             output=tokenizer.build_inputs_with_special_tokens([])
-        for j in range(len(output)):
-            output[j]-=105
+
+
+
         output=fit_to_block_size(output, output_block_size, tokenizer.pad_token_id)
         outputs.append(output)
         print('debug output={}'.format(example.output.split()))
