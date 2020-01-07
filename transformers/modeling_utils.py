@@ -325,6 +325,7 @@ class PreTrainedModel(nn.Module):
 
         # Load config
         if config is None:
+            print('%%$$$%$$%$%$% cls.config_class {}'.format(cls.config_class))
             config, model_kwargs = cls.config_class.from_pretrained(
                 pretrained_model_name_or_path, *model_args,
                 cache_dir=cache_dir, return_unused_kwargs=True,
