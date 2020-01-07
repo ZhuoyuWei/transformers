@@ -435,18 +435,18 @@ def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=Non
                     decoder_lm_labels=outputs_mask_lm_labels,
                 )
 
-                ans_seqs=[[],[]]
-                for i in range(len(model.decoders)):
-                    print(outputs[i][1].size())
-                    predicted_scores=outputs[i][1].argmax(-1).cpu().numpy().tolist()
-                    for idx in predicted_scores:
-                        tokens = []
-                        for id in idx:
-                            tokens.append(decoder_tokenizer.ids_to_tokens.get(id, decoder_tokenizer.unk_token))
-                        ans_seqs[i].append(tokens)
+                ans_seqs=[]
 
-                for i in range(len(ans_seqs[0])):
-                    fout.write('\t'.join([' '.join(ans_seqs[0][i]),' '.join(ans_seqs[1][i])]) + '\n')
+                print(outputs[1].size())
+                predicted_scores=outputs[1].argmax(-1).cpu().numpy().tolist()
+                for idx in predicted_scores:
+                    tokens = []
+                    for id in idx:
+                        tokens.append(decoder_tokenizer.ids_to_tokens.get(id, decoder_tokenizer.unk_token))
+                    ans_seqs.append(tokens)
+
+
+                fout.write(' '.join(ans_seqs) + '\n')
 
 
 
