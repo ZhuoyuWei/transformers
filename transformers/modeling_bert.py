@@ -1670,6 +1670,13 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
 
         sequence_output = outputs[0]
         prediction_scores = self.cls(sequence_output)
+        if vocab_mask_index is not None:
+            vocab_mask = self.vocab_masked_embedding.index_select(0, vocab_mask_index.view(-1)).view(
+                list(vocab_mask_index.size()) + [-1])
+            # print('predict scores size: {}'.format(prediction_scores.size()))
+            # print('vocab_mask size: {}'.format(vocab_mask.size()))
+            prediction_scores = prediction_scores.masked_fill(vocab_mask, -10000.0)
+
 
         outputs = (prediction_scores,) + outputs[2:]  # Add hidden states and attention if they are here
 
@@ -1688,11 +1695,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             #print('debug by zhuoyu lm_labels: {}'.format(lm_labels))
             # we are doing next-token prediction; shift prediction scores and input ids by one
             prediction_scores = prediction_scores[:, :-1, :].contiguous()
-            if vocab_mask_index is not None:
-                vocab_mask=self.vocab_masked_embedding.index_select(0,vocab_mask_index.view(-1)).view(list(vocab_mask_index.size())+[-1])
-                #print('predict scores size: {}'.format(prediction_scores.size()))
-                #print('vocab_mask size: {}'.format(vocab_mask.size()))
-                prediction_scores=prediction_scores.masked_fill(vocab_mask,-10000.0)
+
 
             lm_labels = lm_labels[:, 1:].contiguous()
             loss_fct = CrossEntropyLoss(ignore_index=-1)

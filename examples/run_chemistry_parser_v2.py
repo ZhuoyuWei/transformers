@@ -113,7 +113,7 @@ def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_b
 
 
         output=fit_to_block_size(output, output_block_size, decoder_tokenizer.pad_token_id)
-        output_vocab_indexes=fit_to_block_size(output_vocab_indexes, output_block_size-1, decoder_tokenizer.pad_token_id)
+        output_vocab_indexes=fit_to_block_size(output_vocab_indexes, output_block_size, decoder_tokenizer.pad_token_id)
         outputs.append(output)
         vocabs.append(output_vocab_indexes)
         #print('debug output={}'.format(example.output.split()))
