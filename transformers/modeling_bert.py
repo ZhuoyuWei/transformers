@@ -1645,7 +1645,8 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
         self.vocab_sizes=config.vocab_sizes
 
         self.vocab_masked_embedding = torch.ones([len(self.vocab_sizes), self.vocab_sum_size], dtype=torch.uint8)
-        offset = 5 #special token: [PAD] [CLS] [SEP] [UNK]
+        self.pos_offset=5
+        offset = self.pos_offset #special token: [PAD] [CLS] [SEP] [UNK]
         for i in range(len(self.vocab_sizes)):
             self.vocab_masked_embedding[i,offset: offset + self.vocab_sizes[i]]=0
             offset += self.vocab_sizes[i]
@@ -1655,6 +1656,11 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
     def to_for_other(self,device=None):
         self.vocab_masked_embedding=self.vocab_masked_embedding.to(device=device)
 
+    '''
+    def dynamic_set_position_vocab(self,encoder_hidden_states):
+        hidden_state_size=encoder_hidden_states.size()
+        self.cls.predictions.decoder.weight[self.pos_offset:self.pos_offset+hidden_state_size[1]]= #
+    '''
 
     def forward(self, input_ids=None, attention_mask=None, token_type_ids=None, position_ids=None, head_mask=None, inputs_embeds=None,
                 masked_lm_labels=None, encoder_hidden_states=None, encoder_attention_mask=None, lm_labels=None, vocab_mask_index=None):
