@@ -508,7 +508,7 @@ class Model2Model(PreTrainedEncoderDecoder):
             kwargs_decoder["vocab_mask_index"]=vocab_mask_index
             decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
             decoder_ids=decoder_outputs[0].argmax(dim=-1)
-            decoder_ids=decoder_ids[:,step]
+            decoder_ids=decoder_ids[:,step:step+1]
             #print('decoder_input_ids shape = {}'.format(decoder_input_ids.size()))
             #print('decoder_output_ids shape = {}'.format(decoder_ids.size()))
             #print(decoder_input_ids[:,step+1])
