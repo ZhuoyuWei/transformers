@@ -43,7 +43,7 @@ class InputExampleV2(object):
         if self.output:
             return self.fsa.convert_seq_to_states(self.output.split(' '))
         else:
-            return []
+            return ['s_start']
 
 class DataProcessor(object):
     """Base class for data converters for multiple choice data sets."""
