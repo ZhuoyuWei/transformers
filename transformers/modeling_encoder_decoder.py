@@ -500,8 +500,8 @@ class Model2Model(PreTrainedEncoderDecoder):
                                                      ,torch.zeros([decoder_input_shape[0],decoder_input_shape[1]-(step+1)], dtype=torch.int32, device=decoder_input_ids.device)],dim=1)
             #print('produced_decoder_attn_mask = {}'.format(produced_decoder_attn_mask))
 
-            decoder_input_ids=decoder_input_ids[:step+1]
-            produced_decoder_attn_mask=produced_decoder_attn_mask[:step+1]
+            decoder_input_ids=decoder_input_ids[:,:step+1]
+            produced_decoder_attn_mask=produced_decoder_attn_mask[:,:step+1]
 
             vocab_mask_index=self._get_vocab_index_by_decoder_input_ids(decoder_input_ids,tokenizer,fsa)
             kwargs_decoder["attention_mask"]=produced_decoder_attn_mask
