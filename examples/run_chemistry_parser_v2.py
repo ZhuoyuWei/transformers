@@ -398,7 +398,7 @@ def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=Non
                     decoder_vocab_mask_index=vocabs,
                     encoder_attention_mask=inputs_mask,
                     decoder_attention_mask=outputs_mask,
-                    decoder_lm_labels=outputs_mask_lm_labels,
+                    decoder_lm_labels=None,
                     tokenizer=decoder_tokenizer, fsa=fsa
                 )
                 print('outputs size: {}'.format(outputs_ids.size()))
