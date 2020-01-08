@@ -454,7 +454,7 @@ def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=Non
 
 
 
-                    fout.write(' '.join(tokens) + '\n')
+                    fout.write(' '.join(tokens)+'\t'+ ' '.join(map(str,idx)) + '\n')
 
 
 
