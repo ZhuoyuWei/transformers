@@ -450,11 +450,14 @@ def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=Non
                 for idx in predicted_scores:
                     tokens = []
                     for id in idx:
-                        tokens.append(decoder_tokenizer.ids_to_tokens.get(id, decoder_tokenizer.unk_token))
+                        token=decoder_tokenizer.ids_to_tokens.get(id, decoder_tokenizer.unk_token)
+                        tokens.append(token)
+                        if token == 'end':
+                            break
 
 
 
-                    fout.write(' '.join(tokens)+'\t'+ ' '.join(map(str,idx)) + '\n')
+                    fout.write(' '.join(tokens)+ '\n')
 
 
 
