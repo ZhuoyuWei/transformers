@@ -49,12 +49,14 @@ class FiniteStateAutomata:
         index=1 if inputs[0] == 'start' else 0
         state_list=[]
         self.reset_states()
-        while self.cur_state != self.end_states:
+        state_list.append(self.cur_state)
+        while self.cur_state not in self.end_states:
             if index >= len(inputs):
                 break
             self.get_next_state(inputs[index])
             state_list.append(self.cur_state)
             index+=1
+        state_list.append(self.cur_state)
         self.reset_states()
         return state_list
 
