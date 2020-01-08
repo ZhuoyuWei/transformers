@@ -407,7 +407,9 @@ class Model2Model(PreTrainedEncoderDecoder):
             tokens=[]
             for j in range(len(token_ids)):
                 tokens.append(tokenizer.ids_to_tokens.get(token_ids[j], tokenizer.unk_token))
+            print('IN CONVERSION PROCESS: input = {}'.format(tokens))
             fsa_states = fsa.convert_seq_to_states(tokens)
+            print('IN CONVERSION PROCESS: states = {}'.format(fsa_states))
             vocab_indexes = []
             for state in fsa_states:
                 vocab_indexes.append(fsa.get_vocab_index(state))
