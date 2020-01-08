@@ -63,6 +63,7 @@ class FiniteStateAutomata:
         vocab_indexes=[]
         for state in states:
             vocab_indexes.append(self.get_vocab_index(state))
+        return vocab_indexes
 
     def get_next_state(self,input):
         next_states=self.transitions.get(self.cur_state)
