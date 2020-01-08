@@ -103,15 +103,19 @@ def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_b
         if example.output is not None:
             #output=tokenizer.encode(example.output)
             output=decoder_tokenizer.convert_tokens_to_ids(example.output.split())
+            output_states=example.fsa_states
         else:
-            output=decoder_tokenizer.build_inputs_with_special_tokens([])
+            #output=decoder_tokenizer.build_inputs_with_special_tokens(['start'])
+            output = decoder_tokenizer.convert_tokens_to_ids(['start'])
 
 
 
         output=fit_to_block_size(output, output_block_size, decoder_tokenizer.pad_token_id)
         outputs.append(output)
         print('debug output={}'.format(example.output.split()))
-        print('debug output={}'.format(output))
+        print('debug output_states={}'.format(output_states))
+        print('debug outputid={}'.format(output))
+
 
         if example.vocab_indexes is not None:
             vocab=example.vocab_indexes
