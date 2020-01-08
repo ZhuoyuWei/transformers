@@ -410,7 +410,7 @@ class Model2Model(PreTrainedEncoderDecoder):
             fsa_states = fsa.convert_seq_to_states(tokens)
             vocab_indexes = []
             for state in fsa_states:
-                vocab_indexes.append(self.get_vocab_index(state))
+                vocab_indexes.append(fsa.get_vocab_index(state))
             vocab_indexes=fit_to_block_size(vocab_indexes,len(token_ids), tokenizer.pad_token_id)
             vocab_indexes_batch.append(vocab_indexes)
         vocab_indexes_batch=torch.tensor(vocab_indexes_batch).to(device=decoder_input_ids.device)
