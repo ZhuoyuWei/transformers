@@ -392,47 +392,30 @@ def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=Non
 
             if args.decoding_type=='decoding':
                 tokens_roles=[]
-                for i in range(len(feed_targets)):
-                    outputs_ids=model.decoding(
-                        feed_source,
-                        feed_targets[i],
-                        encoder_attention_mask=feed_encoder_mask,
-                        decoder_attention_mask=feed_decoder_masks[i],
-                        decoder_lm_labels=feed_lm_labels[i],
-                        decoder=model.decoders[i]
-                        #fdebug=fdebug,
-                    )
-                    print('outputs size: {}'.format(outputs_ids.size()))
-                    outputs_ids =outputs_ids.cpu().numpy()
+                outputs_ids=model.decoding(
+                    encoder_input_ids=inputs,
+                    decoder_input_ids=outputs,
+                    decoder_vocab_mask_index=vocabs,
+                    encoder_attention_mask=inputs_mask,
+                    decoder_attention_mask=outputs_mask,
+                    decoder_lm_labels=outputs_mask_lm_labels,
+                    tokenizer=decoder_tokenizer, fsa=fsa
+                )
+                print('outputs size: {}'.format(outputs_ids.size()))
+                outputs_ids =outputs_ids.cpu().numpy()
 
 
-                    batch_tokens=[]
-                    for idx in outputs_ids:
-                        tokens = []
-                        for id in idx:
-                            #print('{}\t{}'.format(id,type(id)))
-                            tokens.append(tokenizer.ids_to_tokens.get(int(id), tokenizer.unk_token))
-
-                        batch_tokens.append(tokens)
-
-                    tokens_roles.append(batch_tokens)
-
-                def subtoken2token(subtokens):
-                    token=""
-                    tokens=[]
-                    for subtoken in subtokens:
-                        if subtoken.startswith("##"):
-                            token+=subtoken[2:]
-                        else:
-                            if token!="":
-                                tokens.append(token)
-                            token=subtoken
-                    if token!="":
+                batch_tokens=[]
+                for idx in outputs_ids:
+                    tokens = []
+                    for id in idx:
+                        token=decoder_tokenizer.ids_to_tokens.get(id, decoder_tokenizer.unk_token)
                         tokens.append(token)
-                    return tokens
-                for i in range(len(tokens_roles[0])):
-                    fout.write('\t'.join([' '.join(subtoken2token(tokens_roles[0][i]))
-                                             ,' '.join(subtoken2token(tokens_roles[1][i]))]) + '\n')
+                        if token == 'end':
+                            break
+
+                fout.write(' '.join(tokens) + '\n')
+
 
             else:
                 outputs = model(
