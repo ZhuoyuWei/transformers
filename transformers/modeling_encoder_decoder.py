@@ -514,6 +514,7 @@ class Model2Model(PreTrainedEncoderDecoder):
             #print(decoder_input_ids[:,step+1])
             #print('########################################')
             #print(decoder_ids)
+            print('decoder_input_ids shape= {}, decoder_ids={}'.format(decoder_input_ids.size(),decoder_ids.size()))
             decoder_input_ids=torch.cat([decoder_input_ids,decoder_ids],dim=1)
             #print('decoder input ids:')
             #print(decoder_input_ids)
