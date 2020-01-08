@@ -405,7 +405,7 @@ def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=Non
                 outputs_ids =outputs_ids.cpu().numpy()
 
 
-                batch_tokens=[]
+
                 for idx in outputs_ids:
                     tokens = []
                     for id in idx:
@@ -414,7 +414,7 @@ def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=Non
                         if token == 'end':
                             break
 
-                fout.write(' '.join(tokens) + '\n')
+                    fout.write(' '.join(tokens) + '\n')
 
 
             else:
