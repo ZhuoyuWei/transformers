@@ -56,7 +56,6 @@ class FiniteStateAutomata:
             self.get_next_state(inputs[index])
             state_list.append(self.cur_state)
             index+=1
-        state_list.append(self.cur_state)
         self.reset_states()
         return state_list
 

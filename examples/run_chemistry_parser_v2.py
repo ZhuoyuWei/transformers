@@ -104,6 +104,7 @@ def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_b
             #output=tokenizer.encode(example.output)
             output=decoder_tokenizer.convert_tokens_to_ids(example.output.split())
             output_states=example.fsa_states
+            output_vocab_indexes=example.vocab_indexes
         else:
             #output=decoder_tokenizer.build_inputs_with_special_tokens(['start'])
             output = decoder_tokenizer.convert_tokens_to_ids(['start'])
@@ -114,6 +115,7 @@ def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_b
         outputs.append(output)
         print('debug output={}'.format(example.output.split()))
         print('debug output_states={}'.format(output_states))
+        print('debug output_vocab_indexes={}'.format(output_vocab_indexes))
         print('debug outputid={}'.format(output))
 
 
