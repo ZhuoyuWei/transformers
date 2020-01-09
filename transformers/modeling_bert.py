@@ -453,15 +453,38 @@ class BertLMPredictionHead(nn.Module):
                                      bias=False)
         self.bias = nn.Parameter(torch.zeros(self.vocab_size))
 
-
-
-
-    def forward(self, hidden_states, vocab_mask=None):
+    def forward(self, hidden_states, encoder_hidden_states):
         hidden_states = self.transform(hidden_states)
-        if vocab_mask:
-            pass
         hidden_states = self.decoder(hidden_states) + self.bias
         return hidden_states
+
+
+class BertPointerHead(nn.Module):
+    def __init__(self, config, vocab_size=None):
+        super(BertPointerHead, self).__init__()
+        self.transform = BertPredictionHeadTransform(config)
+
+        # The output weights are the same as the input embeddings, but there is
+        # an output-only bias for each token.
+
+        self.vocab_size = vocab_size if vocab_size else config.vocab_size
+
+        self.decoder = nn.Linear(config.hidden_size,
+                                 self.vocab_size,
+                                 bias=False)
+        self.bias = nn.Parameter(torch.zeros(self.vocab_size))
+
+        #self.pointer_bias=nn.Parameter(torch.zeros(self.vocab_size))
+
+
+    def forward(self, hidden_states, encoder_hidden_states,encoder_attention_mask=None):
+        hidden_states = self.transform(hidden_states)
+        hidden_states_context = self.decoder(hidden_states) + self.bias
+        hidden_states_pointer = torch.matmul(hidden_states, encoder_hidden_states.transpose(-1, -2))
+        if encoder_attention_mask is not None:
+            # Apply the attention mask is (precomputed for all layers in BertModel forward() function)
+            hidden_states_pointer = encoder_attention_mask + hidden_states_pointer
+        return (hidden_states_context,hidden_states_pointer)
 
 
 
@@ -509,10 +532,23 @@ class BertOnlyMLMHead(nn.Module):
         self.predictions = BertLMPredictionHead(config,vocab_size=vocab_size)
         self.vocab_size=vocab_size if vocab_size else config.vocab_size
 
+
     def forward(self, sequence_output):
         prediction_scores = self.predictions(sequence_output)
         return prediction_scores
 
+
+class BertMLMPointerHead(nn.Module):
+    def __init__(self, config, vocab_size=None):
+        super(BertMLMPointerHead, self).__init__()
+        self.predictions = BertPointerHead(config, vocab_size=vocab_size)
+        self.vocab_size = vocab_size if vocab_size else config.vocab_size
+
+    def forward(self, sequence_output,encoder_hidden_states,encoder_attention_mask):
+        prediction_scores = self.predictions(hidden_states=sequence_output,
+                                             encoder_hidden_states=encoder_hidden_states,
+                                             encoder_attention_mask=encoder_attention_mask)
+        return prediction_scores
 
 class BertOnlyNSPHead(nn.Module):
     def __init__(self, config):
@@ -789,7 +825,8 @@ class BertModel(BertPreTrainedModel):
         sequence_output = encoder_outputs[0]
         pooled_output = self.pooler(sequence_output)
 
-        outputs = (sequence_output, pooled_output,) + encoder_outputs[1:]  # add hidden_states and attentions if they are here
+        #outputs = (sequence_output, pooled_output,) + encoder_outputs[1:]  # add hidden_states and attentions if they are here
+
         return outputs  # sequence_output, pooled_output, (hidden_states), (attentions)
 
 
@@ -1637,7 +1674,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
         super(BertForMaskedLMVocabMask, self).__init__(config)
 
         #self.bert = BertModel(config)
-        #self.cls = BertOnlyMLMHead(config)
+        self.cls = BertMLMPointerHead(config)
 
 
 
@@ -1663,7 +1700,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
     '''
 
     def forward(self, input_ids=None, attention_mask=None, token_type_ids=None, position_ids=None, head_mask=None, inputs_embeds=None,
-                masked_lm_labels=None, encoder_hidden_states=None, encoder_attention_mask=None, lm_labels=None, vocab_mask_index=None):
+                masked_lm_labels=None, encoder_hidden_states=None, encoder_attention_mask=None, lm_labels=None, vocab_mask_index=None,pointer_mask=None):
 
         outputs = self.bert(input_ids,
                             attention_mask=attention_mask,
@@ -1675,14 +1712,19 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
                             encoder_attention_mask=encoder_attention_mask)
 
         sequence_output = outputs[0]
-        prediction_scores = self.cls(sequence_output)
+        prediction_scores = self.cls(sequence_output,
+                                     encoder_hidden_states=encoder_hidden_states,
+                                     encoder_attention_mask=encoder_attention_mask)
+
         if vocab_mask_index is not None:
             vocab_mask = self.vocab_masked_embedding.index_select(0, vocab_mask_index.view(-1)).view(
                 list(vocab_mask_index.size()) + [-1])
             # print('predict scores size: {}'.format(prediction_scores.size()))
             # print('vocab_mask size: {}'.format(vocab_mask.size()))
-            prediction_scores = prediction_scores.masked_fill(vocab_mask, -10000.0)
+            prediction_scores[0] = prediction_scores[0].masked_fill(vocab_mask, -10000.0)
 
+        if pointer_mask:
+            prediction_scores[0] =
 
         outputs = (prediction_scores,) + outputs[2:]  # Add hidden states and attention if they are here
 
@@ -1692,20 +1734,15 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
         #    of predictions for masked words.
         # 2. If `lm_labels` is provided we are in a causal scenario where we
         #    try to predict the next token for each input in the decoder.
-        if masked_lm_labels is not None:
-            loss_fct = CrossEntropyLoss(ignore_index=-1)  # -1 index = padding token
-            masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), masked_lm_labels.view(-1))
-            outputs = (masked_lm_loss,) + outputs
 
         if lm_labels is not None:
             #print('debug by zhuoyu lm_labels: {}'.format(lm_labels))
             # we are doing next-token prediction; shift prediction scores and input ids by one
-            prediction_scores = prediction_scores[:, :-1, :].contiguous()
 
-
+            prediction_scores[0] = prediction_scores[0][:, :-1, :].contiguous()
             lm_labels = lm_labels[:, 1:].contiguous()
             loss_fct = CrossEntropyLoss(ignore_index=-1)
-            ltr_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), lm_labels.view(-1))
+            ltr_lm_loss = loss_fct(prediction_scores[0].view(-1, self.config.vocab_size), lm_labels.view(-1))
             outputs = (ltr_lm_loss,) + outputs
 
         return outputs  # (masked_lm_loss), (ltr_lm_loss), prediction_scores, (hidden_states), (attentions)
