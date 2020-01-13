@@ -1741,7 +1741,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
 
 
 
-        if pointer_mask:
+        if pointer_mask is not None:
             outputs = self.bert(None,
                             attention_mask=attention_mask,
                             token_type_ids=token_type_ids,
