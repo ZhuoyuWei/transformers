@@ -825,7 +825,7 @@ class BertModel(BertPreTrainedModel):
         sequence_output = encoder_outputs[0]
         pooled_output = self.pooler(sequence_output)
 
-        #outputs = (sequence_output, pooled_output,) + encoder_outputs[1:]  # add hidden_states and attentions if they are here
+        outputs = (sequence_output, pooled_output,) + encoder_outputs[1:]  # add hidden_states and attentions if they are here
 
         return outputs  # sequence_output, pooled_output, (hidden_states), (attentions)
 
@@ -1631,7 +1631,15 @@ class BertForMaskedLMSetVocab(BertPreTrainedModel):
 
         return outputs  # (masked_lm_loss), (ltr_lm_loss), prediction_scores, (hidden_states), (attentions)
 
-
+def batched_index_select(input, dim, index):
+    for ii in range(1, len(input.shape)):
+        if ii != dim:
+            index = index.unsqueeze(ii)
+    expanse = list(input.shape)
+    expanse[0] = -1
+    expanse[dim] = -1
+    index = index.expand(expanse)
+    return torch.gather(input, dim, index)
 
 class BertForMaskedLMVocabMask(BertForMaskedLM):
     r"""
@@ -1682,7 +1690,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
         self.vocab_sizes=config.vocab_sizes
 
         self.vocab_masked_embedding = torch.ones([len(self.vocab_sizes), self.vocab_sum_size], dtype=torch.uint8)
-        self.pos_offset=5
+        self.pos_offset=0
         offset = self.pos_offset #special token: [PAD] [CLS] [SEP] [UNK]
         for i in range(len(self.vocab_sizes)):
             self.vocab_masked_embedding[i,offset: offset + self.vocab_sizes[i]]=0
@@ -1700,14 +1708,53 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
     '''
 
     def forward(self, input_ids=None, attention_mask=None, token_type_ids=None, position_ids=None, head_mask=None, inputs_embeds=None,
-                masked_lm_labels=None, encoder_hidden_states=None, encoder_attention_mask=None, lm_labels=None, vocab_mask_index=None,pointer_mask=None):
+                masked_lm_labels=None, encoder_hidden_states=None, encoder_attention_mask=None, lm_labels=None, vocab_mask_index=None):
 
-        outputs = self.bert(input_ids,
+        pointer_mask=None
+
+        if encoder_hidden_states is not None and vocab_mask_index is not None:
+            pointer_mask=(vocab_mask_index==1)
+            cur_pointer_mask=torch.cat([pointer_mask[-1:],pointer_mask[1:]],dim=1)
+
+            encoder_size=encoder_hidden_states.size()
+
+
+            pointers=input_ids-5
+            pointers_illegal=(pointers<0)
+            pointers=pointers.masked_fill(pointers_illegal,0)
+            pointers_illegal = (pointers >= encoder_size[1])
+            pointers = pointers.masked_fill(pointers_illegal, 0)
+
+
+            pos_embeddings=batched_index_select(encoder_hidden_states, 1, pointers)
+            inputs_embeds = self.bert.embeddings.word_embeddings(input_ids)
+
+            input_keep_mask=torch.ones(cur_pointer_mask.size(),dtype=torch.float).masked_fill(cur_pointer_mask,0)
+            input_keep_mask=input_keep_mask.unsqueeze(-1).repeat(1,1,encoder_size[-1])
+            pos_keep_mask = 1 - input_keep_mask
+
+            final_input_embs=input_keep_mask*inputs_embeds+pos_keep_mask*pos_embeddings
+
+
+
+
+
+        if pointer_mask:
+            outputs = self.bert(None,
                             attention_mask=attention_mask,
                             token_type_ids=token_type_ids,
                             position_ids=position_ids,
                             head_mask=head_mask,
-                            inputs_embeds=inputs_embeds,
+                            inputs_embeds=final_input_embs,
+                            encoder_hidden_states=encoder_hidden_states,
+                            encoder_attention_mask=encoder_attention_mask)
+        else:
+            outputs = self.bert(input_ids,
+                            attention_mask=attention_mask,
+                            token_type_ids=token_type_ids,
+                            position_ids=position_ids,
+                            head_mask=head_mask,
+                            inputs_embeds=None,
                             encoder_hidden_states=encoder_hidden_states,
                             encoder_attention_mask=encoder_attention_mask)
 
@@ -1724,7 +1771,10 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             prediction_scores[0] = prediction_scores[0].masked_fill(vocab_mask, -10000.0)
 
         if pointer_mask:
-            prediction_scores[0] =
+            #input_keep_mask=torch.ones(cur_pointer_mask.size(),dtype=torch.float).masked_fill(cur_pointer_mask,0)
+            #input_keep_mask=input_keep_mask.unsqueeze(-1).repeat(1,1,encoder_size[-1])
+            #pos_keep_mask = 1 - input_keep_mask
+            #prediction_scores[0] =
 
         outputs = (prediction_scores,) + outputs[2:]  # Add hidden states and attention if they are here
 
@@ -1743,6 +1793,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             lm_labels = lm_labels[:, 1:].contiguous()
             loss_fct = CrossEntropyLoss(ignore_index=-1)
             ltr_lm_loss = loss_fct(prediction_scores[0].view(-1, self.config.vocab_size), lm_labels.view(-1))
+            print('debug ltr lm loss = {}'.format(ltr_lm_loss))
             outputs = (ltr_lm_loss,) + outputs
 
         return outputs  # (masked_lm_loss), (ltr_lm_loss), prediction_scores, (hidden_states), (attentions)
