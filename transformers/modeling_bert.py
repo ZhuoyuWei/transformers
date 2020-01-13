@@ -1806,9 +1806,11 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
 
                 input_keep_mask = torch.ones(pointer_mask.size(), dtype=torch.float, device=pointer_mask.device)
                 input_keep_mask = input_keep_mask.masked_fill(pointer_mask, 0)
-                input_keep_mask = input_keep_mask.unsqueeze(-1).repeat(1, 1, encoder_size[-1])
                 pos_keep_mask = 1 - input_keep_mask
+                input_keep_mask = input_keep_mask.unsqueeze(-1).repeat(1, 1, prediction_scores[0].size()[-1])
+                pos_keep_mask = pos_keep_mask.unsqueeze(-1).repeat(1, 1, prediction_scores[1].size()[-1])
                 print('input_keep_mask shape {}'.format(input_keep_mask.size()))
+                print('pos_keep_mask shape {}'.format(pos_keep_mask.size()))
                 #content based
                 prediction_scores[0] = input_keep_mask*prediction_scores[0]
 
