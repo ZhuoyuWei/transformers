@@ -1769,6 +1769,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
         prediction_scores = self.cls(sequence_output,
                                      encoder_hidden_states=encoder_hidden_states,
                                      encoder_attention_mask=encoder_attention_mask)
+        prediction_scores=list(prediction_scores)
 
         if vocab_mask_index is not None:
             vocab_mask = self.vocab_masked_embedding.index_select(0, vocab_mask_index.view(-1)).view(
