@@ -1831,9 +1831,9 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
                 print(pointers)
                 torch.set_printoptions(profile="default")
 
-                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG pointers @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG vocab_mask_index @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
                 torch.set_printoptions(profile="full")
-                print(pointers)
+                print(vocab_mask_index)
                 torch.set_printoptions(profile="default")
 
                 print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG pointer_mask @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
