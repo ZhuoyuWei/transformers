@@ -1714,8 +1714,9 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
 
         if encoder_hidden_states is not None and vocab_mask_index is not None:
             pointer_mask=(vocab_mask_index==1)
-            cur_pointer_mask=torch.cat([pointer_mask[-1:],pointer_mask[1:]],dim=1)
-
+            print('debug pointer mask {}'.format(pointer_mask.size()))
+            cur_pointer_mask=torch.cat([pointer_mask[:,-1:],pointer_mask[:,1:]],dim=1)
+            print('debug pointer mask {}'.format(cur_pointer_mask.size()))
             encoder_size=encoder_hidden_states.size()
 
 
