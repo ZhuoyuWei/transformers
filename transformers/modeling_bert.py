@@ -1799,7 +1799,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
 
             lm_labels = lm_labels[:, 1:].contiguous()
             loss_fct = CrossEntropyLoss(ignore_index=-1)
-            if pointer_mask:
+            if pointer_mask is not None:
 
                 pointer_mask=pointer_mask[:,1:].contiguous()
                 pointers=pointers[:,1:].contiguous()
@@ -1819,7 +1819,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             ltr_lm_loss = loss_fct(prediction_scores[0].view(-1, self.config.vocab_size), lm_labels.view(-1))
             total_loss=ltr_lm_loss
 
-            if pointer_mask:
+            if pointer_mask is not None:
                 ltr_pointer_loss = loss_fct(prediction_scores[1].view(-1, encoder_size[1]), pointers.view(-1))
                 total_loss+=ltr_pointer_loss
                 print('debug ltr lm loss = {}'.format(ltr_lm_loss))
