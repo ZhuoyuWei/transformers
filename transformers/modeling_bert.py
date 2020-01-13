@@ -481,6 +481,9 @@ class BertPointerHead(nn.Module):
         hidden_states = self.transform(hidden_states)
         hidden_states_context = self.decoder(hidden_states) + self.bias
         hidden_states_pointer = torch.matmul(hidden_states, encoder_hidden_states.transpose(-1, -2))
+        print('context hidden states {}'.format(hidden_states_context.size()))
+        print('encoder_hidden_states {}'.format(encoder_hidden_states.size()))
+        print('encoder_attention_mask {}'.format(encoder_attention_mask.size()))
         if encoder_attention_mask is not None:
             # Apply the attention mask is (precomputed for all layers in BertModel forward() function)
             hidden_states_pointer = encoder_attention_mask + hidden_states_pointer
