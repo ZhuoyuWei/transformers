@@ -1716,6 +1716,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
                 masked_lm_labels=None, encoder_hidden_states=None, encoder_attention_mask=None, lm_labels=None, vocab_mask_index=None):
 
         pointer_mask=None
+        encoder_size=None
 
         if encoder_hidden_states is not None and vocab_mask_index is not None:
             pointer_mask=(vocab_mask_index==1)
@@ -1778,11 +1779,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             # print('vocab_mask size: {}'.format(vocab_mask.size()))
             prediction_scores[0] = prediction_scores[0].masked_fill(vocab_mask, -10000.0)
 
-        #if pointer_mask:
-            #input_keep_mask=torch.ones(cur_pointer_mask.size(),dtype=torch.float).masked_fill(cur_pointer_mask,0)
-            #input_keep_mask=input_keep_mask.unsqueeze(-1).repeat(1,1,encoder_size[-1])
-            #pos_keep_mask = 1 - input_keep_mask
-            #prediction_scores[0] =
+
 
         outputs = (prediction_scores,) + outputs[2:]  # Add hidden states and attention if they are here
 
@@ -1798,11 +1795,38 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             # we are doing next-token prediction; shift prediction scores and input ids by one
 
             prediction_scores[0] = prediction_scores[0][:, :-1, :].contiguous()
+            prediction_scores[1] = prediction_scores[1][:, :-1, :].contiguous()
+
             lm_labels = lm_labels[:, 1:].contiguous()
             loss_fct = CrossEntropyLoss(ignore_index=-1)
+            if pointer_mask:
+
+                pointer_mask=pointer_mask[:,1:].contiguous()
+                pointers=pointers[:,1:].contiguous()
+
+                input_keep_mask = torch.ones(pointer_mask.size(), dtype=torch.float, device=pointer_mask.device)
+                input_keep_mask = input_keep_mask.masked_fill(pointer_mask, 0)
+                input_keep_mask = input_keep_mask.unsqueeze(-1).repeat(1, 1, encoder_size[-1])
+                pos_keep_mask = 1 - input_keep_mask
+                print('input_keep_mask shape {}'.format(input_keep_mask.size()))
+                #content based
+                prediction_scores[0] = input_keep_mask*prediction_scores[0]
+
+                #pointer based
+                prediction_scores[1] = pos_keep_mask*prediction_scores[1]
+
+
             ltr_lm_loss = loss_fct(prediction_scores[0].view(-1, self.config.vocab_size), lm_labels.view(-1))
-            print('debug ltr lm loss = {}'.format(ltr_lm_loss))
-            outputs = (ltr_lm_loss,) + outputs
+            total_loss=ltr_lm_loss
+
+            if pointer_mask:
+                ltr_pointer_loss = loss_fct(prediction_scores[1].view(-1, encoder_size[1]), pointers.view(-1))
+                total_loss+=ltr_pointer_loss
+                print('debug ltr lm loss = {}'.format(ltr_lm_loss))
+
+            print('debug total loss = {}'.format(total_loss))
+
+            outputs = (total_loss,) + outputs
 
         return outputs  # (masked_lm_loss), (ltr_lm_loss), prediction_scores, (hidden_states), (attentions)
 
