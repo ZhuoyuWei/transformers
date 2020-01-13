@@ -1831,9 +1831,19 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
                 print(pointers)
                 torch.set_printoptions(profile="default")
 
-                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG prediction scores[1] @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG pointers @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
                 torch.set_printoptions(profile="full")
-                print(prediction_scores[1])
+                print(pointers)
+                torch.set_printoptions(profile="default")
+
+                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG pointer_mask @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+                torch.set_printoptions(profile="full")
+                print(pointer_mask)
+                torch.set_printoptions(profile="default")
+
+                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG pos_keep_mask @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+                torch.set_printoptions(profile="full")
+                print(pos_keep_mask)
                 torch.set_printoptions(profile="default")
 
 
