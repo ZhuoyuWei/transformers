@@ -1730,7 +1730,8 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             pos_embeddings=batched_index_select(encoder_hidden_states, 1, pointers)
             inputs_embeds = self.bert.embeddings.word_embeddings(input_ids)
 
-            input_keep_mask=torch.ones(cur_pointer_mask.size(),dtype=torch.float).masked_fill(cur_pointer_mask,0).to(device=cur_pointer_mask.device)
+            input_keep_mask=torch.ones(cur_pointer_mask.size(),dtype=torch.float).to(device=cur_pointer_mask.device)
+            input_keep_mask =input_keep_mask.masked_fill(cur_pointer_mask,0)
             input_keep_mask=input_keep_mask.unsqueeze(-1).repeat(1,1,encoder_size[-1])
             pos_keep_mask = 1 - input_keep_mask
 
