@@ -1826,6 +1826,17 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
                 total_loss+=ltr_pointer_loss
                 print('debug ltr_pointer_loss = {}'.format(ltr_pointer_loss))
 
+                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG POINTERS@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+                torch.set_printoptions(profile="full")
+                print(pointers)
+                torch.set_printoptions(profile="default")
+
+                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG prediction scores[1] @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+                torch.set_printoptions(profile="full")
+                print(prediction_scores[1])
+                torch.set_printoptions(profile="default")
+
+
             print('debug total loss = {}'.format(total_loss))
 
             outputs = (total_loss,) + outputs
