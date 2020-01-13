@@ -1770,7 +1770,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             # print('vocab_mask size: {}'.format(vocab_mask.size()))
             prediction_scores[0] = prediction_scores[0].masked_fill(vocab_mask, -10000.0)
 
-        if pointer_mask:
+        #if pointer_mask:
             #input_keep_mask=torch.ones(cur_pointer_mask.size(),dtype=torch.float).masked_fill(cur_pointer_mask,0)
             #input_keep_mask=input_keep_mask.unsqueeze(-1).repeat(1,1,encoder_size[-1])
             #pos_keep_mask = 1 - input_keep_mask
