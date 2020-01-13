@@ -488,7 +488,7 @@ class BertPointerHead(nn.Module):
         print('hidden_states_pointer {}'.format(hidden_states_pointer.size()))
         if encoder_attention_mask is not None:
             # Apply the attention mask is (precomputed for all layers in BertModel forward() function)
-            hidden_states_pointer = encoder_attention_mask + hidden_states_pointer
+            hidden_states_pointer = encoder_attention_mask.unsqueeze(dim=1).repeat([1,hidden_states_pointer.size()[1],1]) + hidden_states_pointer
         return (hidden_states_context,hidden_states_pointer)
 
 
