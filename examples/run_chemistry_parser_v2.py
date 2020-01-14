@@ -90,9 +90,9 @@ def load_and_cache_examples(args, tokenizer, prefix="train",fsa=None):
     return dataset
 
 def translate_tokenindex_to_subtokenindex(example,indexes,vocabs,states):
-    print('INDEXES: {}'.format(indexes))
-    print('VOCABS: {}'.format(vocabs))
-    print('STATES: {}'.format(states))
+    #print('INDEXES: {}'.format(indexes))
+    #print('VOCABS: {}'.format(vocabs))
+    #print('STATES: {}'.format(states))
     new_indexes=[]
     for i,index in enumerate(indexes):
         if i>0 and vocabs[i-1] == 1:
@@ -104,8 +104,20 @@ def translate_tokenindex_to_subtokenindex(example,indexes,vocabs,states):
                 while j < len(example.tok_to_orig_index) and example.tok_to_orig_index[j] == index:
                     sub_index=j
                     j+=1
-                print('Diff sub index by end: {} \t {}'.format(tmp_sub_index,sub_index))
+                #print('Diff sub index by end: {} \t {}'.format(tmp_sub_index,sub_index))
             new_indexes.append(str(sub_index))
+        else:
+            new_indexes.append(index)
+    return new_indexes
+
+def translate_subtokenindex_backto_tokenindex(example,indexes,vocabs):
+    new_indexes=[]
+    for i,index in enumerate(indexes):
+        if i>0 and vocabs[i-1] == 1:
+            index=int(index)
+            whole_index=example.tok_to_orig_index[index]
+
+            new_indexes.append(str(whole_index))
         else:
             new_indexes.append(index)
     return new_indexes
@@ -115,9 +127,10 @@ def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_b
     inputs=[]
     outputs=[]
     vocabs=[]
+    example_buffer=[]
     for i,example in enumerate(data):
         #input=encoder_tokenizer.encode(example.input)
-
+        example_buffer.append(example)
         tok_to_orig_index = []
         orig_to_tok_index = []
         all_doc_tokens = []
@@ -137,9 +150,9 @@ def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_b
         if example.output is not None:
             #output=tokenizer.encode(example.output)
             output_tokens=example.output.split()
-            print('Before Whole Index: {}'.format(output_tokens))
+            #print('Before Whole Index: {}'.format(output_tokens))
             output_tokens=translate_tokenindex_to_subtokenindex(example,output_tokens,example.vocab_indexes,example.fsa_states)
-            print('After Sub Index: {}'.format(output_tokens))
+            #print('After Sub Index: {}'.format(output_tokens))
             output=decoder_tokenizer.convert_tokens_to_ids(output_tokens)
             output_states=example.fsa_states
 
@@ -192,6 +205,7 @@ def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_b
         vocabs_mask,
         outputs_mask_lm_labels,
         vocabs_mask_lm_labels,
+        example_buffer,
     )
 
 
@@ -320,7 +334,7 @@ def train(args, model, encoder_tokenizer,decoder_tokenizer,fsa):
     for _ in train_iterator:
         epoch_iterator = tqdm(train_dataloader, desc="Iteration", disable=False)
         for step, batch in enumerate(epoch_iterator):
-            inputs,outputs,vocabs,inputs_mask,outputs_mask,vocabs_mask,outputs_mask_lm_labels,vocabs_mask_lm_labels = batch
+            inputs,outputs,vocabs,inputs_mask,outputs_mask,vocabs_mask,outputs_mask_lm_labels,vocabs_mask_lm_labels,example_buffer = batch
             #print('source: {}'.format(source))
             #print('target: {}'.format(target))
 
@@ -409,7 +423,7 @@ def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=Non
     fout=open(os.path.join(args.output_dir,"dev.res"),'w',encoding='utf-8')
     fdebug=open(os.path.join(args.output_dir,"dev.debug.res"),'w',encoding='utf-8')
     for batch in tqdm(eval_dataloader, desc="Evaluating"):
-        inputs, outputs, vocabs, inputs_mask, outputs_mask, vocabs_mask, outputs_mask_lm_labels, vocabs_mask_lm_labels = batch
+        inputs, outputs, vocabs, inputs_mask, outputs_mask, vocabs_mask, outputs_mask_lm_labels, vocabs_mask_lm_labels, example_buffer = batch
 
         inputs = inputs.to(args.device)
         outputs = outputs.to(args.device)
@@ -430,7 +444,7 @@ def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=Non
 
             if args.decoding_type=='decoding':
                 tokens_roles=[]
-                outputs_ids=model.decoding(
+                outputs_ids,vocab_mask_index=model.decoding(
                     encoder_input_ids=inputs,
                     decoder_input_ids=outputs,
                     decoder_vocab_mask_index=vocabs,
@@ -441,17 +455,19 @@ def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=Non
                 )
                 print('outputs size: {}'.format(outputs_ids.size()))
                 outputs_ids =outputs_ids.cpu().numpy()
+                vocab_mask_index=vocab_mask_index.cpu().numpy()
 
 
-
-                for idx in outputs_ids:
+                for i,idx in enumerate(outputs_ids):
                     tokens = []
                     for id in idx:
                         token=decoder_tokenizer.ids_to_tokens.get(id, decoder_tokenizer.unk_token)
                         tokens.append(token)
                         if token == 'end':
                             break
-
+                    print('Before Whole Index: {}'.format(tokens))
+                    tokens=translate_subtokenindex_backto_tokenindex(example_buffer[i],tokens,vocab_mask_index[i])
+                    print('After Sub Index: {}'.format(tokens))
                     fout.write(' '.join(tokens) + '\n')
 
 

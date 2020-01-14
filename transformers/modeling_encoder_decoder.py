@@ -494,7 +494,7 @@ class Model2Model(PreTrainedEncoderDecoder):
         decoder_input_shape=decoder_input_ids.size()
         #print('debug decoder_input_ids={}'.format(decoder_input_shape))
 
-
+        vocab_mask_index=None
         for step in range(64):
             produced_decoder_attn_mask=torch.cat([torch.ones([decoder_input_shape[0],step+1],dtype=torch.int32, device=decoder_input_ids.device)
                                                      ,torch.zeros([decoder_input_shape[0],decoder_input_shape[1]-(step+1)], dtype=torch.int32, device=decoder_input_ids.device)],dim=1)
@@ -537,7 +537,7 @@ class Model2Model(PreTrainedEncoderDecoder):
             #print(decoder_input_ids)
 
 
-        return decoder_input_ids
+        return decoder_input_ids,vocab_mask_index
 
 
 class Model2Models(PreTrainedEncoderDecoder):
