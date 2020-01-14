@@ -93,13 +93,14 @@ def translate_tokenindex_to_subtokenindex(example,indexes,vocabs,states):
     new_indexes=[]
     for i,index in enumerate(indexes):
         if i>0 and vocabs[i-1] == 1:
+            index=int(index)
             sub_index=example.orig_to_tok_index[index]
             if states[i-1].endswith('_end'):
                 j=sub_index+1
                 while j < len(example.tok_to_orig_index) and example.tok_to_orig_index[j] == index:
                     sub_index=j
                     j+=1
-            new_indexes.append(sub_index)
+            new_indexes.append(str(sub_index))
         else:
             new_indexes.append(index)
 
