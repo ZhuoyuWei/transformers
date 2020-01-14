@@ -1781,8 +1781,12 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
 
         if encoder_attention_mask is not None:
             print('debug encoder_attention_mask {}'.format(encoder_attention_mask.size()))
-            exit(-1)
+            print('debug encoder_attention_mask {}'.format(encoder_attention_mask))
 
+            pointer_scores_mask=encoder_attention_mask.unsqueeze(dim=1).repeat([1,prediction_scores[1].size()[1],1])
+            print('pointer_scores_mask {}'.format(pointer_scores_mask))
+            prediction_scores[1]=prediction_scores[1]+pointer_scores_mask
+            exit(-1)
         outputs = (prediction_scores,) + outputs[2:]  # Add hidden states and attention if they are here
 
         # Although this may seem awkward, BertForMaskedLM supports two scenarios:
