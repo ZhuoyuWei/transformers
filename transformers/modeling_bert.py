@@ -1784,7 +1784,9 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             print('debug encoder_attention_mask {}'.format(encoder_attention_mask))
 
             pointer_scores_mask=encoder_attention_mask.unsqueeze(dim=1).repeat([1,prediction_scores[1].size()[1],1])
+            pointer_scores_mask=(1.0 - pointer_scores_mask) * -10000.0
             print('pointer_scores_mask {}'.format(pointer_scores_mask))
+
             prediction_scores[1]=prediction_scores[1]+pointer_scores_mask
             exit(-1)
         outputs = (prediction_scores,) + outputs[2:]  # Add hidden states and attention if they are here
