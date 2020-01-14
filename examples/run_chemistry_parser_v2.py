@@ -90,6 +90,9 @@ def load_and_cache_examples(args, tokenizer, prefix="train",fsa=None):
     return dataset
 
 def translate_tokenindex_to_subtokenindex(example,indexes,vocabs,states):
+    print('INDEXES: {}'.format(indexes))
+    print('VOCABS: {}'.format(vocabs))
+    print('STATES: {}'.format(states))
     new_indexes=[]
     for i,index in enumerate(indexes):
         if i>0 and vocabs[i-1] == 1:
