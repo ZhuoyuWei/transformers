@@ -32,6 +32,10 @@ class InputExampleV2(object):
         self.fsa=fsa
         self.fsa_states=None
         self.vocab_indexes=None
+
+        self.tok_to_orig_index = None
+        self.orig_to_tok_index = None
+
         if self.fsa:
             self.fsa_states=self._get_fsa_states()
         if self.fsa_states:

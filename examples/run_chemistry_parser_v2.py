@@ -89,6 +89,20 @@ def load_and_cache_examples(args, tokenizer, prefix="train",fsa=None):
     dataset = ChemistryDataset(tokenizer, prefix=prefix, data_dir=args.data_dir,version=args.decoder_version,fsa_or_config=fsa)
     return dataset
 
+def translate_tokenindex_to_subtokenindex(example,indexes,vocabs,states):
+    new_indexes=[]
+    for i,index in enumerate(indexes):
+        if i>0 and vocabs[i-1] == 1:
+            sub_index=example.orig_to_tok_index[index]
+            if states[i-1].endswith('_end'):
+                j=sub_index+1
+                while j < len(example.tok_to_orig_index) and example.tok_to_orig_index[j] == index:
+                    sub_index=j
+                    j+=1
+            new_indexes.append(sub_index)
+        else:
+            new_indexes.append(index)
+
 
 def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_block_size):
     """ List of tuple as an input. """
@@ -96,13 +110,29 @@ def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_b
     outputs=[]
     vocabs=[]
     for i,example in enumerate(data):
-        input=encoder_tokenizer.encode(example.input)
+        #input=encoder_tokenizer.encode(example.input)
+
+        tok_to_orig_index = []
+        orig_to_tok_index = []
+        all_doc_tokens = []
+        input_tokens=example.input.split()
+        for (i, token) in enumerate(input_tokens):
+            orig_to_tok_index.append(len(all_doc_tokens))
+            sub_tokens = encoder_tokenizer.tokenize(token)
+            for sub_token in sub_tokens:
+                tok_to_orig_index.append(i)
+                all_doc_tokens.append(sub_token)
+        input=encoder_tokenizer.convert_tokens_to_ids(all_doc_tokens)
+        example.tok_to_orig_index=tok_to_orig_index
+        example.orig_to_tok_index=orig_to_tok_index
         input=fit_to_block_size(input, input_block_size, encoder_tokenizer.pad_token_id)
         inputs.append(input)
 
         if example.output is not None:
             #output=tokenizer.encode(example.output)
-            output=decoder_tokenizer.convert_tokens_to_ids(example.output.split())
+            output_tokens=example.output.split()
+            output_tokens=translate_tokenindex_to_subtokenindex(example,output_tokens,example.vocab_indexes,example.fsa_states)
+            output=decoder_tokenizer.convert_tokens_to_ids(output_tokens)
             output_states=example.fsa_states
 
         else:
