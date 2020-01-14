@@ -132,7 +132,9 @@ def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_b
         if example.output is not None:
             #output=tokenizer.encode(example.output)
             output_tokens=example.output.split()
+            print('Before Whole Index: {}'.format(output_tokens))
             output_tokens=translate_tokenindex_to_subtokenindex(example,output_tokens,example.vocab_indexes,example.fsa_states)
+            print('After Sub Index: {}'.format(output_tokens))
             output=decoder_tokenizer.convert_tokens_to_ids(output_tokens)
             output_states=example.fsa_states
 
