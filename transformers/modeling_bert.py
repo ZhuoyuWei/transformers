@@ -1779,7 +1779,9 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             # print('vocab_mask size: {}'.format(vocab_mask.size()))
             prediction_scores[0] = prediction_scores[0].masked_fill(vocab_mask, -10000.0)
 
-
+        if encoder_attention_mask is not None:
+            print('debug encoder_attention_mask {}'.format(encoder_attention_mask.size()))
+            exit(-1)
 
         outputs = (prediction_scores,) + outputs[2:]  # Add hidden states and attention if they are here
 
