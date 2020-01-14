@@ -103,7 +103,7 @@ def translate_tokenindex_to_subtokenindex(example,indexes,vocabs,states):
             new_indexes.append(str(sub_index))
         else:
             new_indexes.append(index)
-
+    return new_indexes
 
 def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_block_size):
     """ List of tuple as an input. """
