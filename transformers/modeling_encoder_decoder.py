@@ -507,14 +507,31 @@ class Model2Model(PreTrainedEncoderDecoder):
             kwargs_decoder["attention_mask"]=produced_decoder_attn_mask
             kwargs_decoder["vocab_mask_index"]=vocab_mask_index
             decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
-            decoder_ids=decoder_outputs[0].argmax(dim=-1)
-            decoder_ids=decoder_ids[:,step:step+1]
+
+
+
+            content_decoder_ids=decoder_outputs[0][0].argmax(dim=-1)
+            content_decoder_ids=content_decoder_ids[:,step]
+            pointer_decoder_ids=decoder_outputs[0][1].argmax(dim=-1)
+            pointer_decoder_ids=pointer_decoder_ids[:,step]
+            pointer_decoder_ids=pointer_decoder_ids+5
+
+            res_vocab_mask=vocab_mask_index[:,step]
+            content_mask=(res_vocab_mask==1)
+            pointer_mask=(res_vocab_mask!=1)
+            content_decoder_ids=content_decoder_ids.masked_fill(content_mask,0)
+            pointer_decoder_ids=pointer_decoder_ids.masked_fill(pointer_mask,0)
+            decoder_ids=content_decoder_ids+pointer_decoder_ids
+            decoder_ids=decoder_ids.unsqueeze(-1)
+
+
+
             #print('decoder_input_ids shape = {}'.format(decoder_input_ids.size()))
             #print('decoder_output_ids shape = {}'.format(decoder_ids.size()))
             #print(decoder_input_ids[:,step+1])
             #print('########################################')
             #print(decoder_ids)
-            print('decoder_input_ids shape= {}, decoder_ids={}'.format(decoder_input_ids.size(),decoder_ids.size()))
+            #print('decoder_input_ids shape= {}, decoder_ids={}'.format(decoder_input_ids.size(),decoder_ids.size()))
             decoder_input_ids=torch.cat([decoder_input_ids,decoder_ids],dim=1)
             #print('decoder input ids:')
             #print(decoder_input_ids)

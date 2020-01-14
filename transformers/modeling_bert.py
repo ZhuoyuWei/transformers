@@ -1825,27 +1825,27 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
                 ltr_pointer_loss = loss_fct(prediction_scores[1].view(-1, encoder_size[1]), pointers.view(-1))
                 total_loss+=ltr_pointer_loss
                 print('debug ltr_pointer_loss = {}'.format(ltr_pointer_loss))
+                '''
+                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG POINTERS@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+                torch.set_printoptions(profile="full")
+                print(pointers)
+                torch.set_printoptions(profile="default")
 
-                #print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG POINTERS@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-                #torch.set_printoptions(profile="full")
-                #print(pointers)
-                #torch.set_printoptions(profile="default")
+                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG vocab_mask_index @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+                torch.set_printoptions(profile="full")
+                print(vocab_mask_index)
+                torch.set_printoptions(profile="default")
 
-                #print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG vocab_mask_index @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-                #torch.set_printoptions(profile="full")
-                #print(vocab_mask_index)
-                #torch.set_printoptions(profile="default")
+                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG pointer_mask @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+                torch.set_printoptions(profile="full")
+                print(pointer_mask)
+                torch.set_printoptions(profile="default")
 
-                #print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG pointer_mask @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-                #torch.set_printoptions(profile="full")
-                #print(pointer_mask)
-                #torch.set_printoptions(profile="default")
-
-                #print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG pos_keep_mask @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-                #torch.set_printoptions(profile="full")
-                #print(pos_keep_mask)
-                #torch.set_printoptions(profile="default")
-
+                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG pos_keep_mask @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+                torch.set_printoptions(profile="full")
+                print(pos_keep_mask)
+                torch.set_printoptions(profile="default")
+                '''
 
             print('debug total loss = {}'.format(total_loss))
 
