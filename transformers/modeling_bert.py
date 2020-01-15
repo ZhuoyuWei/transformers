@@ -1783,13 +1783,20 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             #print('debug encoder_attention_mask {}'.format(encoder_attention_mask.size()))
             #print('debug encoder_attention_mask {}'.format(encoder_attention_mask))
 
+            print('##############################encoder_attention_mask##################################')
+            torch.set_printoptions(profile="full")
+            print(encoder_attention_mask)
+            torch.set_printoptions(profile="default")
+
             pointer_scores_mask=encoder_attention_mask.unsqueeze(dim=1).repeat([1,prediction_scores[1].size()[1],1])
             pointer_scores_mask=(1.0 - pointer_scores_mask) * -10000.0
             #print('pointer_scores_mask {}'.format(pointer_scores_mask))
+            print('pointer_scores_mask size = {}'.format(pointer_scores_mask.size()))
             print('##############################POINTERERERERERs##################################')
             torch.set_printoptions(profile="full")
             print(pointer_scores_mask)
             torch.set_printoptions(profile="default")
+
             exit(-1)
             prediction_scores[1]=prediction_scores[1]+pointer_scores_mask
             #exit(-1)
