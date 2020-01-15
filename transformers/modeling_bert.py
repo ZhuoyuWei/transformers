@@ -478,7 +478,7 @@ class BertPointerHead(nn.Module):
 
 
     def forward(self, hidden_states, encoder_hidden_states,encoder_attention_mask=None):
-        #hidden_states = self.transform(hidden_states)
+        hidden_states = self.transform(hidden_states)
         hidden_states_context = self.decoder(hidden_states) + self.bias
         hidden_states_pointer = torch.matmul(hidden_states, encoder_hidden_states.transpose(-1, -2))
         print('hidden_states {}'.format(hidden_states.size()))
@@ -1915,7 +1915,8 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             if pointer_mask is not None:
                 ltr_pointer_loss = loss_fct(prediction_scores[1].view(-1, encoder_size[1]), pointers.view(-1))
                 #total_loss+=ltr_pointer_loss
-                total_loss=ltr_lm_loss*1.0+ltr_pointer_loss*0.0
+                #total_loss=ltr_lm_loss*1.0+ltr_pointer_loss*0.0
+                total_loss = ltr_lm_loss +ltr_pointer_loss
                 print('debug ltr_pointer_loss = {}'.format(ltr_pointer_loss))
                 '''
                 print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG POINTERS@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
