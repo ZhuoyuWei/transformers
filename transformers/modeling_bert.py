@@ -1861,6 +1861,12 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
                 content_mask_from_point = (pointer_mask == False)
                 pointers = pointers.masked_fill(content_mask_from_point, -1)
 
+                print('##############################input_ids##################################')
+                print("input_ids = {}".format(input_ids.size()))
+                torch.set_printoptions(profile="full")
+                print(input_ids)
+                torch.set_printoptions(profile="default")
+
                 print('##############################pointers##################################')
                 print("pointers = {}".format(pointers.size()))
                 torch.set_printoptions(profile="full")
