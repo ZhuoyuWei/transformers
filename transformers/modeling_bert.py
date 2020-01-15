@@ -479,9 +479,12 @@ class BertPointerHead(nn.Module):
 
 
     def forward(self, hidden_states, encoder_hidden_states,encoder_attention_mask=None):
-        hidden_states = self.transform(hidden_states)
-        hidden_states_context = self.transform_cont(hidden_states)
-        hidden_states_pointer = self.transform_point(hidden_states)
+        #hidden_states = self.transform(hidden_states)
+        #hidden_states_context = self.transform_cont(hidden_states)
+        #hidden_states_pointer = self.transform_point(hidden_states)
+        hidden_states_context=hidden_states
+        hidden_states_pointer=hidden_states
+
         hidden_states_context = self.decoder(hidden_states_context) + self.bias
         hidden_states_pointer = torch.matmul(hidden_states_pointer, encoder_hidden_states.transpose(-1, -2))
         print('hidden_states {}'.format(hidden_states.size()))
