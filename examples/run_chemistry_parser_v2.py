@@ -308,6 +308,8 @@ def train(args, model, encoder_tokenizer,decoder_tokenizer,fsa):
     #lr = {"encoder": 0.002, "decoder": 0.2}
     lr = {"encoder": args.encoder_lr, "decoder": args.decoder_lr}
     #warmup_steps = {"encoder": 20000, "decoder": 10000}
+    args.encoder_warmup=(0.1*t_total)
+    args.decoder_warmup=args.encoder_warmup
     warmup_steps = {"encoder": args.encoder_warmup, "decoder": args.decoder_warmup}
     optimizer = BertSumOptimizer(model, lr, warmup_steps)
 
