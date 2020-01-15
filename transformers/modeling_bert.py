@@ -1726,14 +1726,33 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             encoder_size=encoder_hidden_states.size()
 
 
+
             pointers=input_ids-5
             pointers_illegal=(pointers<0)
             pointers=pointers.masked_fill(pointers_illegal,0)
             pointers_illegal = (pointers >= encoder_size[1])
             pointers = pointers.masked_fill(pointers_illegal, 0)
 
+            print('##############################encoder_hidden_states##################################')
+            print("encoder_hidden_states size = {}".format(encoder_hidden_states.size()))
+            torch.set_printoptions(profile="full")
+            print(encoder_hidden_states)
+            torch.set_printoptions(profile="default")
+
+            print('##############################pointers##################################')
+            print("pointers = {}".format(pointers.size()))
+            torch.set_printoptions(profile="full")
+            print(pointers)
+            torch.set_printoptions(profile="default")
 
             pos_embeddings=batched_index_select(encoder_hidden_states, 1, pointers)
+
+            print('##############################pos_embeddings##################################')
+            print("pos_embeddings size = {}".format(pos_embeddings.size()))
+            torch.set_printoptions(profile="full")
+            print(pos_embeddings)
+            torch.set_printoptions(profile="default")
+
             inputs_embeds = self.bert.embeddings.word_embeddings(input_ids)
 
             input_keep_mask=torch.ones(cur_pointer_mask.size(),dtype=torch.float).to(device=cur_pointer_mask.device)
