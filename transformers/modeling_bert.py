@@ -1789,40 +1789,30 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
         prediction_scores=list(prediction_scores)
 
         if vocab_mask_index is not None:
-
+            '''
             print('##############################vocab_mask_index##################################')
             print("vocab_mask_index = {}".format(vocab_mask_index.size()))
             torch.set_printoptions(profile="full")
             print(vocab_mask_index)
             torch.set_printoptions(profile="default")
-
+            '''
             vocab_mask = self.vocab_masked_embedding.index_select(0, vocab_mask_index.view(-1)).view(
                 list(vocab_mask_index.size()) + [-1])
-
+            '''
             print('##############################vocab_mask##################################')
             print("vocab_mask = {}".format(vocab_mask.size()))
             torch.set_printoptions(profile="full")
             print(vocab_mask)
             torch.set_printoptions(profile="default")
-
+            '''
             # print('predict scores size: {}'.format(prediction_scores.size()))
             # print('vocab_mask size: {}'.format(vocab_mask.size()))
 
-            print('##############################BEFORE##################################')
-            print("prediction_scores[0] = {}".format(prediction_scores[0].size()))
-            torch.set_printoptions(profile="full")
-            print(prediction_scores[0])
-            torch.set_printoptions(profile="default")
+
 
             prediction_scores[0] = prediction_scores[0].masked_fill(vocab_mask, -10000.0)
 
-            print('##############################AFTER##################################')
-            print("prediction_scores[0] = {}".format(prediction_scores[0].size()))
-            torch.set_printoptions(profile="full")
-            print(prediction_scores[0])
-            torch.set_printoptions(profile="default")
 
-            exit(-1)
 
         if encoder_attention_mask is not None:
             #print('debug encoder_attention_mask {}'.format(encoder_attention_mask.size()))
@@ -1924,7 +1914,8 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             print('debug ltr lm loss = {}'.format(ltr_lm_loss))
             if pointer_mask is not None:
                 ltr_pointer_loss = loss_fct(prediction_scores[1].view(-1, encoder_size[1]), pointers.view(-1))
-                total_loss+=ltr_pointer_loss
+                #total_loss+=ltr_pointer_loss
+                total_loss=ltr_lm_loss*0.9+ltr_pointer_loss*0.1
                 print('debug ltr_pointer_loss = {}'.format(ltr_pointer_loss))
                 '''
                 print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG POINTERS@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
