@@ -1789,6 +1789,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
         prediction_scores=list(prediction_scores)
 
         if vocab_mask_index is not None:
+            pass
             vocab_mask = self.vocab_masked_embedding.index_select(0, vocab_mask_index.view(-1)).view(
                 list(vocab_mask_index.size()) + [-1])
             # print('predict scores size: {}'.format(prediction_scores.size()))
@@ -1861,6 +1862,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
                 content_mask_from_point = (pointer_mask == False)
                 pointers = pointers.masked_fill(content_mask_from_point, -1)
 
+                '''
                 print('##############################input_ids##################################')
                 print("input_ids = {}".format(input_ids.size()))
                 torch.set_printoptions(profile="full")
@@ -1873,11 +1875,11 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
                 print(pointers)
                 torch.set_printoptions(profile="default")
 
-                print('##############################pointer_mask##################################')
-                print("pointer_mask = {}".format(pointer_mask.size()))
-                torch.set_printoptions(profile="full")
-                print(pointer_mask)
-                torch.set_printoptions(profile="default")
+                #print('##############################pointer_mask##################################')
+                #print("pointer_mask = {}".format(pointer_mask.size()))
+                #torch.set_printoptions(profile="full")
+                #print(pointer_mask)
+                #torch.set_printoptions(profile="default")
 
                 print('##############################lm_labels##################################')
                 print("lm_labels = {}".format(lm_labels.size()))
@@ -1886,7 +1888,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
                 torch.set_printoptions(profile="default")
 
                 exit(-1)
-
+                '''
 
 
             ltr_lm_loss = loss_fct(prediction_scores[0].view(-1, self.config.vocab_size), lm_labels.view(-1))
