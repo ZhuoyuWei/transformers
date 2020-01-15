@@ -1915,7 +1915,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             if pointer_mask is not None:
                 ltr_pointer_loss = loss_fct(prediction_scores[1].view(-1, encoder_size[1]), pointers.view(-1))
                 #total_loss+=ltr_pointer_loss
-                total_loss=ltr_lm_loss*0.9+ltr_pointer_loss*0.1
+                total_loss=ltr_lm_loss*1.0+ltr_pointer_loss*0.0
                 print('debug ltr_pointer_loss = {}'.format(ltr_pointer_loss))
                 '''
                 print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DEBUG POINTERS@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
