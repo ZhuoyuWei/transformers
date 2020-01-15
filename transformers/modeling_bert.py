@@ -1727,19 +1727,20 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
 
 
 
-            pointers=input_ids-5
+            pointers=input_ids-4
             pointers_illegal=(pointers<0)
             pointers=pointers.masked_fill(pointers_illegal,0)
             pointers_illegal = (pointers >= encoder_size[1])
             pointers = pointers.masked_fill(pointers_illegal, 0)
 
 
-
+            '''
             print('##############################pointers##################################')
             print("pointers = {}".format(pointers.size()))
             torch.set_printoptions(profile="full")
             print(pointers)
             torch.set_printoptions(profile="default")
+            '''
 
             pos_embeddings=batched_index_select(encoder_hidden_states, 1, pointers)
 
@@ -1810,7 +1811,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             #print(pointer_scores_mask)
             #torch.set_printoptions(profile="default")
 
-            exit(-1)
+            #exit(-1)
             prediction_scores[1]=prediction_scores[1]+pointer_scores_mask
             #exit(-1)
         outputs = (prediction_scores,) + outputs[2:]  # Add hidden states and attention if they are here

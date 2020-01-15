@@ -514,7 +514,7 @@ class Model2Model(PreTrainedEncoderDecoder):
             content_decoder_ids=content_decoder_ids[:,step]
             pointer_decoder_ids=decoder_outputs[0][1].argmax(dim=-1)
             pointer_decoder_ids=pointer_decoder_ids[:,step]
-            pointer_decoder_ids=pointer_decoder_ids+5
+            pointer_decoder_ids=pointer_decoder_ids+4
 
             res_vocab_mask=vocab_mask_index[:,step]
             content_mask=(res_vocab_mask==1)
