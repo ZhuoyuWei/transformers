@@ -463,7 +463,8 @@ class BertPointerHead(nn.Module):
     def __init__(self, config, vocab_size=None):
         super(BertPointerHead, self).__init__()
         self.transform = BertPredictionHeadTransform(config)
-
+        self.transform_cont = BertPredictionHeadTransform(config)
+        self.transform_point = BertPredictionHeadTransform(config)
         # The output weights are the same as the input embeddings, but there is
         # an output-only bias for each token.
 
@@ -479,8 +480,10 @@ class BertPointerHead(nn.Module):
 
     def forward(self, hidden_states, encoder_hidden_states,encoder_attention_mask=None):
         hidden_states = self.transform(hidden_states)
-        hidden_states_context = self.decoder(hidden_states) + self.bias
-        hidden_states_pointer = torch.matmul(hidden_states, encoder_hidden_states.transpose(-1, -2))
+        hidden_states_context = self.transform_cont(hidden_states)
+        hidden_states_pointer = self.transform_point(hidden_states)
+        hidden_states_context = self.decoder(hidden_states_context) + self.bias
+        hidden_states_pointer = torch.matmul(hidden_states_pointer, encoder_hidden_states.transpose(-1, -2))
         print('hidden_states {}'.format(hidden_states.size()))
         print('context hidden states {}'.format(hidden_states_context.size()))
         print('encoder_hidden_states {}'.format(encoder_hidden_states.size()))
