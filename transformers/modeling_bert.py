@@ -1719,6 +1719,10 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
         encoder_size=None
 
         if encoder_hidden_states is not None and vocab_mask_index is not None:
+
+            encoder_input_embeddings=encoder_hidden_states[0]
+            encoder_hidden_states=encoder_hidden_states[-1]
+
             pointer_mask=(vocab_mask_index==1)
             print('debug pointer mask {}'.format(pointer_mask.size()))
             cur_pointer_mask=torch.cat([pointer_mask[:,-1:],pointer_mask[:,:-1]],dim=1)
@@ -1742,7 +1746,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             torch.set_printoptions(profile="default")
             '''
 
-            pos_embeddings=batched_index_select(encoder_hidden_states, 1, pointers)
+            pos_embeddings=batched_index_select(encoder_input_embeddings, 1, pointers)
 
 
 

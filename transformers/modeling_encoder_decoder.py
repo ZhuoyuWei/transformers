@@ -230,7 +230,7 @@ class PreTrainedEncoderDecoder(nn.Module):
         if encoder_hidden_states is None:
             encoder_outputs = self.encoder(encoder_input_ids, **kwargs_encoder)
             encoder_hidden_states = encoder_outputs[
-                0
+                2
             ]  # output the last layer hidden state
         else:
             encoder_outputs = ()
