@@ -1853,7 +1853,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
                 prediction_scores[1] = pos_keep_mask*prediction_scores[1]
                 '''
 
-
+                '''
                 print('##############################pointers##################################')
                 print("pointers = {}".format(pointers.size()))
                 torch.set_printoptions(profile="full")
@@ -1873,6 +1873,10 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
                 torch.set_printoptions(profile="default")
 
                 exit(-1)
+                '''
+                lm_labels=lm_labels.masked_fill(pointer_mask,-1)
+                content_mask_from_point=(pointer_mask==False)
+                pointers=pointers.masked_fill(content_mask_from_point,-1)
 
             ltr_lm_loss = loss_fct(prediction_scores[0].view(-1, self.config.vocab_size), lm_labels.view(-1))
             total_loss=ltr_lm_loss
