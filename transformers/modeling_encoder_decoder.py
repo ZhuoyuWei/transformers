@@ -405,6 +405,7 @@ class Model2Model(PreTrainedEncoderDecoder):
         for i in range(len(decoder_ids)):
             token_ids=decoder_ids[i]
             tokens=[]
+            print(token_ids)
             for j in range(len(token_ids)):
                 tokens.append(tokenizer.ids_to_tokens.get(token_ids[j], tokenizer.unk_token))
             print('IN CONVERSION PROCESS: input = {}'.format(tokens))
