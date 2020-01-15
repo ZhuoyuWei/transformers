@@ -89,14 +89,14 @@ def load_and_cache_examples(args, tokenizer, prefix="train",fsa=None):
     dataset = ChemistryDataset(tokenizer, prefix=prefix, data_dir=args.data_dir,version=args.decoder_version,fsa_or_config=fsa)
     return dataset
 
-def translate_tokenindex_to_subtokenindex(example,indexes,vocabs,states):
+def translate_tokenindex_to_subtokenindex(example,indexes,vocabs,states,clsoffset=1):
     #print('INDEXES: {}'.format(indexes))
     #print('VOCABS: {}'.format(vocabs))
     #print('STATES: {}'.format(states))
     new_indexes=[]
     for i,index in enumerate(indexes):
         if i>0 and vocabs[i-1] == 1:
-            index=int(index)
+            index=int(index)+clsoffset
             sub_index=example.orig_to_tok_index[index]
             if states[i].endswith('_end'):
                 tmp_sub_index=sub_index
@@ -110,12 +110,12 @@ def translate_tokenindex_to_subtokenindex(example,indexes,vocabs,states):
             new_indexes.append(index)
     return new_indexes
 
-def translate_subtokenindex_backto_tokenindex(example,indexes,vocabs):
+def translate_subtokenindex_backto_tokenindex(example,indexes,vocabs,clsoffset=1):
     new_indexes=[]
     for i,index in enumerate(indexes):
         if i>0 and vocabs[i-1] == 1:
             index=int(index)
-            whole_index=example.tok_to_orig_index[index]
+            whole_index=example.tok_to_orig_index[index]-clsoffset
 
             new_indexes.append(str(whole_index))
         else:
@@ -134,7 +134,7 @@ def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_b
         tok_to_orig_index = []
         orig_to_tok_index = []
         all_doc_tokens = []
-        input_tokens=example.input.split()
+        input_tokens=['[CLS]']+example.input.split()+['SEP']
         for (i, token) in enumerate(input_tokens):
             orig_to_tok_index.append(len(all_doc_tokens))
             sub_tokens = encoder_tokenizer.tokenize(token)

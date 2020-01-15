@@ -519,7 +519,7 @@ class Model2Model(PreTrainedEncoderDecoder):
 
             torch.set_printoptions(profile="full")
             print('BEFORE {}'.format(pointer_decoder_ids))
-            pointer_decoder_ids=pointer_decoder_ids+4
+            pointer_decoder_ids=pointer_decoder_ids+5
             print('AFTER {}'.format(pointer_decoder_ids))
             torch.set_printoptions(profile="default")
 

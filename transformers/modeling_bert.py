@@ -1727,7 +1727,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
 
 
 
-            pointers=input_ids-4
+            pointers=input_ids-5
             pointers_illegal=(pointers<0)
             pointers=pointers.masked_fill(pointers_illegal,0)
             pointers_illegal = (pointers >= encoder_size[1])
