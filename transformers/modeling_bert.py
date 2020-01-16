@@ -473,7 +473,7 @@ class BertPointerHead(nn.Module):
         self.decoder = nn.Linear(config.hidden_size,
                                  self.vocab_size,
                                  bias=False)
-        self.bias = nn.Parameter(torch.zeros(self.vocab_size))
+        #self.bias = nn.Parameter(torch.zeros(self.vocab_size))
 
         #self.pointer_bias=nn.Parameter(torch.zeros(self.vocab_size))
 
@@ -485,7 +485,7 @@ class BertPointerHead(nn.Module):
         #hidden_states_context=hidden_states
         #hidden_states_pointer=hidden_states
 
-        hidden_states_context = self.decoder(hidden_states_context) + self.bias
+        hidden_states_context = self.decoder(hidden_states_context) #+ self.bias
         hidden_states_pointer = torch.matmul(hidden_states_pointer, encoder_hidden_states.transpose(-1, -2))
         print('hidden_states {}'.format(hidden_states.size()))
         print('context hidden states {}'.format(hidden_states_context.size()))
