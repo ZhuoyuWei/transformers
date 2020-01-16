@@ -547,7 +547,7 @@ class Model2Model(PreTrainedEncoderDecoder):
             torch.set_printoptions(profile="full")
             print('{}'.format(decoder_input_ids))
             torch.set_printoptions(profile="default")
-        exit(-1)
+        #exit(-1)
         return decoder_input_ids,vocab_mask_index
 
 
