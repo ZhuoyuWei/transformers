@@ -506,6 +506,8 @@ class Model2Model(PreTrainedEncoderDecoder):
             print('Debug decoder_input_ids ###########################')
             print('decoder_input_ids size {}'.format(decoder_input_ids.size()))
             vocab_mask_index=self._get_vocab_index_by_decoder_input_ids(decoder_input_ids,tokenizer,fsa)
+            if step == 10:
+                exit(-1)
             kwargs_decoder["attention_mask"]=produced_decoder_attn_mask
             kwargs_decoder["vocab_mask_index"]=vocab_mask_index
             decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
