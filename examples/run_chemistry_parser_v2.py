@@ -466,15 +466,15 @@ def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=Non
                     for id in idx:
                         token=decoder_tokenizer.ids_to_tokens.get(id, decoder_tokenizer.unk_token)
                         tokens.append(token)
-                        #if token == 'end':
-                        #    break
+                        if token == 'end':
+                            break
                     print("idx={}".format(idx))
                     print("tokens={}".format(tokens))
                     print('Before Whole Index: {}'.format(tokens))
                     tokens=translate_subtokenindex_backto_tokenindex(example_buffer[i],tokens,vocab_mask_index[i])
                     print('After Sub Index: {}'.format(tokens))
                     fout.write(' '.join(tokens) + '\n')
-                exit(-1)
+                #exit(-1)
 
             else:
                 outputs = model(
