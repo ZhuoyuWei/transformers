@@ -1692,7 +1692,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
     def __init__(self, config):
         super(BertForMaskedLMVocabMask, self).__init__(config)
 
-        #self.bert = BertModel(config)
+        self.bert = BertModel(config)
         self.cls = BertMLMPointerHead(config)
 
 
