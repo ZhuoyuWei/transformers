@@ -424,7 +424,7 @@ def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=Non
     nb_eval_steps = 0
     model.eval()
     print(model)
-    #exit(-1)
+    exit(-1)
     fout=open(os.path.join(args.output_dir,"dev.res"),'w',encoding='utf-8')
     fdebug=open(os.path.join(args.output_dir,"dev.debug.res"),'w',encoding='utf-8')
     for batch in tqdm(eval_dataloader, desc="Evaluating"):
