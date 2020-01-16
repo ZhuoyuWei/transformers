@@ -474,7 +474,7 @@ def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=Non
                     tokens=translate_subtokenindex_backto_tokenindex(example_buffer[i],tokens,vocab_mask_index[i])
                     print('After Sub Index: {}'.format(tokens))
                     fout.write(' '.join(tokens) + '\n')
-                #exit(-1)
+                exit(-1)
 
             else:
                 outputs = model(
