@@ -408,9 +408,9 @@ class Model2Model(PreTrainedEncoderDecoder):
             print(token_ids)
             for j in range(len(token_ids)):
                 tokens.append(tokenizer.ids_to_tokens.get(token_ids[j], tokenizer.unk_token))
-            print('IN CONVERSION PROCESS: input = {}'.format(tokens))
+            #print('IN CONVERSION PROCESS: input = {}'.format(tokens))
             fsa_states = fsa.convert_seq_to_states(tokens)
-            print('IN CONVERSION PROCESS: states = {}'.format(fsa_states))
+            #print('IN CONVERSION PROCESS: states = {}'.format(fsa_states))
             vocab_indexes = []
             for state in fsa_states:
                 vocab_indexes.append(fsa.get_vocab_index(state))
@@ -503,8 +503,8 @@ class Model2Model(PreTrainedEncoderDecoder):
 
             decoder_input_ids=decoder_input_ids[:,:step+1]
             produced_decoder_attn_mask=produced_decoder_attn_mask[:,:step+1]
-            print('Debug decoder_input_ids ###########################')
-            print('decoder_input_ids size {}'.format(decoder_input_ids.size()))
+            #print('Debug decoder_input_ids ###########################')
+            #print('decoder_input_ids size {}'.format(decoder_input_ids.size()))
             vocab_mask_index=self._get_vocab_index_by_decoder_input_ids(decoder_input_ids,tokenizer,fsa)
             kwargs_decoder["attention_mask"]=produced_decoder_attn_mask
             kwargs_decoder["vocab_mask_index"]=vocab_mask_index
@@ -517,11 +517,14 @@ class Model2Model(PreTrainedEncoderDecoder):
             pointer_decoder_ids=decoder_outputs[0][1].argmax(dim=-1)
             pointer_decoder_ids=pointer_decoder_ids[:,step]
 
+            '''
             torch.set_printoptions(profile="full")
             print('BEFORE {}'.format(pointer_decoder_ids))
-            pointer_decoder_ids=pointer_decoder_ids+5
+            
             print('AFTER {}'.format(pointer_decoder_ids))
             torch.set_printoptions(profile="default")
+            '''
+            pointer_decoder_ids = pointer_decoder_ids + 5
 
             res_vocab_mask=vocab_mask_index[:,step]
             content_mask=(res_vocab_mask==1)
@@ -542,11 +545,13 @@ class Model2Model(PreTrainedEncoderDecoder):
             decoder_input_ids=torch.cat([decoder_input_ids,decoder_ids],dim=1)
             #print('decoder input ids:')
             #print(decoder_input_ids)
+            '''
             print('########################decoder_input_ids##############################')
             print('decoder_input_ids size {}'.format(decoder_input_ids.size()))
             torch.set_printoptions(profile="full")
             print('{}'.format(decoder_input_ids))
             torch.set_printoptions(profile="default")
+            '''
         #exit(-1)
         return decoder_input_ids,vocab_mask_index
 
