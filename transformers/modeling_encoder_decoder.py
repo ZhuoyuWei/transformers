@@ -358,6 +358,10 @@ class Model2Model(PreTrainedEncoderDecoder):
             model = Model2Model.from_pretrained('bert-base-uncased', decoder_model=decoder)
     """
 
+    def eval(self):
+        self.encoder.eval()
+        self.decoder.eval()
+
     def __init__(self, *args, **kwargs):
         super(Model2Model, self).__init__(*args, **kwargs)
         self.tie_weights()
