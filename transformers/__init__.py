@@ -68,7 +68,8 @@ if is_torch_available():
     from .modeling_bert import (BertPreTrainedModel, BertModel, BertForPreTraining,
                                 BertForMaskedLM, BertForNextSentencePrediction,
                                 BertForSequenceClassification, BertForMultipleChoice,
-                                BertForTokenClassification, BertForQuestionAnswering,
+                                BertForTokenClassification, BertForQuestionAnswering,BertForMaskedLMSetVocab,
+                                BertForMaskedLMVocabMask,
                                 load_tf_weights_in_bert, BERT_PRETRAINED_MODEL_ARCHIVE_MAP)
     from .modeling_openai import (OpenAIGPTPreTrainedModel, OpenAIGPTModel,
                                 OpenAIGPTLMHeadModel, OpenAIGPTDoubleHeadsModel,

@@ -23,6 +23,7 @@ import torch
 from torch import nn
 
 from .modeling_auto import AutoModel, AutoModelWithLMHead
+from examples.utils_summarization import fit_to_block_size
 
 logger = logging.getLogger(__name__)
 
@@ -229,7 +230,7 @@ class PreTrainedEncoderDecoder(nn.Module):
         if encoder_hidden_states is None:
             encoder_outputs = self.encoder(encoder_input_ids, **kwargs_encoder)
             encoder_hidden_states = encoder_outputs[
-                0
+                2
             ]  # output the last layer hidden state
         else:
             encoder_outputs = ()
@@ -357,6 +358,10 @@ class Model2Model(PreTrainedEncoderDecoder):
             model = Model2Model.from_pretrained('bert-base-uncased', decoder_model=decoder)
     """
 
+    def eval(self):
+        self.encoder.eval()
+        self.decoder.eval()
+
     def __init__(self, *args, **kwargs):
         super(Model2Model, self).__init__(*args, **kwargs)
         self.tie_weights()
@@ -377,7 +382,8 @@ class Model2Model(PreTrainedEncoderDecoder):
         by a model-specific keyword (bert, )...
         """
         # self._tie_or_clone_weights(self.encoder, self.decoder)
-        self.decoder.bert.embeddings=self.encoder.embeddings
+        #self.decoder.bert.embeddings=self.encoder.embeddings
+        pass
 
     @classmethod
     def from_pretrained(cls, pretrained_model_name_or_path, *args, **kwargs):
@@ -397,6 +403,162 @@ class Model2Model(PreTrainedEncoderDecoder):
         )
 
         return model
+
+    def _get_vocab_index_by_decoder_input_ids(self,decoder_input_ids,tokenizer,fsa):
+        decoder_ids=decoder_input_ids.cpu().numpy().tolist()
+        vocab_indexes_batch=[]
+        for i in range(len(decoder_ids)):
+            token_ids=decoder_ids[i]
+            tokens=[]
+            print(token_ids)
+            for j in range(len(token_ids)):
+                tokens.append(tokenizer.ids_to_tokens.get(token_ids[j], tokenizer.unk_token))
+            #print('IN CONVERSION PROCESS: input = {}'.format(tokens))
+            fsa_states = fsa.convert_seq_to_states(tokens)
+            #print('IN CONVERSION PROCESS: states = {}'.format(fsa_states))
+            vocab_indexes = []
+            for state in fsa_states:
+                vocab_indexes.append(fsa.get_vocab_index(state))
+            vocab_indexes=fit_to_block_size(vocab_indexes,len(token_ids), tokenizer.pad_token_id)
+            vocab_indexes_batch.append(vocab_indexes)
+        vocab_indexes_batch=torch.tensor(vocab_indexes_batch).to(device=decoder_input_ids.device)
+        return vocab_indexes_batch
+
+
+
+    def decoding(self, encoder_input_ids, decoder_input_ids, tokenizer=None, fsa=None, fdebug=None, **kwargs):
+        """ The forward pass on a seq2eq depends what we are performing:
+
+        - During training we perform one forward pass through both the encoder
+          and decoder;
+        - During prediction, we perform one forward pass through the encoder,
+          and then perform several forward passes with the encoder's hidden
+          state through the decoder to decode a full sequence.
+
+        Therefore, we skip the forward pass on the encoder if an argument named
+        `encoder_hidden_state` is passed to this function.
+
+        Params:
+            encoder_input_ids: ``torch.LongTensor`` of shape ``(batch_size, sequence_length)``
+                Indices of encoder input sequence tokens in the vocabulary.
+            decoder_input_ids: ``torch.LongTensor`` of shape ``(batch_size, sequence_length)``
+                Indices of decoder input sequence tokens in the vocabulary.
+            kwargs: (`optional`) Remaining dictionary of keyword arguments.
+        """
+        # keyword arguments come in 3 flavors: encoder-specific (prefixed by
+        # `encoder_`), decoder-specific (prefixed by `decoder_`) and those
+        # that apply to the model as whole.
+        # We let the specific kwargs override the common ones in case of conflict.
+        kwargs_common = {
+            argument: value
+            for argument, value in kwargs.items()
+            if not argument.startswith("encoder_")
+            and not argument.startswith("decoder_")
+        }
+        #fdebug=kwargs['fdebug']
+        kwargs_decoder = kwargs_common.copy()
+        kwargs_encoder = kwargs_common.copy()
+        kwargs_encoder.update(
+            {
+                argument[len("encoder_") :]: value
+                for argument, value in kwargs.items()
+                if argument.startswith("encoder_")
+            }
+        )
+        kwargs_decoder.update(
+            {
+                argument[len("decoder_") :]: value
+                for argument, value in kwargs.items()
+                if argument.startswith("decoder_")
+            }
+        )
+
+        # Encode if needed (training, first prediction pass)
+        encoder_hidden_states = kwargs_encoder.pop("hidden_states", None)
+        if encoder_hidden_states is None:
+            encoder_outputs = self.encoder(encoder_input_ids, **kwargs_encoder)
+            encoder_hidden_states = encoder_outputs[
+                2
+            ]  # output the last layer hidden state
+        else:
+            encoder_outputs = ()
+
+        #print('encoder input ids')
+        #print(encoder_input_ids)
+        #print('encoder hidden states')
+        #print(encoder_hidden_states)
+        torch.set_printoptions(profile="full")
+        if fdebug is not None:
+            fdebug.write('{}'.format(encoder_hidden_states) + '\n')
+        # Decode
+        kwargs_decoder["encoder_hidden_states"] = encoder_hidden_states
+        kwargs_decoder["encoder_attention_mask"] = kwargs_encoder.get(
+            "attention_mask", None
+        )
+        #add attention_msk to kwarfs_decoder
+        #decoder_input_ids=decoder_input_ids[:,:1]
+        decoder_input_shape=decoder_input_ids.size()
+        #print('debug decoder_input_ids={}'.format(decoder_input_shape))
+
+        vocab_mask_index=None
+        for step in range(64):
+            produced_decoder_attn_mask=torch.cat([torch.ones([decoder_input_shape[0],step+1],dtype=torch.int32, device=decoder_input_ids.device)
+                                                     ,torch.zeros([decoder_input_shape[0],decoder_input_shape[1]-(step+1)], dtype=torch.int32, device=decoder_input_ids.device)],dim=1)
+            #print('produced_decoder_attn_mask = {}'.format(produced_decoder_attn_mask))
+
+            decoder_input_ids=decoder_input_ids[:,:step+1]
+            produced_decoder_attn_mask=produced_decoder_attn_mask[:,:step+1]
+            #print('Debug decoder_input_ids ###########################')
+            #print('decoder_input_ids size {}'.format(decoder_input_ids.size()))
+            vocab_mask_index=self._get_vocab_index_by_decoder_input_ids(decoder_input_ids,tokenizer,fsa)
+            kwargs_decoder["attention_mask"]=produced_decoder_attn_mask
+            kwargs_decoder["vocab_mask_index"]=vocab_mask_index
+            decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
+
+
+
+            content_decoder_ids=decoder_outputs[0][0].argmax(dim=-1)
+            content_decoder_ids=content_decoder_ids[:,step]
+            pointer_decoder_ids=decoder_outputs[0][1].argmax(dim=-1)
+            pointer_decoder_ids=pointer_decoder_ids[:,step]
+
+            '''
+            torch.set_printoptions(profile="full")
+            print('BEFORE {}'.format(pointer_decoder_ids))
+            
+            print('AFTER {}'.format(pointer_decoder_ids))
+            torch.set_printoptions(profile="default")
+            '''
+            pointer_decoder_ids = pointer_decoder_ids + 5
+
+            res_vocab_mask=vocab_mask_index[:,step]
+            content_mask=(res_vocab_mask==1)
+            pointer_mask=(res_vocab_mask!=1)
+            content_decoder_ids=content_decoder_ids.masked_fill(content_mask,0)
+            pointer_decoder_ids=pointer_decoder_ids.masked_fill(pointer_mask,0)
+            decoder_ids=content_decoder_ids+pointer_decoder_ids
+            decoder_ids=decoder_ids.unsqueeze(-1)
+
+
+
+            #print('decoder_input_ids shape = {}'.format(decoder_input_ids.size()))
+            #print('decoder_output_ids shape = {}'.format(decoder_ids.size()))
+            #print(decoder_input_ids[:,step+1])
+            #print('########################################')
+            #print(decoder_ids)
+            #print('decoder_input_ids shape= {}, decoder_ids={}'.format(decoder_input_ids.size(),decoder_ids.size()))
+            decoder_input_ids=torch.cat([decoder_input_ids,decoder_ids],dim=1)
+            #print('decoder input ids:')
+            #print(decoder_input_ids)
+            '''
+            print('########################decoder_input_ids##############################')
+            print('decoder_input_ids size {}'.format(decoder_input_ids.size()))
+            torch.set_printoptions(profile="full")
+            print('{}'.format(decoder_input_ids))
+            torch.set_printoptions(profile="default")
+            '''
+        #exit(-1)
+        return decoder_input_ids,vocab_mask_index
 
 
 class Model2Models(PreTrainedEncoderDecoder):
@@ -742,6 +904,162 @@ class Model2Models(PreTrainedEncoderDecoder):
         self.encoder.eval()
         for decoder in self.decoders:
             decoder.eval()
+
+class Model2FSADecoder(PreTrainedEncoderDecoder):
+    r"""
+        :class:`~transformers.Model2Model` instantiates a Seq2Seq2 model
+        where both of the encoder and decoder are of the same family. If the
+        name of or that path to a pretrained model is specified the encoder and
+        the decoder will be initialized with the pretrained weight (the
+        cross-attention will be intialized randomly if its weights are not
+        present).
+
+        It is possible to override this behavior and initialize, say, the decoder randomly
+        by creating it beforehand as follows
+
+            config = BertConfig.from_pretrained()
+            decoder = BertForMaskedLM(config)
+            model = Model2Model.from_pretrained('bert-base-uncased', decoder_model=decoder)
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(Model2Model, self).__init__(*args, **kwargs)
+        self.fsa=kwargs['fsa']
+        self.tie_weights()
+
+
+    def tie_weights(self):
+        """ Tying the encoder and decoders' embeddings together.
+
+       We need for each to get down to the embedding weights. However the
+        different model classes are inconsistent to that respect:
+        - BertModel: embeddings.word_embeddings
+        - RoBERTa: embeddings.word_embeddings
+        - XLMModel: embeddings
+        - GPT2: wte
+        - BertForMaskedLM: bert.embeddings.word_embeddings
+        - RobertaForMaskedLM: roberta.embeddings.word_embeddings
+
+        argument of the XEmbedding layer for each model, but it is "blocked"
+        by a model-specific keyword (bert, )...
+        """
+        # self._tie_or_clone_weights(self.encoder, self.decoder)
+        self.decoder.bert.embeddings=self.encoder.embeddings
+
+    def decoding(self, encoder_input_ids, decoder_input_ids, fdebug=None, **kwargs):
+        """ The forward pass on a seq2eq depends what we are performing:
+
+        - During training we perform one forward pass through both the encoder
+          and decoder;
+        - During prediction, we perform one forward pass through the encoder,
+          and then perform several forward passes with the encoder's hidden
+          state through the decoder to decode a full sequence.
+
+        Therefore, we skip the forward pass on the encoder if an argument named
+        `encoder_hidden_state` is passed to this function.
+
+        Params:
+            encoder_input_ids: ``torch.LongTensor`` of shape ``(batch_size, sequence_length)``
+                Indices of encoder input sequence tokens in the vocabulary.
+            decoder_input_ids: ``torch.LongTensor`` of shape ``(batch_size, sequence_length)``
+                Indices of decoder input sequence tokens in the vocabulary.
+            kwargs: (`optional`) Remaining dictionary of keyword arguments.
+        """
+        # keyword arguments come in 3 flavors: encoder-specific (prefixed by
+        # `encoder_`), decoder-specific (prefixed by `decoder_`) and those
+        # that apply to the model as whole.
+        # We let the specific kwargs override the common ones in case of conflict.
+        kwargs_common = {
+            argument: value
+            for argument, value in kwargs.items()
+            if not argument.startswith("encoder_")
+            and not argument.startswith("decoder_")
+        }
+        #fdebug=kwargs['fdebug']
+        kwargs_decoder = kwargs_common.copy()
+        kwargs_encoder = kwargs_common.copy()
+        kwargs_encoder.update(
+            {
+                argument[len("encoder_") :]: value
+                for argument, value in kwargs.items()
+                if argument.startswith("encoder_")
+            }
+        )
+        kwargs_decoder.update(
+            {
+                argument[len("decoder_") :]: value
+                for argument, value in kwargs.items()
+                if argument.startswith("decoder_")
+            }
+        )
+
+        # Encode if needed (training, first prediction pass)
+        encoder_hidden_states = kwargs_encoder.pop("hidden_states", None)
+        if encoder_hidden_states is None:
+            encoder_outputs = self.encoder(encoder_input_ids, **kwargs_encoder)
+            encoder_hidden_states = encoder_outputs[
+                0
+            ]  # output the last layer hidden state
+        else:
+            encoder_outputs = ()
+
+        #print('encoder input ids')
+        #print(encoder_input_ids)
+        #print('encoder hidden states')
+        #print(encoder_hidden_states)
+        torch.set_printoptions(profile="full")
+        if fdebug is not None:
+            fdebug.write('{}'.format(encoder_hidden_states) + '\n')
+        # Decode
+        kwargs_decoder["encoder_hidden_states"] = encoder_hidden_states
+        kwargs_decoder["encoder_attention_mask"] = kwargs_encoder.get(
+            "attention_mask", None
+        )
+        #add attention_msk to kwarfs_decoder
+        #decoder_input_ids=decoder_input_ids[:,:1]
+        decoder_input_shape=decoder_input_ids.size()
+        #print('debug decoder_input_ids={}'.format(decoder_input_shape))
+
+
+        for step in range(10):
+            produced_decoder_attn_mask=torch.cat([torch.ones([decoder_input_shape[0],step+1],dtype=torch.int32, device=decoder_input_ids.device)
+                                                     ,torch.zeros([decoder_input_shape[0],decoder_input_shape[1]-(step+1)], dtype=torch.int32, device=decoder_input_ids.device)],dim=1)
+            #print('produced_decoder_attn_mask = {}'.format(produced_decoder_attn_mask))
+
+            kwargs_decoder["attention_mask"]=produced_decoder_attn_mask
+            decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
+            decoder_ids=decoder_outputs[1].argmax(dim=-1)
+            decoder_ids=decoder_ids[:,step]
+            #print('decoder_input_ids shape = {}'.format(decoder_input_ids.size()))
+            #print('decoder_output_ids shape = {}'.format(decoder_ids.size()))
+            #print(decoder_input_ids[:,step+1])
+            #print('########################################')
+            #print(decoder_ids)
+            decoder_input_ids[:,step+1]=decoder_ids
+            #print('decoder input ids:')
+            #print(decoder_input_ids)
+
+
+        return decoder_input_ids
+
+    @classmethod
+    def from_pretrained(cls, pretrained_model_name_or_path, *args, **kwargs):
+
+        if (
+            "bert" not in pretrained_model_name_or_path
+            or "roberta" in pretrained_model_name_or_path
+            or "distilbert" in pretrained_model_name_or_path
+        ):
+            raise ValueError("Only the Bert model is currently supported.")
+
+        model = super(Model2Model, cls).from_pretrained(
+            encoder_pretrained_model_name_or_path=pretrained_model_name_or_path,
+            decoder_pretrained_model_name_or_path=pretrained_model_name_or_path,
+            *args,
+            **kwargs
+        )
+
+        return model
 
 class Model2LSTM(PreTrainedEncoderDecoder):
     @classmethod

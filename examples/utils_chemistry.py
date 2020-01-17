@@ -5,6 +5,8 @@ import csv
 import torch
 from torch.utils.data import Dataset
 
+from finite_state_automata import FiniteStateAutomata
+
 
 '''
 From tsv to example: Processor
@@ -20,6 +22,32 @@ class InputExample(object):
         self.question_input=question_input
         self.question_varible_output=question_varible_output
         self.condition_output=condition_output
+
+class InputExampleV2(object):
+    def __init__(self,example_id,input,output=None,fsa=None):
+        self.example_id=example_id
+        self.input=input
+        self.output=output
+
+        self.fsa=fsa
+        self.fsa_states=None
+        self.vocab_indexes=None
+
+        self.tok_to_orig_index = None
+        self.orig_to_tok_index = None
+
+        if self.fsa:
+            self.fsa_states=self._get_fsa_states()
+        if self.fsa_states:
+            self.vocab_indexes=self.fsa.get_vocab_for_states(self.fsa_states)
+
+
+
+    def _get_fsa_states(self):
+        if self.output:
+            return self.fsa.convert_seq_to_states(self.output.split(' '))
+        else:
+            return ['s_start']
 
 class DataProcessor(object):
     """Base class for data converters for multiple choice data sets."""
@@ -42,20 +70,40 @@ class DataProcessor(object):
 class ChemistryProcessor(DataProcessor):
     """Processor for the SWAG data set."""
 
+    def __init__(self,version='v1',fsa_or_config=None):
+        self.version=version
+        if version == 'v2':
+            if type(fsa_or_config) == FiniteStateAutomata:
+                self.fsa=fsa_or_config
+            else:
+                self.fsa=FiniteStateAutomata.init_from_config(fsa_or_config)
+
     def get_train_examples(self, data_dir):
         """See base class."""
         logger.info("LOOKING AT {} train".format(data_dir))
-        return self._create_examples(self._read_csv(os.path.join(data_dir, "train.tsv")), "train")
+        csv_buffer=self._read_csv(os.path.join(data_dir, "train.tsv"))
+        if self.version == 'v1':
+            return self._create_examples(csv_buffer, "train")
+        else:
+            return self._create_examples_V2(csv_buffer, "train")
 
     def get_dev_examples(self, data_dir):
         """See base class."""
         logger.info("LOOKING AT {} dev".format(data_dir))
-        return self._create_examples(self._read_csv(os.path.join(data_dir, "dev.tsv")), "dev")
+        csv_buffer=self._read_csv(os.path.join(data_dir, "dev.tsv"))
+        if self.version == 'v1':
+            return self._create_examples(csv_buffer, "dev")
+        else:
+            return self._create_examples_V2(csv_buffer, "dev")
 
     def get_test_examples(self, data_dir):
         """See base class."""
         logger.info("LOOKING AT {} test".format(data_dir))
-        return self._create_examples(self._read_csv(os.path.join(data_dir, "test.tsv")), "test")
+        csv_buffer=self._read_csv(os.path.join(data_dir, "test.tsv"))
+        if self.version == 'v1':
+            return self._create_examples(csv_buffer, "test")
+        else:
+            return self._create_examples_V2(csv_buffer, "test")
 
 
 
@@ -91,6 +139,20 @@ class ChemistryProcessor(DataProcessor):
             ))
         return examples
 
+    def _create_examples_V2(self, lines, type):
+        """Creates examples for the training and dev sets."""
+        examples=[]
+        for line in lines:
+            #print('debug line = {}'.format(len(line)))
+            examples.append(InputExampleV2(
+                example_id=line[0],
+                input=line[1],
+                output=line[2] if len(line) > 2 else None,
+                fsa=self.fsa
+            )
+            )
+        return examples
+
 
     def get_examples_from_tsvlines(self,lines):
         parsed_lines=[]
@@ -98,7 +160,10 @@ class ChemistryProcessor(DataProcessor):
             parsed_line=line.strip().split('\t')
             parsed_lines.append(parsed_line)
             print('Debug parsed line = {}'.format(parsed_line))
-        return self._create_examples(parsed_lines,"test")
+        if self.version == 'v1':
+            return self._create_examples(parsed_lines,"test")
+        else:
+            return self._create_examples_V2(parsed_lines,"test")
 
 class ChemistryDataset(Dataset):
     """ Abstracts the dataset used to train seq2seq models.
@@ -115,10 +180,10 @@ class ChemistryDataset(Dataset):
     [2] https://github.com/abisee/cnn-dailymail/
     """
 
-    def __init__(self, tokenizer, prefix="train", data_dir=""):
+    def __init__(self, tokenizer, prefix="train", data_dir="",version='v1',fsa_or_config=None):
         assert os.path.isdir(data_dir)
         self.tokenizer = tokenizer
-        self.processor=ChemistryProcessor()
+        self.processor=ChemistryProcessor(version=version,fsa_or_config=fsa_or_config)
         self.examples=None
         if prefix == "train":
             self.examples=self.processor.get_train_examples(data_dir)

@@ -325,6 +325,7 @@ class PreTrainedModel(nn.Module):
 
         # Load config
         if config is None:
+            #print('%%$$$%$$%$%$% cls.config_class {}'.format(cls.config_class))
             config, model_kwargs = cls.config_class.from_pretrained(
                 pretrained_model_name_or_path, *model_args,
                 cache_dir=cache_dir, return_unused_kwargs=True,
@@ -385,7 +386,11 @@ class PreTrainedModel(nn.Module):
             resolved_archive_file = None
 
         # Instantiate model.
+        #print("CONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIGCONFIG")
+        #print(config)
         model = cls(config, *model_args, **model_kwargs)
+
+        new_state_dict=model.state_dict()
 
         if state_dict is None and not from_tf:
             state_dict = torch.load(resolved_archive_file, map_location='cpu')
@@ -421,7 +426,17 @@ class PreTrainedModel(nn.Module):
                     old_keys.append(key)
                     new_keys.append(new_key)
             for old_key, new_key in zip(old_keys, new_keys):
+                #print('new shape = {} and old shape ={}'.format(new_state_dict[new_key].size(),state_dict[old_key].size()))
                 state_dict[new_key] = state_dict.pop(old_key)
+
+            filtered_by_shape_state_dict={}
+            for key in state_dict:
+                if key in new_state_dict:
+                    if new_state_dict[key].size() != state_dict[key].size():
+                        continue
+                filtered_by_shape_state_dict[key]=state_dict[key]
+            state_dict=filtered_by_shape_state_dict
+
 
             # copy state_dict so _load_from_state_dict can modify it
             metadata = getattr(state_dict, '_metadata', None)
