@@ -1734,8 +1734,8 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
 
         if encoder_hidden_states is not None and vocab_mask_index is not None:
 
-            #encoder_input_embeddings=encoder_hidden_states[0]
-            encoder_input_embeddings = encoder_hidden_states[-1]
+            encoder_input_embeddings=encoder_hidden_states[0]
+            #encoder_input_embeddings = encoder_hidden_states[-1]
             encoder_hidden_states=encoder_hidden_states[-1]
 
             pointer_mask=(vocab_mask_index==1)
