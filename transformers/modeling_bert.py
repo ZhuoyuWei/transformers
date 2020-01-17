@@ -1692,6 +1692,7 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
     def __init__(self, config):
         super(BertForMaskedLMVocabMask, self).__init__(config)
 
+        print('DEBUG CONFIG VOCAB_SIZE = {}'.format(config.vocab_size))
         self.bert = BertModel(config)
         self.cls = BertMLMPointerHead(config)
 
@@ -1708,6 +1709,11 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             offset += self.vocab_sizes[i]
 
         self.vocab_masked_embedding = self.vocab_masked_embedding.to(dtype=torch.bool)
+
+        self.init_weights()
+
+    def get_output_embeddings(self):
+        return self.cls.predictions.decoder
 
     def to_for_other(self,device=None):
         self.vocab_masked_embedding=self.vocab_masked_embedding.to(device=device)
