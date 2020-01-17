@@ -150,6 +150,7 @@ class BertEmbeddings(nn.Module):
     def __init__(self, config):
         super(BertEmbeddings, self).__init__()
         self.word_embeddings = nn.Embedding(config.vocab_size, config.hidden_size, padding_idx=0)
+        print('build in bert embedding, embedding size = {} after config.vocab_size = {}'.format(self.word_embeddings.weight.size(),config.vocab_size))
         self.position_embeddings = nn.Embedding(config.max_position_embeddings, config.hidden_size)
         self.token_type_embeddings = nn.Embedding(config.type_vocab_size, config.hidden_size)
 
@@ -1709,8 +1710,9 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
             offset += self.vocab_sizes[i]
 
         self.vocab_masked_embedding = self.vocab_masked_embedding.to(dtype=torch.bool)
-
+        print('BEFORE init_weights embedding {}'.format(self.bert.embeddings.word_embeddings.weight.size()))
         self.init_weights()
+        print('AFTER init_weights embedding {}'.format(self.bert.embeddings.word_embeddings.weight.size()))
 
     def get_output_embeddings(self):
         return self.cls.predictions.decoder
