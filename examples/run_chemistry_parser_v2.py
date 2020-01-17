@@ -764,6 +764,8 @@ def main():
     if args.do_train:
         model.to(args.device)
         model.decoder.to_for_other(args.device)
+        print(model)
+        exit(-1)
         print('debug model device {}\t{}\t{}'.format(next(model.parameters()).device, next(model.encoder.parameters()).device,next(model.decoder.parameters()).device))
 
         global_step, tr_loss = train(args, model, encoder_tokenizer,decoder_tokenizer,fsa)
