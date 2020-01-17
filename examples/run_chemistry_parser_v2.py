@@ -423,8 +423,8 @@ def evaluate(args, model, encoder_tokenizer,decoder_tokenizer, prefix="",fsa=Non
     eval_loss = 0.0
     nb_eval_steps = 0
     model.eval()
-    print(model)
-    exit(-1)
+    #print(model)
+    #exit(-1)
     fout=open(os.path.join(args.output_dir,"dev.res"),'w',encoding='utf-8')
     fdebug=open(os.path.join(args.output_dir,"dev.debug.res"),'w',encoding='utf-8')
     for batch in tqdm(eval_dataloader, desc="Evaluating"):
@@ -731,8 +731,8 @@ def main():
     #decoder_model = BertForMaskedLM(config)
 
     decoder_model=BertForMaskedLMVocabMask.from_pretrained(args.decoder_model_name_or_path)
-    print(decoder_model)
-    exit(-1)
+    #print(decoder_model)
+    #exit(-1)
     model = Model2Model.from_pretrained(
         args.encoder_model_name_or_path, decoder_model=decoder_model
     )
