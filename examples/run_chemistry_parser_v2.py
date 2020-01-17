@@ -731,6 +731,8 @@ def main():
     #decoder_model = BertForMaskedLM(config)
 
     decoder_model=BertForMaskedLMVocabMask.from_pretrained(args.decoder_model_name_or_path)
+    print(decoder_model)
+    exit(-1)
     model = Model2Model.from_pretrained(
         args.encoder_model_name_or_path, decoder_model=decoder_model
     )
@@ -764,8 +766,7 @@ def main():
     if args.do_train:
         model.to(args.device)
         model.decoder.to_for_other(args.device)
-        print(model)
-        exit(-1)
+
         print('debug model device {}\t{}\t{}'.format(next(model.parameters()).device, next(model.encoder.parameters()).device,next(model.decoder.parameters()).device))
 
         global_step, tr_loss = train(args, model, encoder_tokenizer,decoder_tokenizer,fsa)
