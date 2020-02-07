@@ -14,6 +14,9 @@ class FiniteStateAutomata:
 
         self.condition_map=self._build_inversed_condition_map(condition_map)
 
+        #for check
+        self.check_state_vocab()
+
     def _build_inversed_condition_map(self,condition_map):
         inversed_condition_map={}
         for type in condition_map:
@@ -21,6 +24,17 @@ class FiniteStateAutomata:
             for inst in instances:
                 inversed_condition_map[inst]=type
         return inversed_condition_map
+
+    def check_state_vocab(self):
+        state_without_vocab=set()
+        for state in self.states:
+            if not state in self.state2vocab:
+                state_without_vocab.add(state)
+        print('DEBUG: FSA state wihtout vocabs: {}'.format(state_without_vocab))
+        assert len(state_without_vocab) > 0
+
+
+
 
     def reset_states(self):
         self.cur_state=self.start_state
