@@ -1804,13 +1804,13 @@ class BertForMaskedLMVocabMask(BertForMaskedLM):
         prediction_scores=list(prediction_scores)
 
         if vocab_mask_index is not None:
-
+            '''
             print('##############################vocab_mask_index##################################')
             print("vocab_mask_index = {}".format(vocab_mask_index.size()))
             torch.set_printoptions(profile="full")
             print(vocab_mask_index)
             torch.set_printoptions(profile="default")
-
+            '''
             vocab_mask = self.vocab_masked_embedding.index_select(0, vocab_mask_index.view(-1)).view(
                 list(vocab_mask_index.size()) + [-1])
             '''
