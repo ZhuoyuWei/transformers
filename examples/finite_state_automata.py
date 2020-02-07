@@ -31,7 +31,7 @@ class FiniteStateAutomata:
             if not state in self.state2vocab:
                 state_without_vocab.add(state)
         print('DEBUG: FSA state wihtout vocabs: {}'.format(state_without_vocab))
-        assert len(state_without_vocab) > 0
+        assert len(state_without_vocab) <= 0
 
 
 
@@ -87,6 +87,9 @@ class FiniteStateAutomata:
         return self.cur_state
 
     def get_vocab_index(self,state):
+        if not state in self.state2vocab:
+            print("VOCAB ERROR: {} has no vocab".format(state))
+            exit(-1)
         return self.state2vocab.get(state,-1)
 
 
