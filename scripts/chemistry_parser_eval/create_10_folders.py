@@ -21,7 +21,7 @@ else:
 
 
 random.seed(2020)
-data=random.shuffle(data)
+random.shuffle(data)
 dev_size=len(data)/10
 
 subdata=[]
