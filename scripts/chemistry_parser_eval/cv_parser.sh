@@ -30,7 +30,7 @@ echo $SCRIPT_DIR
 
 #DATA
 DATA_DIR=$EXP_ROOT_DIR/data
-cd SCRIPT_DIR
+cd $SCRIPT_DIR
 python create_10_folders.py /data/zhuoyu/semantic_parsing_v3/data/train.tsv $DATA_DIR
 
 #MODEL
