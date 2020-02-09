@@ -25,7 +25,8 @@ cd transformers
 git checkout chemistry_v4
 sudo pip install -r requirements.txt
 cd $EXP_ROOT_DIR
-SCRIPT_DIR=$CODE_DIR/transformers/scripts/chemistry_parser_eval
+SCRIPT_DIR=$CODE_DIR/transformers/scripts/chemistry_parser_eval/
+ECHO $SCRIPT_DIR
 
 #DATA
 DATA_DIR=$EXP_ROOT_DIR/data
