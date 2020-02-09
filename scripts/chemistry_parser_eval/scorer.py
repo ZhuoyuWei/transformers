@@ -35,7 +35,7 @@ for i in range(len(answers)):
 
     token_total+=len(ans_tokens)
 
-print("{}\t{}".format(question_level/len(answers)),token_level/token_total)
+print("{}\t{}".format(question_level/len(answers),token_level/token_total))
 
 
 
