@@ -26,8 +26,8 @@ dev_size=len(data)/10
 
 subdata=[]
 for i in range(9):
-    subdata.append(data[i*subdata:(i+1)*subdata])
-subdata.append(data[9*subdata:])
+    subdata.append(data[i*dev_size:(i+1)*dev_size])
+subdata.append(data[9*dev_size:])
 for i in range(10):
     train_buffer=[]
     for j in range(10):
