@@ -22,7 +22,7 @@ else:
 
 random.seed(2020)
 random.shuffle(data)
-dev_size=len(data)/10
+dev_size=len(data)//10
 
 subdata=[]
 for i in range(9):
