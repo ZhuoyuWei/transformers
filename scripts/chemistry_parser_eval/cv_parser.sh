@@ -46,7 +46,7 @@ do
           --do_train=True --per_gpu_train_batch_size=8 --do_evaluate=True  --num_train_epochs=$TRAIN_EPOCH \
           --decoder_version=v2 --encoder_model_name_or_path=$MODEL_DIR/encoder \
           --decoder_model_name_or_path=$MODEL_DIR/decoder --encoder_lr=$LR --decoder_lr=$LR \
-          --decoding_type=decoding
+          --decoding_type=decoding --trained_checkpoints=$OUTPUT_DIR/${k}_bert_output
    python scorer.py $DATA_DIR/$k/dev.ans $OUTPUT_DIR/${k}_bert_output/dev.res >> $OUTPUT_DIR/log
 done
 
