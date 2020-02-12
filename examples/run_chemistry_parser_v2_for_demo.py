@@ -878,40 +878,46 @@ def build_jobj_from_oneline(question,line):
     #conditions
     c_objs=[]
     for i in range(1,len(qc_blocks)):
-        c_jobj={}
-        if qc_blocks[i][0] == 'physical_unit':
-            c_jobj['type'] = qc_blocks[i][0].replace('_', ' ')
-            print('debug in post')
-            print('qc blocks length: {}'.format(qc_blocks[i]))
-            print('question length: {}'.format(len(question_tokens)))
-            print('start = {}, end= {}'.format(int(qc_blocks[i][1]),int(qc_blocks[i][2]) + 1))
-            subject =question_tokens[int(qc_blocks[i][1]):int(qc_blocks[i][2]) + 1]
-            if subject == None or subject == []:
-                subject = "None"
-            else:
-                subject = ' '.join(subject)
-            value = question_tokens[int(qc_blocks[i][3]):int(qc_blocks[i][4]) + 1]
-            if value == None or value == []:
-                value = "None"
-            else:
-                value = ' '.join(value)
-            predicate=qc_blocks[i][5]
-            c_jobj['value']='{} [OF] {} [=] '.format(predicate,subject) + r'\\pu{' +str(value) + '}'
-        elif qc_blocks[i][0] == 'chemical_equation' or \
-            qc_blocks[i][0] == 'chemical_formula' or \
-            qc_blocks[i][0] == 'substance':
-            c_jobj['type'] = qc_blocks[i][0].replace('_', ' ')
-            subject = question_tokens[int(qc_blocks[i][1]):int(qc_blocks[i][2]) + 1]
-            if subject == None or subject == []:
-                subject = "None"
-            else:
-                subject = ' '.join(subject)
-            c_jobj['value'] = subject
-        elif  qc_blocks[i][0] == 'c_other':
-            c_jobj['type'] = 'other'
-            c_jobj['value'] = qc_blocks[i][1]
+        try:
+            c_jobj = {}
+            if qc_blocks[i][0] == 'physical_unit':
+                c_jobj['type'] = qc_blocks[i][0].replace('_', ' ')
+                print('debug in post')
+                print('qc blocks length: {}'.format(qc_blocks[i]))
+                print('question length: {}'.format(len(question_tokens)))
+                print('start = {}, end= {}'.format(int(qc_blocks[i][1]), int(qc_blocks[i][2]) + 1))
+                subject = question_tokens[int(qc_blocks[i][1]):int(qc_blocks[i][2]) + 1]
+                if subject == None or subject == []:
+                    subject = "None"
+                else:
+                    subject = ' '.join(subject)
+                value = question_tokens[int(qc_blocks[i][3]):int(qc_blocks[i][4]) + 1]
+                if value == None or value == []:
+                    value = "None"
+                else:
+                    value = ' '.join(value)
+                predicate = qc_blocks[i][5]
+                c_jobj['value'] = '{} [OF] {} [=] '.format(predicate, subject) + r'\\pu{' + str(value) + '}'
+            elif qc_blocks[i][0] == 'chemical_equation' or \
+                    qc_blocks[i][0] == 'chemical_formula' or \
+                    qc_blocks[i][0] == 'substance':
+                c_jobj['type'] = qc_blocks[i][0].replace('_', ' ')
+                subject = question_tokens[int(qc_blocks[i][1]):int(qc_blocks[i][2]) + 1]
+                if subject == None or subject == []:
+                    subject = "None"
+                else:
+                    subject = ' '.join(subject)
+                c_jobj['value'] = subject
+            elif qc_blocks[i][0] == 'c_other':
+                c_jobj['type'] = 'other'
+                c_jobj['value'] = qc_blocks[i][1]
 
-        c_objs.append(c_jobj)
+            c_objs.append(c_jobj)
+        except:
+            print('LOG: condition tokens: {}'.format(qc_blocks[i]))
+            continue
+
+
 
     jobj["conditions"]=c_objs
 
