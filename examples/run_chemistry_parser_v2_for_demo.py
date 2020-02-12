@@ -77,55 +77,132 @@ def set_seed(args):
 # ------------
 
 
-def load_and_cache_examples(args, tokenizer, prefix="train"):
-    dataset = ChemistryDataset(tokenizer, prefix=prefix, data_dir=args.data_dir)
+def load_and_cache_examples(args, tokenizer, prefix="train",fsa=None):
+    dataset = ChemistryDataset(tokenizer, prefix=prefix, data_dir=args.data_dir,version=args.decoder_version,fsa_or_config=fsa)
     return dataset
 
+def translate_tokenindex_to_subtokenindex(example,indexes,vocabs,states,clsoffset=1):
+    #print('INDEXES: {}'.format(indexes))
+    #print('VOCABS: {}'.format(vocabs))
+    #print('STATES: {}'.format(states))
+    new_indexes=[]
+    for i,index in enumerate(indexes):
+        if i>0 and vocabs[i-1] == 1:
+            index=int(index)+clsoffset
+            sub_index=example.orig_to_tok_index[index]
+            if states[i].endswith('_end'):
+                tmp_sub_index=sub_index
+                j=sub_index+1
+                while j < len(example.tok_to_orig_index) and example.tok_to_orig_index[j] == index:
+                    sub_index=j
+                    j+=1
+                #print('Diff sub index by end: {} \t {}'.format(tmp_sub_index,sub_index))
+            new_indexes.append(str(sub_index))
+        else:
+            new_indexes.append(index)
+    return new_indexes
 
-def collate(data, tokenizer, input_block_size,output_block_size):
+def translate_subtokenindex_backto_tokenindex(example,indexes,vocabs,clsoffset=1):
+    new_indexes=[]
+    for i,index in enumerate(indexes):
+        if i>0 and vocabs[i-1] == 1:
+            index=int(index)
+            whole_index=example.tok_to_orig_index[index]-clsoffset
+
+            new_indexes.append(str(whole_index))
+        else:
+            new_indexes.append(index)
+    return new_indexes
+
+
+def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_block_size):
     """ List of tuple as an input. """
-    question_inputs=[]
-    question_varible_outputs=[]
-    condition_outputs=[]
+    inputs=[]
+    outputs=[]
+    vocabs=[]
+    example_buffer=[]
     for i,example in enumerate(data):
-        print('EXAMPLE DEBUGING={}'.format(example.question_input))
-        question_input=tokenizer.encode(example.question_input)
-        print('EXAMPLE DEBUGING after ={}'.format(question_input))
-        question_input=fit_to_block_size(question_input, input_block_size, tokenizer.pad_token_id)
-        question_inputs.append(question_input)
+        #input=encoder_tokenizer.encode(example.input)
+        example_buffer.append(example)
+        tok_to_orig_index = []
+        orig_to_tok_index = []
+        all_doc_tokens = []
+        input_tokens=['[CLS]']+example.input.split()+['SEP']
+        for (i, token) in enumerate(input_tokens):
+            orig_to_tok_index.append(len(all_doc_tokens))
+            sub_tokens = encoder_tokenizer.tokenize(token)
+            for sub_token in sub_tokens:
+                tok_to_orig_index.append(i)
+                all_doc_tokens.append(sub_token)
+        input=encoder_tokenizer.convert_tokens_to_ids(all_doc_tokens)
+        example.tok_to_orig_index=tok_to_orig_index
+        example.orig_to_tok_index=orig_to_tok_index
+        input=fit_to_block_size(input, input_block_size, encoder_tokenizer.pad_token_id)
+        inputs.append(input)
 
-        if example.question_varible_output is not None:
-            question_varible_output=tokenizer.encode(example.question_varible_output)
+        if example.output is not None:
+            #output=tokenizer.encode(example.output)
+            output_tokens=example.output.split()
+            #print('Before Whole Index: {}'.format(output_tokens))
+            #print('encoder input: {}'.format(all_doc_tokens))
+            output_tokens=translate_tokenindex_to_subtokenindex(example,output_tokens,example.vocab_indexes,example.fsa_states)
+            #print('After Sub Index: {}'.format(output_tokens))
+            output=decoder_tokenizer.convert_tokens_to_ids(output_tokens)
+            output_states=example.fsa_states
+
         else:
-            question_varible_output=tokenizer.build_inputs_with_special_tokens([])
-        question_varible_output=fit_to_block_size(question_varible_output, output_block_size, tokenizer.pad_token_id)
-        question_varible_outputs.append(question_varible_output)
+            #output=decoder_tokenizer.build_inputs_with_special_tokens(['start'])
+            output = decoder_tokenizer.convert_tokens_to_ids(['start'])
 
-        if example.condition_output is not None:
-            condition_output=tokenizer.encode(example.condition_output)
-        else:
-            condition_output=tokenizer.build_inputs_with_special_tokens([])
-        condition_output=fit_to_block_size(condition_output, output_block_size, tokenizer.pad_token_id)
-        condition_outputs.append(condition_output)
+        output_vocab_indexes = example.vocab_indexes
 
-    question_inputs = torch.tensor(question_inputs)
-    question_varible_outputs = torch.tensor(question_varible_outputs)
-    condition_outputs = torch.tensor(condition_outputs)
 
-    question_inputs_mask = build_mask(question_inputs, tokenizer.pad_token_id)
-    question_varible_outputs_mask = build_mask(question_varible_outputs, tokenizer.pad_token_id)
-    condition_outputs_mask = build_mask(condition_outputs, tokenizer.pad_token_id)
+        output=fit_to_block_size(output, output_block_size, decoder_tokenizer.pad_token_id)
+        output_vocab_indexes=fit_to_block_size(output_vocab_indexes, output_block_size, decoder_tokenizer.pad_token_id)
+        outputs.append(output)
+        vocabs.append(output_vocab_indexes)
+        #print('debug output={}'.format(example.output.split()))
+        #print('debug output_states={}'.format(output_states))
+        #print('debug output_vocab_indexes={}'.format(output_vocab_indexes))
+        #print('debug outputid={}'.format(output))
 
-    question_varible_outputs_mask_lm_labels = build_lm_labels(question_varible_outputs, tokenizer.pad_token_id)
-    condition_outputs_mask_lm_labels = build_lm_labels(condition_outputs, tokenizer.pad_token_id)
+
+        #if example.vocab_indexes is not None:
+        #    vocab=example.vocab_indexes
+        #else:
+        #    vocab=[1]
+        #vocabs.append(vocab)
+
+    #print(tokenizer.vocab)
+    #exit(-1)
+
+
+
+
+    inputs = torch.tensor(inputs)
+    outputs = torch.tensor(outputs)
+    vocabs = torch.tensor(vocabs)
+
+    inputs_mask = build_mask(inputs, encoder_tokenizer.pad_token_id)
+    outputs_mask = build_mask(outputs, decoder_tokenizer.pad_token_id)
+    vocabs_mask = build_mask(vocabs, decoder_tokenizer.pad_token_id)
+
+    outputs_mask_lm_labels = build_lm_labels(outputs, decoder_tokenizer.pad_token_id)
+    vocabs_mask_lm_labels = build_lm_labels(vocabs, decoder_tokenizer.pad_token_id)
 
     return (
-        question_inputs,
-        [question_varible_outputs,condition_outputs],
-        question_inputs_mask,
-        [question_varible_outputs_mask,condition_outputs_mask],
-        [question_varible_outputs_mask_lm_labels,condition_outputs_mask_lm_labels],
+        inputs,
+        outputs,
+        vocabs,
+        inputs_mask,
+        outputs_mask,
+        vocabs_mask,
+        outputs_mask_lm_labels,
+        vocabs_mask_lm_labels,
+        example_buffer,
     )
+
+
 
 
 # ----------
@@ -762,17 +839,7 @@ def rconvert_q2qjson(q):
     qobjs.append(qobj)
     return qobjs
 
-def translate_subtokenindex_backto_tokenindex(example,indexes,vocabs,clsoffset=1):
-    new_indexes=[]
-    for i,index in enumerate(indexes):
-        if i>0 and vocabs[i-1] == 1:
-            index=int(index)
-            whole_index=example.tok_to_orig_index[index]-clsoffset
 
-            new_indexes.append(str(whole_index))
-        else:
-            new_indexes.append(index)
-    return new_indexes
 
 def build_jobj_from_oneline(question,line):
     #if is_bert_tokenize:
