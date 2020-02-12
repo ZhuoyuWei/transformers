@@ -795,7 +795,7 @@ def init():
 
     processor=ChemistryProcessor(version='v2',fsa_or_config=fsa)
 
-    return args,model,tokenizers,processor
+    return args,model,tokenizers,processor,fsa
 
 def preprocess_line(line):
     line='\t'.join([str(uuid.uuid1()),line.strip()])
@@ -914,7 +914,7 @@ def build_jobj_from_oneline(question,line):
     return jobj
 
 
-def parse_oneline(line,args,model,tokenizers,processor):
+def parse_oneline(line,args,model,tokenizers,processor,fsa=None):
 
     model_line=preprocess_line(line)
 
@@ -977,14 +977,14 @@ def parse_oneline(line,args,model,tokenizers,processor):
 def main():
 
     #test
-    args, model, tokenizer, processor=init()
+    args, model, tokenizer, processor,fsa=init()
     line="How many moles of sodium carbonate are present in 6.80 grams of sodium carbonate?"
-    res=parse_oneline(line,args,model,tokenizer,processor)
+    res=parse_oneline(line,args,model,tokenizer,processor,fsa)
     print('{}\t{}'.format(line,json.dumps(res, ensure_ascii=False)))
 
 
 def web_serving():
-    args, model, tokenizer, processor = init()
+    args, model, tokenizer, processor,fsa = init()
     import flask
     server=flask.Flask(__name__)
 
@@ -994,7 +994,7 @@ def web_serving():
     def parse():
         line = flask.request.values.get('q')
         print('debug by zhuoyu: q={}'.format(line))
-        json_res=parse_oneline(line, args, model, tokenizer, processor)
+        json_res=parse_oneline(line, args, model, tokenizer, processor,fsa)
         return json.dumps(json_res, ensure_ascii=False)
 
     server.run(debug=True,host='0.0.0.0',port=36521)
