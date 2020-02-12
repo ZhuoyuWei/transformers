@@ -78,7 +78,7 @@ def set_seed(args):
 
 
 def load_and_cache_examples(args, tokenizer, prefix="train",fsa=None):
-    dataset = ChemistryDataset(tokenizer, prefix=prefix, data_dir=args.data_dir,version='V2',fsa_or_config=fsa)
+    dataset = ChemistryDataset(tokenizer, prefix=prefix, data_dir=args.data_dir,version='v2',fsa_or_config=fsa)
     return dataset
 
 def translate_tokenindex_to_subtokenindex(example,indexes,vocabs,states,clsoffset=1):
@@ -793,7 +793,7 @@ def init():
     model.decoder.to_for_other(args.device)
     model.eval()
 
-    processor=ChemistryProcessor(version='V2',fsa_or_config=fsa)
+    processor=ChemistryProcessor(version='v2',fsa_or_config=fsa)
 
     return args,model,tokenizers,processor
 
