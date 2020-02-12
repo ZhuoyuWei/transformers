@@ -882,10 +882,10 @@ def build_jobj_from_oneline(question,line):
             c_jobj = {}
             if qc_blocks[i][0] == 'physical_unit':
                 c_jobj['type'] = qc_blocks[i][0].replace('_', ' ')
-                print('debug in post')
-                print('qc blocks length: {}'.format(qc_blocks[i]))
-                print('question length: {}'.format(len(question_tokens)))
-                print('start = {}, end= {}'.format(int(qc_blocks[i][1]), int(qc_blocks[i][2]) + 1))
+                #print('debug in post')
+                #print('qc blocks length: {}'.format(qc_blocks[i]))
+                #print('question length: {}'.format(len(question_tokens)))
+                #print('start = {}, end= {}'.format(int(qc_blocks[i][1]), int(qc_blocks[i][2]) + 1))
                 subject = question_tokens[int(qc_blocks[i][1]):int(qc_blocks[i][2]) + 1]
                 if subject == None or subject == []:
                     subject = "None"
@@ -1007,9 +1007,9 @@ def web_serving():
         json_res=parse_oneline(line, args, model, tokenizer, processor,fsa)
         return json.dumps(json_res, ensure_ascii=False)
 
-    server.run(debug=True,host='0.0.0.0',port=36521)
+    server.run(debug=True,host='0.0.0.0',port=36523)
 
 
 if __name__ == "__main__":
-    main()
+    #main()
     web_serving()
