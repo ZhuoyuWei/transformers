@@ -48,5 +48,6 @@ do
           --decoder_model_name_or_path=$MODEL_DIR/decoder --encoder_lr=$LR --decoder_lr=$LR \
           --decoding_type=decoding --trained_checkpoints=$OUTPUT_DIR/${k}_bert_output
    python scorer.py $DATA_DIR/$k/dev.ans $OUTPUT_DIR/${k}_bert_output/dev.res >> $OUTPUT_DIR/log
+   python cal_ave_for_cv.res.py $OUTPUT_DIR/log $OUTPUT_DIR/metrics
 done
 

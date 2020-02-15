@@ -11,3 +11,7 @@ with open(sys.argv[1]) as f:
     scores[1]/=10
 
     print('{}\t{}'.format(*scores))
+
+    if len(sys.argv) > 2:
+        with open(sys.argv[2],'w') as fout:
+            fout.write('{}\t{}'.format(*scores))

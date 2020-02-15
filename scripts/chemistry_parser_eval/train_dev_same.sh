@@ -30,8 +30,8 @@ echo $SCRIPT_DIR
 
 #DATA
 DATA_DIR=$EXP_ROOT_DIR/data
-cd $SCRIPT_DIR
-python create_10_folders.py /data/zhuoyu/semantic_parsing_v3/data/train.tsv $DATA_DIR
+cp -r /data/zhuoyu/semantic_parsing_v3/data/ $EXP_ROOT_DIR/
+
 
 #MODEL
 cp -r /data/zhuoyu/semantic_parsing_v3/bertmodels $EXP_ROOT_DIR/
@@ -40,13 +40,11 @@ MODEL_DIR=$EXP_ROOT_DIR/bertmodels
 
 #RUNNING
 cd $SCRIPT_DIR
-for k in $( seq 0 9 )
-do
-   python ../../examples/run_chemistry_parser_v2.py --data_dir $DATA_DIR/$k --output_dir $OUTPUT_DIR/${k}_bert_output --output_block_size=128 \
-          --do_train=True --per_gpu_train_batch_size=8 --do_evaluate=True  --num_train_epochs=$TRAIN_EPOCH \
-          --decoder_version=v2 --encoder_model_name_or_path=$MODEL_DIR/encoder \
-          --decoder_model_name_or_path=$MODEL_DIR/decoder --encoder_lr=$LR --decoder_lr=$LR \
-          --decoding_type=decoding --trained_checkpoints=$OUTPUT_DIR/${k}_bert_output
-   python scorer.py $DATA_DIR/$k/dev.ans $OUTPUT_DIR/${k}_bert_output/dev.res >> $OUTPUT_DIR/log
-done
+python ../../examples/run_chemistry_parser_v2.py --data_dir $DATA_DIR/ --output_dir $OUTPUT_DIR/bert_output --output_block_size=128 \
+    --do_train=True --per_gpu_train_batch_size=8 --do_evaluate=True  --num_train_epochs=$TRAIN_EPOCH \
+    --decoder_version=v2 --encoder_model_name_or_path=$MODEL_DIR/encoder \
+    --decoder_model_name_or_path=$MODEL_DIR/decoder --encoder_lr=$LR --decoder_lr=$LR \
+    --decoding_type=decoding --trained_checkpoints=$OUTPUT_DIR/bert_output
+python scorer.py $DATA_DIR/train.tsv $OUTPUT_DIR/bert_output/dev.res >> $OUTPUT_DIR/log
+python cal_ave_for_cv.res.py $OUTPUT_DIR/log $OUTPUT_DIR/metrics
 
