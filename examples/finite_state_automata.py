@@ -81,7 +81,7 @@ class FiniteStateAutomata:
 
     def get_next_state(self,input):
         next_states=self.transitions.get(self.cur_state)
-        print('1: cur:{}, and input:{}, next_states:{}, input_type: {}'.
+        print('1: cur:{}, and input:{}, next_states:{}'.
               format(self.cur_state, input,next_states))
         print('2: cur:{}, and input:{}, next_states:{}, input_type: {}'.
               format(self.cur_state, input,next_states,self.condition_map.get(input,None)))
