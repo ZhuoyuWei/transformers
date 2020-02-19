@@ -46,15 +46,15 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="4" />
-          <entry key="py" value="4111" />
+          <entry key="py" value="4121" />
           <entry key="sh" value="799" />
-          <entry key="txt" value="481" />
+          <entry key="txt" value="482" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="1284" />
-          <entry key="Python" value="4111" />
+          <entry key="PLAIN_TEXT" value="1285" />
+          <entry key="Python" value="4121" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
@@ -100,8 +100,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/examples/finite_state_automata.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="399">
-              <caret line="86" column="96" selection-start-line="86" selection-start-column="96" selection-end-line="86" selection-end-column="96" />
+            <state relative-caret-position="378">
+              <caret line="85" column="18" selection-start-line="85" selection-start-column="18" selection-end-line="85" selection-end-column="18" />
             </state>
           </provider>
         </entry>
@@ -297,13 +297,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1574860646239</updated>
-    </task>
-    <task id="LOCAL-00008" summary="add fdebug">
-      <created>1574870007228</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1574870007228</updated>
     </task>
     <task id="LOCAL-00009" summary="add fdebug as parameters">
       <created>1574870192400</created>
@@ -641,11 +634,19 @@
       <option name="project" value="LOCAL" />
       <updated>1582099226770</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="debug 0219 2">
+      <created>1582114559442</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1582114559443</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1519" height="977" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24966262" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -670,7 +671,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="add 10 cv|fix bug" />
     <MESSAGE value="add 10 cv|fix bug 2" />
     <MESSAGE value="add 10 cv|fix bug 3" />
     <MESSAGE value="add 10 cv|fix bug 4" />
@@ -695,7 +695,8 @@
     <MESSAGE value="add parser v3.2 data|2" />
     <MESSAGE value="add parser v3.3 data" />
     <MESSAGE value="debug 0219 1" />
-    <option name="LAST_COMMIT_MESSAGE" value="debug 0219 1" />
+    <MESSAGE value="debug 0219 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="debug 0219 2" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/transformers/tokenization_utils.py">
@@ -874,8 +875,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/finite_state_automata.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="86" column="96" selection-start-line="86" selection-start-column="96" selection-end-line="86" selection-end-column="96" />
+        <state relative-caret-position="378">
+          <caret line="85" column="18" selection-start-line="85" selection-start-column="18" selection-end-line="85" selection-end-column="18" />
         </state>
       </provider>
     </entry>
