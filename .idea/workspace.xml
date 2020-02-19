@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5f469860-85ab-48fb-8dc7-280ec3b31dbf" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/finite_state_automata.py" beforeDir="false" afterPath="$PROJECT_DIR$/examples/finite_state_automata.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -14,9 +15,9 @@
     <session id="1342980547">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="28" />
+          <entry key="project.closed" value="29" />
           <entry key="project.open.time.0" value="5" />
-          <entry key="project.open.time.1" value="8" />
+          <entry key="project.open.time.1" value="9" />
           <entry key="project.open.time.10" value="3" />
           <entry key="project.open.time.12" value="2" />
           <entry key="project.open.time.13" value="1" />
@@ -27,33 +28,33 @@
           <entry key="project.open.time.7" value="2" />
           <entry key="project.open.time.8" value="2" />
           <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="30" />
+          <entry key="project.opened" value="31" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="38" />
+          <entry key="py" value="39" />
           <entry key="sh" value="10" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="PLAIN_TEXT" value="10" />
-          <entry key="Python" value="38" />
+          <entry key="Python" value="39" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="4" />
-          <entry key="py" value="4096" />
+          <entry key="py" value="4111" />
           <entry key="sh" value="799" />
-          <entry key="txt" value="468" />
+          <entry key="txt" value="481" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="1271" />
-          <entry key="Python" value="4096" />
+          <entry key="PLAIN_TEXT" value="1284" />
+          <entry key="Python" value="4111" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
@@ -83,7 +84,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/examples/run_chemistry_parser_v2.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="246">
@@ -92,6 +93,15 @@
                 <element signature="e#728#743#0" expanded="true" />
                 <element signature="e#3896#7133#0" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/examples/finite_state_automata.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="399">
+              <caret line="86" column="96" selection-start-line="86" selection-start-column="96" selection-end-line="86" selection-end-column="96" />
             </state>
           </provider>
         </entry>
@@ -173,7 +183,6 @@
         <option value="$PROJECT_DIR$/transformers/tokenization_utils.py" />
         <option value="$PROJECT_DIR$/transformers/tokenization_bert.py" />
         <option value="$PROJECT_DIR$/examples/run_chemistry_parser.py" />
-        <option value="$PROJECT_DIR$/examples/finite_state_automata.py" />
         <option value="$PROJECT_DIR$/transformers/modeling_bert.py" />
         <option value="$PROJECT_DIR$/scripts/chemistry_parser_eval/cv_parser.py" />
         <option value="$PROJECT_DIR$/examples/run_chemistry_parser_v2.py" />
@@ -187,6 +196,7 @@
         <option value="$PROJECT_DIR$/scripts/chemistry_parser_eval/train_dev_same.sh" />
         <option value="$PROJECT_DIR$/scripts/chemistry_parser_eval/join_10_back.py" />
         <option value="$PROJECT_DIR$/examples/run_chemistry_parser_v2_for_demo.py" />
+        <option value="$PROJECT_DIR$/examples/finite_state_automata.py" />
       </list>
     </option>
   </component>
@@ -221,22 +231,13 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="transformers" type="b2602c69:ProjectViewProjectNode" />
               <item name="transformers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="transformers" type="b2602c69:ProjectViewProjectNode" />
-              <item name="transformers" type="462c0819:PsiDirectoryNode" />
-              <item name="data" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="transformers" type="b2602c69:ProjectViewProjectNode" />
-              <item name="transformers" type="462c0819:PsiDirectoryNode" />
-              <item name="docker" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="transformers" type="b2602c69:ProjectViewProjectNode" />
@@ -263,7 +264,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -297,20 +297,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1574860646239</updated>
-    </task>
-    <task id="LOCAL-00006" summary="decoding for decoder attn mask|fix bug 6">
-      <created>1574866617409</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1574866617409</updated>
-    </task>
-    <task id="LOCAL-00007" summary="decoding for decoder attn mask|fix bug 7">
-      <created>1574869621113</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1574869621113</updated>
     </task>
     <task id="LOCAL-00008" summary="add fdebug">
       <created>1574870007228</created>
@@ -641,7 +627,21 @@
       <option name="project" value="LOCAL" />
       <updated>1581925964838</updated>
     </task>
-    <option name="localTasksCounter" value="55" />
+    <task id="LOCAL-00055" summary="add parser v3.3 data">
+      <created>1582097027895</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1582097027895</updated>
+    </task>
+    <task id="LOCAL-00056" summary="debug 0219 1">
+      <created>1582099226770</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1582099226770</updated>
+    </task>
+    <option name="localTasksCounter" value="57" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -670,8 +670,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="remove debug info at 0208 2" />
-    <MESSAGE value="add 10 cv" />
     <MESSAGE value="add 10 cv|fix bug" />
     <MESSAGE value="add 10 cv|fix bug 2" />
     <MESSAGE value="add 10 cv|fix bug 3" />
@@ -695,7 +693,9 @@
     <MESSAGE value="add a tmp file" />
     <MESSAGE value="add parser v3.2 data" />
     <MESSAGE value="add parser v3.2 data|2" />
-    <option name="LAST_COMMIT_MESSAGE" value="add parser v3.2 data|2" />
+    <MESSAGE value="add parser v3.3 data" />
+    <MESSAGE value="debug 0219 1" />
+    <option name="LAST_COMMIT_MESSAGE" value="debug 0219 1" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/transformers/tokenization_utils.py">
@@ -733,13 +733,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="8631">
           <caret line="420" column="48" selection-start-line="420" selection-start-column="48" selection-end-line="420" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/finite_state_automata.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1764">
-          <caret line="84" column="9" selection-start-line="84" selection-start-column="9" selection-end-line="84" selection-end-column="9" />
         </state>
       </provider>
     </entry>
@@ -876,6 +869,13 @@
             <element signature="e#728#743#0" expanded="true" />
             <element signature="e#3896#7133#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/finite_state_automata.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="399">
+          <caret line="86" column="96" selection-start-line="86" selection-start-column="96" selection-end-line="86" selection-end-column="96" />
         </state>
       </provider>
     </entry>
