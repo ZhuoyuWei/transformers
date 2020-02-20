@@ -13,7 +13,7 @@ class FiniteStateAutomata:
         self.cur_state=self.start_state
 
         self.condition_map=self._build_inversed_condition_map(condition_map)
-        print(self.condition_map)
+        #print(self.condition_map)
 
         #for check
         self.check_state_vocab()
@@ -87,11 +87,10 @@ class FiniteStateAutomata:
     def get_next_state(self,input):
         next_states=self.transitions.get(self.cur_state)
 
-        try:
-            print('cur:{}, and input:{}, next_states:{}, input_type: {}'.
-              format(self.cur_state, input,next_states,self.condition_map.get(input,None)))
-        except:
-            pass
+
+        #print('cur:{}, and input:{}, next_states:{}, input_type: {}'.
+        #    format(self.cur_state, input,next_states,self.condition_map.get(input,None)))
+
 
         self.cur_state=next_states.get(self.condition_map[input])
         return self.cur_state

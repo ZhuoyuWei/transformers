@@ -2,7 +2,7 @@ import sys
 import os
 
 input_dir=sys.argv[1]
-ans_dir=r'/data/zhuoyu/semantic_parsing_v3/10data_3.0'
+ans_dir=r'/data/zhuoyu/semantic_parsing_v3/10data_3.2'
 
 data_buffer=[]
 for i in range(10):

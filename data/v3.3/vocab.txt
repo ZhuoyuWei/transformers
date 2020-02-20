@@ -588,7 +588,7 @@ mole
 mole_fraction
 molecular_weight
 multiplier
-n
+state_n
 normality
 number
 o.n
