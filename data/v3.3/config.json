@@ -9,9 +9,9 @@
   "num_attention_heads": 12,
   "num_hidden_layers": 6,
   "type_vocab_size": 2,
-  "vocab_size": 702,
+  "vocab_size": 701,
   "is_decoder":true,
-  "vocab_sizes":[5,512,6,113,52,13,1],
+  "vocab_sizes":[5,512,6,112,52,13,1],
   "output_hidden_states":true
   
 }
