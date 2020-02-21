@@ -18,7 +18,7 @@ with codecs.open(sys.argv[2],'r','utf-8') as f:
 question_level=0
 token_level=0
 token_total=0
-
+print('answers: {}\tpredicts: {}'.format(len(answers),len(predicts)))
 assert len(answers) == len(predicts)
 
 for i in range(len(answers)):
