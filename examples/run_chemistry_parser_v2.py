@@ -170,20 +170,9 @@ def collate(data, encoder_tokenizer,decoder_tokenizer, input_block_size,output_b
         output_vocab_indexes=fit_to_block_size(output_vocab_indexes, output_block_size, decoder_tokenizer.pad_token_id)
         outputs.append(output)
         vocabs.append(output_vocab_indexes)
-        #print('debug output={}'.format(example.output.split()))
-        #print('debug output_states={}'.format(output_states))
-        #print('debug output_vocab_indexes={}'.format(output_vocab_indexes))
-        #print('debug outputid={}'.format(output))
 
 
-        #if example.vocab_indexes is not None:
-        #    vocab=example.vocab_indexes
-        #else:
-        #    vocab=[1]
-        #vocabs.append(vocab)
 
-    #print(tokenizer.vocab)
-    #exit(-1)
 
 
 

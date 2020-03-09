@@ -22,7 +22,9 @@ import os
 import random
 import sys
 sys.path.append(r'../')
-
+sys.path.append(r'../../')
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
 
 import numpy as np
 from tqdm import tqdm, trange
