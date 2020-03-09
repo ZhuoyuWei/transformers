@@ -644,9 +644,9 @@ class PreTrainedTokenizer(object):
                     else:
                         tokenized_text += [sub_text]
                 text_list = tokenized_text
-            print('out of split_on_tokens: {}'.format(text_list))
-            for i,token in enumerate(tokenized_text):
-                print('<{}> {}'.format(i,token))
+            #print('out of split_on_tokens: {}'.format(text_list))
+            #for i,token in enumerate(tokenized_text):
+            #    print('<{}> {}'.format(i,token))
 
 
 

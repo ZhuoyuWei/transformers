@@ -171,7 +171,7 @@ class BertTokenizer(PreTrainedTokenizer):
         return len(self.vocab)
 
     def _tokenize(self, text):
-        print('in bert token:{}'.format(text))
+        #print('in bert token:{}'.format(text))
         split_tokens = []
         if self.do_basic_tokenize:
             for token in self.basic_tokenizer.tokenize(text, never_split=self.all_special_tokens):
@@ -181,7 +181,7 @@ class BertTokenizer(PreTrainedTokenizer):
         else:
             #print('debug in tokenization_bert.py input: {}'.format(text))
             split_tokens = self.wordpiece_tokenizer.tokenize(text)
-        print('debug in tokenization_bert.py output: {}'.format(split_tokens))
+        #print('debug in tokenization_bert.py output: {}'.format(split_tokens))
         return split_tokens
 
     def _convert_token_to_id(self, token):
@@ -316,14 +316,14 @@ class BasicTokenizer(object):
         orig_tokens = whitespace_tokenize(text)
         split_tokens = []
         for token in orig_tokens:
-            print('[BASIC]: {} not in {}'.format(token,never_split))
+            #print('[BASIC]: {} not in {}'.format(token,never_split))
             if self.do_lower_case and token not in never_split:
                 token = token.lower()
                 token = self._run_strip_accents(token)
             split_tokens.extend(self._run_split_on_punc(token, never_split=never_split))
-        print('[BASIC OUTPUT]={}'.format(split_tokens))
+        #print('[BASIC OUTPUT]={}'.format(split_tokens))
         output_tokens = whitespace_tokenize(" ".join(split_tokens))
-        print('***[BASIC OUTPUT]={}'.format(output_tokens))
+        #print('***[BASIC OUTPUT]={}'.format(output_tokens))
         return output_tokens
 
     def _run_strip_accents(self, text):
@@ -339,8 +339,8 @@ class BasicTokenizer(object):
 
     def _run_split_on_punc(self, text, never_split=None):
         """Splits punctuation on a piece of text."""
-        print('[RUN_SPLIT] {} in {} is {}'.format(text, never_split,
-                                            never_split is not None and text in never_split))
+        #print('[RUN_SPLIT] {} in {} is {}'.format(text, never_split,
+        #                                    never_split is not None and text in never_split))
         if never_split is not None and text in never_split:
             return [text]
         chars = list(text)
@@ -435,7 +435,7 @@ class WordpieceTokenizer(object):
         Returns:
           A list of wordpiece tokens.
         """
-        print('debug tokenizaton input:{}'.format(text))
+        #print('debug tokenizaton input:{}'.format(text))
         output_tokens = []
         for token in whitespace_tokenize(text):
             chars = list(token)
@@ -467,7 +467,7 @@ class WordpieceTokenizer(object):
                 output_tokens.append(self.unk_token)
             else:
                 output_tokens.extend(sub_tokens)
-        print('debug tokenizaton output:{}'.format(output_tokens))
+        #print('debug tokenizaton output:{}'.format(output_tokens))
         return output_tokens
 
 
