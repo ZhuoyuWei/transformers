@@ -40,15 +40,11 @@ MODEL_DIR=$EXP_ROOT_DIR/models
 
 #RUNNING
 cd $SCRIPT_DIR
-python ../../examples/run_chemistry_parser_v2.py --data_dir $DATA_DIR/ --output_dir $OUTPUT_DIR/bert_output --output_block_size=128 \
-    --do_train=True --per_gpu_train_batch_size=8 --do_evaluate=True  --num_train_epochs=$TRAIN_EPOCH \
-    --decoder_version=v2 --encoder_model_name_or_path=$MODEL_DIR/encoder \
-    --decoder_model_name_or_path=$MODEL_DIR/decoder --encoder_lr=$LR --decoder_lr=$LR \
-    --decoding_type=decoding --trained_checkpoints=$OUTPUT_DIR/bert_output
 
 python ../../examples/run_chemistry_parser.py --data_dir $DATA_DIR/ --output_dir $OUTPUT_DIR/bert_output --output_block_size=128 \
 --do_train=True --per_gpu_train_batch_size=8 --do_evaluate=True --trained_checkpoints $OUTPUT_DIR/bert_output --decoding_type=decoding --num_train_epochs=$TRAIN_EPOCH
 --encoder_lr=$LR  --decoder_lr=$LR
+
 python scorer.py $DATA_DIR/train.tsv $OUTPUT_DIR/bert_output/dev.res >> $OUTPUT_DIR/log
 
 
