@@ -717,13 +717,13 @@ class Model2Models(PreTrainedEncoderDecoder):
         #print('debug decoder_input_ids={}'.format(decoder_input_shape))
 
 
-        for step in range(10):
+        for step in range(64):
             produced_decoder_attn_mask=torch.cat([torch.ones([decoder_input_shape[0],step+1],dtype=torch.int32, device=decoder_input_ids.device)
                                                      ,torch.zeros([decoder_input_shape[0],decoder_input_shape[1]-(step+1)], dtype=torch.int32, device=decoder_input_ids.device)],dim=1)
             #print('produced_decoder_attn_mask = {}'.format(produced_decoder_attn_mask))
 
             kwargs_decoder["attention_mask"]=produced_decoder_attn_mask
-            decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
+            decoder_outputs = decoder(decoder_input_ids, **kwargs_decoder)
             decoder_ids=decoder_outputs[1].argmax(dim=-1)
             decoder_ids=decoder_ids[:,step]
             #print('decoder_input_ids shape = {}'.format(decoder_input_ids.size()))
@@ -738,7 +738,10 @@ class Model2Models(PreTrainedEncoderDecoder):
 
         return decoder_input_ids
 
-
+    def eval(self):
+        self.encoder.eval()
+        for decoder in self.decoders:
+            decoder.eval()
 
 class Model2LSTM(PreTrainedEncoderDecoder):
     @classmethod

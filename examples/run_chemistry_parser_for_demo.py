@@ -21,8 +21,9 @@ import logging
 import os
 import random
 import sys
+import uuid
 sys.path.append(r'../')
-
+os.environ["CUDA_VISIBLE_DEVICES"]="5"
 
 import numpy as np
 from tqdm import tqdm, trange
@@ -47,7 +48,7 @@ from utils_summarization import (
     compute_token_type_ids,
 )
 
-from utils_chemistry import (ChemistryDataset,)
+from utils_chemistry import (ChemistryDataset,ChemistryProcessor,)
 '''
 class InputExample(object):
     def __init__(self,example_id,question_input,question_varible_output=None,condition_output=None):
@@ -84,7 +85,9 @@ def collate(data, tokenizer, input_block_size,output_block_size):
     question_varible_outputs=[]
     condition_outputs=[]
     for i,example in enumerate(data):
+        print('EXAMPLE DEBUGING={}'.format(example.question_input))
         question_input=tokenizer.encode(example.question_input)
+        print('EXAMPLE DEBUGING after ={}'.format(question_input))
         question_input=fit_to_block_size(question_input, input_block_size, tokenizer.pad_token_id)
         question_inputs.append(question_input)
 
@@ -486,8 +489,7 @@ def evaluate(args, model, tokenizer, prefix=""):
     fdebug.close()
     return result
 
-
-def main():
+def init():
     parser = argparse.ArgumentParser()
 
     # Required parameters
@@ -495,14 +497,14 @@ def main():
         "--data_dir",
         default=None,
         type=str,
-        required=True,
+        required=False,
         help="The input training data file (a text file).",
     )
     parser.add_argument(
         "--output_dir",
         default=None,
         type=str,
-        required=True,
+        required=False,
         help="The output directory where the model predictions and checkpoints will be written.",
     )
 
@@ -582,21 +584,21 @@ def main():
     )
     parser.add_argument(
         "--output_block_size",
-        default=64,
+        default=128,
         type=int,
         help="Max seq length for output",
     )
 
     parser.add_argument(
         "--trained_checkpoints",
-        default="",
+        default="/data/zhuoyu/semantic_parsing/chemistry_bert_parser_binary",
         type=str,
         help="trained_checkpoints",
     )
 
     parser.add_argument(
         "--decoding_type",
-        default="pnt",
+        default="decoding",
         type=str,
         help="",
     )
@@ -632,19 +634,6 @@ def main():
     parser.add_argument("--seed", default=42, type=int)
     args = parser.parse_args()
 
-    if (
-                        os.path.exists(args.output_dir)
-                    and os.listdir(args.output_dir)
-                and args.do_train
-            and not args.do_overwrite_output_dir
-    ):
-        raise ValueError(
-            "Output directory ({}) already exists and is not empty. Use --do_overwrite_output_dir to overwrite.".format(
-                args.output_dir
-            )
-        )
-
-
 
     # Set up training device
     if args.to_cpu or not torch.cuda.is_available():
@@ -658,18 +647,8 @@ def main():
     # Load pretrained model and tokenizer. The decoder's weights are randomly initialized.
     tokenizer = AutoTokenizer.from_pretrained(args.encoder_model_name_or_path
                                               ,never_split=['[unused0]','[unused1]','[unused2]','[unused3]'])
-    #config = BertConfig.from_pretrained(args.model_name_or_path)
-    #config.num_hidden_layers=3
-    #config.is_decoder=True
-    #decoder_model = BertForMaskedLM(config)
-    decoder_models=[BertForMaskedLM.from_pretrained(args.decoder_model_name_or_path),
-                    BertForMaskedLM.from_pretrained(args.decoder_model_name_or_path)]
-    model = Model2Models.from_pretrained(
-        args.encoder_model_name_or_path, decoder_model=decoder_models
-    )
-    #model = Model2Model.from_pretrained(
-    #    args.model_name_or_path, decoder_model=None
-    #)
+
+
 
     # Setup logging
     logging.basicConfig(
@@ -687,58 +666,173 @@ def main():
     )
 
     logger.info("Training/evaluation parameters %s", args)
+    checkpoint=args.trained_checkpoints
+    encoder_checkpoint = os.path.join(checkpoint, "encoder")
+    decoder_checkpoint_question_varibles = os.path.join(checkpoint, "decoder_0")
+    decoder_checkpoint_conditions = os.path.join(checkpoint, "decoder_1")
 
-    # Train the model
+    decoder_models = [BertForMaskedLM.from_pretrained(decoder_checkpoint_question_varibles),
+                      BertForMaskedLM.from_pretrained(decoder_checkpoint_conditions)]
+    model = Model2Models.from_pretrained(
+        encoder_checkpoint, decoder_model=decoder_models
+    )
 
-    if not os.path.exists(args.output_dir):
-            os.makedirs(args.output_dir)
-    if args.do_train:
-        model.to(args.device)
-        global_step, tr_loss = train(args, model, tokenizer)
-        logger.info(" global_step = %s, average loss = %s", global_step, tr_loss)
+    model.to(args.device)
+    model.eval()
+
+    processor=ChemistryProcessor()
+
+    return args,model,tokenizer,processor
+
+def preprocess_line(line):
+    line='\t'.join([str(uuid.uuid1()),line.strip()])
+    print('debug in preprocess_line line=[{}]'.format(line))
+    return line
+
+def rconvert_c2cs(s):
+    seqs=s.split('[SEP]')
+    cjobj=[]
+    for seq in seqs:
+        jobj={}
+        seq=seq.strip(' ')
+        tokens=seq.split(' ')
+        if tokens[0] == '0':
+            jobj['type'] = 'physical unit'
+            jobj['value'] = ' '.join(tokens[1:]).replace('[unused3]', '[OF]').replace('[unused1]', '[IN]').replace('[unused2]', '[=]').replace('[UNK]','').strip(' ')
+        elif tokens[0] == '1':
+            jobj['type'] = 'chemical equation'
+            jobj['value'] = ' '.join(tokens[1:]).replace('[unused3]', '[OF]').replace('[unused1]', '[IN]').replace('[unused2]', '[=]').replace('[UNK]','').strip(' ')
+        elif tokens[0] == '2':
+            jobj['type'] = 'other'
+            jobj['value'] = ' '.join(tokens[1:]).replace('[unused3]', '[OF]').replace('[unused1]', '[IN]').replace('[unused2]', '[=]').replace('[UNK]','').strip(' ')
+        else:
+            print('c wrong = [{}] in [{}]'.format(seq,s))
+        cjobj.append(jobj)
+    return cjobj
+
+def rconvert_q2qjson(q):
+    q=q.split(' [SEP] ')[0]
+    tokens=q.split(' ')
+    qobjs=[]
+    qobj={}
+    if tokens[0] == '0':
+        qobj['type']='physical unit'
+        qobj['value'] = ' '.join(tokens[1:]).replace('[unused3]', '[OF]').replace('[unused1]', '[IN]').replace('[unused2]', '[=]')
+    elif tokens[0]=='1':
+        qobj['type'] = 'other'
+        qobj['value'] = ' '.join(tokens[1:])
+    else:
+        print('q wrong = {}'.format(q))
+    qobjs.append(qobj)
+    return qobjs
+
+def parse_oneline(line,args,model,tokenizer,processor):
+
+    model_line=preprocess_line(line)
+
+    examples=processor.get_examples_from_tsvlines([model_line])
+    source, target, encoder_mask, decoder_mask, lm_labels = collate(examples, tokenizer, args.input_block_size, args.output_block_size)
+
+    feed_source = None
+    feed_targets = [None] * len(target)
+    feed_encoder_mask = None
+    feed_decoder_masks = [None] * len(decoder_mask)
+    feed_lm_labels = [None] * len(lm_labels)
 
 
 
-        logger.info("Saving model checkpoint to %s", args.output_dir)
+    feed_source = source.to(args.device)
+    for i in range(len(target)):
+        feed_targets[i] = target[i].to(args.device)
 
-        # Save a trained model, configuration and tokenizer using `save_pretrained()`.
-        # They can then be reloaded using `from_pretrained()`
-        model_to_save = (
-            model.module if hasattr(model, "module") else model
-        )  # Take care of distributed/parallel training
-        model_to_save.save_pretrained(args.output_dir)
-        tokenizer.save_pretrained(args.output_dir)
-        torch.save(args, os.path.join(args.output_dir, "training_arguments.bin"))
+    feed_encoder_mask = encoder_mask.to(args.device)
+    for i in range(len(decoder_mask)):
+        feed_decoder_masks[i] = decoder_mask[i].to(args.device)
+    for i in range(len(lm_labels)):
+        feed_lm_labels[i] = lm_labels[i].to(args.device)
+    results=[]
+    print('debug by zhuoyu in parser: feed_sources: {}'.format(feed_source))
+    with torch.no_grad():
+        if args.decoding_type == 'decoding':
+            tokens_roles = []
+            for i in range(len(feed_targets)):
+                outputs_ids = model.decoding(
+                    feed_source,
+                    feed_targets[i],
+                    encoder_attention_mask=feed_encoder_mask,
+                    decoder_attention_mask=feed_decoder_masks[i],
+                    decoder_lm_labels=feed_lm_labels[i],
+                    decoder=model.decoders[i]
+                    # fdebug=fdebug,
+                )
+                print('outputs size: {}'.format(outputs_ids.size()))
+                outputs_ids = outputs_ids.cpu().numpy()
 
-    # Evaluate the model
-    results = {}
-    if args.do_evaluate:
-        checkpoints = [args.trained_checkpoints]
-        logger.info("Evaluate the following checkpoints: %s", checkpoints)
-        for checkpoint in checkpoints:
-            encoder_checkpoint = os.path.join(checkpoint, "encoder")
-            decoder_checkpoint_question_varibles = os.path.join(checkpoint, "decoder_0")
-            decoder_checkpoint_conditions = os.path.join(checkpoint, "decoder_1")
+                batch_tokens = []
+                for idx in outputs_ids:
+                    tokens = []
+                    for id in idx:
+                        # print('{}\t{}'.format(id,type(id)))
+                        tokens.append(tokenizer.ids_to_tokens.get(int(id), tokenizer.unk_token))
 
-            decoder_models = [BertForMaskedLM.from_pretrained(decoder_checkpoint_question_varibles),
-                              BertForMaskedLM.from_pretrained(decoder_checkpoint_conditions)]
-            model = Model2Models.from_pretrained(
-                encoder_checkpoint, decoder_model=decoder_models
-            )
+                    batch_tokens.append(tokens)
 
-            model.to(args.device)
+                tokens_roles.append(batch_tokens)
 
-            #model = PreTrainedEncoderDecoder.from_pretrained(
-            #    encoder_checkpoint, decoder_checkpoint
-            #)
-            #model = Model2Model.from_pretrained(encoder_checkpoint)
-            #model.to(args.device)
-            results = "placeholder"
+            def subtoken2token(subtokens):
+                token = ""
+                tokens = []
+                for subtoken in subtokens:
+                    if subtoken.startswith("##"):
+                        token += subtoken[2:]
+                    else:
+                        if token != "":
+                            tokens.append(token)
+                        token = subtoken
+                if token != "":
+                    tokens.append(token)
+                return tokens
 
-            evaluate(args,model,tokenizer,"test")
+            for i in range(len(tokens_roles[0])):
+                results.append('\t'.join([' '.join(subtoken2token(tokens_roles[0][i]))
+                                         , ' '.join(subtoken2token(tokens_roles[1][i]))]) + '\n')
+    print(results)
+    ss=results[0].split('\t')
+    question_varible = rconvert_q2qjson(ss[0].replace('[CLS]', '').replace(' [PAD]', '').strip())
+    conditions = rconvert_c2cs(ss[1].replace('[CLS]', '').replace(' [PAD]', '').strip())
 
-    return results
+    print(question_varible)
+    print(conditions)
+
+    json_res={"question_variable":question_varible,"conditions":conditions}
+
+    return json_res
+
+def main():
+
+    #test
+    args, model, tokenizer, processor=init()
+    line="How many moles of sodium carbonate are present in 6.80 grams of sodium carbonate?"
+    parse_oneline(line,args,model,tokenizer,processor)
+
+
+def web_serving():
+    args, model, tokenizer, processor = init()
+    import flask,json
+    server=flask.Flask(__name__)
+
+
+
+    @server.route('/parse', methods=['get', 'post'])
+    def parse():
+        line = flask.request.values.get('q')
+        print('debug by zhuoyu: q={}'.format(line))
+        json_res=parse_oneline(line, args, model, tokenizer, processor)
+        return json.dumps(json_res, ensure_ascii=False)
+
+    server.run(debug=True,host='0.0.0.0',port=36521)
 
 
 if __name__ == "__main__":
-    main()
+    #main()
+    web_serving()
