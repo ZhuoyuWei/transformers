@@ -22,7 +22,7 @@ import os
 import random
 import sys
 sys.path.append(r'../')
-
+sys.path.append(r'../../')
 
 import numpy as np
 from tqdm import tqdm, trange
