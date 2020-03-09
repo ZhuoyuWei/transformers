@@ -25,7 +25,7 @@ cd transformers
 git checkout chemistry
 sudo pip install -r requirements.txt
 cd $EXP_ROOT_DIR
-SCRIPT_DIR=$CODE_DIR/transformers/scripts/chemistry_parser_eval
+SCRIPT_DIR=$CODE_DIR/transformers/scripts/baseline1
 echo $SCRIPT_DIR
 
 #DATA
@@ -49,6 +49,6 @@ python ../../examples/run_chemistry_parser_v2.py --data_dir $DATA_DIR/ --output_
 python ../../examples/run_chemistry_parser.py --data_dir $DATA_DIR/ --output_dir $OUTPUT_DIR/bert_output --output_block_size=128 \
 --do_train=True --per_gpu_train_batch_size=8 --do_evaluate=True --trained_checkpoints $OUTPUT_DIR/bert_output --decoding_type=decoding --num_train_epochs=$TRAIN_EPOCH
 --encoder_lr=$LR  --decoder_lr=$LR
-python ../chemistry_parser_eval/scorer.py $DATA_DIR/train.tsv $OUTPUT_DIR/bert_output/dev.res >> $OUTPUT_DIR/log
+python scorer.py $DATA_DIR/train.tsv $OUTPUT_DIR/bert_output/dev.res >> $OUTPUT_DIR/log
 
 
