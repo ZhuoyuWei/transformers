@@ -841,7 +841,7 @@ def rconvert_q2qjson(q):
 
 
 
-def build_jobj_from_oneline(question,line):
+def build_jobj_from_oneline(question,line,format='ori'):
     #if is_bert_tokenize:
     #    question_tokens=tokenizing(question)
     #else:
@@ -868,7 +868,13 @@ def build_jobj_from_oneline(question,line):
             subject=' '.join(subject)
         property = qc_blocks[0][3]
         unit=qc_blocks[0][4]
-        q_jobj['value']="{} [OF] {} [IN] {}".format(property,subject,unit)
+        if format == 'new':
+            q_jobj['value'] = {}
+            q_jobj['value']['subject']=subject
+            q_jobj['value']['property']=property
+            q_jobj['value']['unit']=unit
+        else:
+            q_jobj['value']="{} [OF] {} [IN] {}".format(property,subject,unit)
 
     elif qc_blocks[0][0] == 'chemical_equation' or \
             qc_blocks[0][0] == 'chemical_formula':
@@ -897,7 +903,14 @@ def build_jobj_from_oneline(question,line):
                 else:
                     value = ' '.join(value)
                 predicate = qc_blocks[i][5]
-                c_jobj['value'] = '{} [OF] {} [=] '.format(predicate, subject) + r'\\pu{' + str(value) + '}'
+                if format == 'new':
+                    c_jobj['value']={}
+                    c_jobj['value']['subject']=subject
+                    c_objs['value']['predicate']=predicate
+                    c_objs['value']['value']=str(value)
+                else:
+                    c_jobj['value'] = '{} [OF] {} [=] '.format(predicate, subject) + r'\\pu{' + str(value) + '}'
+
             elif qc_blocks[i][0] == 'chemical_equation' or \
                     qc_blocks[i][0] == 'chemical_formula' or \
                     qc_blocks[i][0] == 'substance':
@@ -924,7 +937,7 @@ def build_jobj_from_oneline(question,line):
     return jobj
 
 
-def parse_oneline(line,args,model,tokenizers,processor,fsa=None):
+def parse_oneline(line,args,model,tokenizers,processor,fsa=None,format='ori'):
 
     model_line=preprocess_line(line)
 
@@ -976,7 +989,7 @@ def parse_oneline(line,args,model,tokenizers,processor,fsa=None):
                 # print("tokens={}".format(tokens))
                 # print('Before Whole Index: {}'.format(tokens))
                 tokens = translate_subtokenindex_backto_tokenindex(example_buffer[i], tokens, vocab_mask_index[i])
-                jobj=build_jobj_from_oneline(line.strip(), ' '.join(tokens))
+                jobj=build_jobj_from_oneline(line.strip(), ' '.join(tokens),format=format)
 
         else:
             pass
@@ -1003,7 +1016,8 @@ def web_serving():
     @server.route('/parse', methods=['get', 'post'])
     def parse():
         line = flask.request.values.get('q')
-        print('debug by zhuoyu: q={}'.format(line))
+        format= flask.request.values.get('format')
+        print('debug by zhuoyu: q={} in {}'.format(line,format))
         json_res=parse_oneline(line, args, model, tokenizer, processor,fsa)
         return json.dumps(json_res, ensure_ascii=False)
 
