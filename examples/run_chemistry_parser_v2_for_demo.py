@@ -1018,7 +1018,7 @@ def web_serving():
         line = flask.request.values.get('q')
         format= flask.request.values.get('format')
         print('debug by zhuoyu: q={} in {}'.format(line,format))
-        json_res=parse_oneline(line, args, model, tokenizer, processor,fsa)
+        json_res=parse_oneline(line, args, model, tokenizer, processor,fsa,format)
         return json.dumps(json_res, ensure_ascii=False)
 
     server.run(debug=True,host='0.0.0.0',port=36523)
