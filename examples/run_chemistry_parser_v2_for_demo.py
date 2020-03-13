@@ -906,8 +906,8 @@ def build_jobj_from_oneline(question,line,format='ori'):
                 if format == 'new':
                     c_jobj['value']={}
                     c_jobj['value']['subject']=subject
-                    c_objs['value']['predicate']=predicate
-                    c_objs['value']['value']=str(value)
+                    c_jobj['value']['predicate']=predicate
+                    c_jobj['value']['value']=str(value)
                 else:
                     c_jobj['value'] = '{} [OF] {} [=] '.format(predicate, subject) + r'\\pu{' + str(value) + '}'
 

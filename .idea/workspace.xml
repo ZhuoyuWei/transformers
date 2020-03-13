@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5f469860-85ab-48fb-8dc7-280ec3b31dbf" name="Default Changelist" comment="modify api for extractor demo">
+    <list default="true" id="5f469860-85ab-48fb-8dc7-280ec3b31dbf" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -52,16 +52,16 @@
         <counts>
           <entry key="dummy" value="4" />
           <entry key="json" value="2" />
-          <entry key="py" value="4576" />
+          <entry key="py" value="4616" />
           <entry key="sh" value="799" />
-          <entry key="txt" value="576" />
+          <entry key="txt" value="587" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="JSON" value="2" />
-          <entry key="PLAIN_TEXT" value="1379" />
-          <entry key="Python" value="4576" />
+          <entry key="PLAIN_TEXT" value="1390" />
+          <entry key="Python" value="4616" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
@@ -76,8 +76,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/examples/run_chemistry_parser_v2_for_demo.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-200">
-              <caret line="991" column="89" selection-start-line="991" selection-start-column="89" selection-end-line="991" selection-end-column="89" />
+            <state relative-caret-position="246">
+              <caret line="870" column="27" lean-forward="true" selection-start-line="870" selection-start-column="27" selection-end-line="870" selection-end-column="27" />
             </state>
           </provider>
         </entry>
@@ -253,20 +253,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1574860646239</updated>
-    </task>
-    <task id="LOCAL-00019" summary="debug 1211:7">
-      <created>1576079715017</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1576079715017</updated>
-    </task>
-    <task id="LOCAL-00020" summary="debug 1211:8">
-      <created>1576079923678</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1576079923678</updated>
     </task>
     <task id="LOCAL-00021" summary="debug 1211:8 fix">
       <created>1576080535860</created>
@@ -597,7 +583,21 @@
       <option name="project" value="LOCAL" />
       <updated>1584084028242</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="modify api for extractor demo|fix bug">
+      <created>1584085568368</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1584085568368</updated>
+    </task>
+    <task id="LOCAL-00069" summary="modify api for extractor demo|fix bug 2">
+      <created>1584086965861</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1584086965861</updated>
+    </task>
+    <option name="localTasksCounter" value="70" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -627,8 +627,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="implement web service for parser v2" />
-    <MESSAGE value="implement web service for parser v2|fix bug 1" />
     <MESSAGE value="implement web service for parser v2|fix bug 2" />
     <MESSAGE value="implement web service for parser v2|fix bug 3" />
     <MESSAGE value="implement web service for parser v2|fix bug 4" />
@@ -652,7 +650,9 @@
     <MESSAGE value="n  --&gt; state_n" />
     <MESSAGE value="ppm in predict remove" />
     <MESSAGE value="modify api for extractor demo" />
-    <option name="LAST_COMMIT_MESSAGE" value="modify api for extractor demo" />
+    <MESSAGE value="modify api for extractor demo|fix bug" />
+    <MESSAGE value="modify api for extractor demo|fix bug 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="modify api for extractor demo|fix bug 2" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/transformers/tokenization_utils.py">
@@ -910,8 +910,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/run_chemistry_parser_v2_for_demo.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-200">
-          <caret line="991" column="89" selection-start-line="991" selection-start-column="89" selection-end-line="991" selection-end-column="89" />
+        <state relative-caret-position="246">
+          <caret line="870" column="27" lean-forward="true" selection-start-line="870" selection-start-column="27" selection-end-line="870" selection-end-column="27" />
         </state>
       </provider>
     </entry>
