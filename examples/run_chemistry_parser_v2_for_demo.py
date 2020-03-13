@@ -866,15 +866,15 @@ def build_jobj_from_oneline(question,line,format='ori'):
             subject="None"
         else:
             subject=' '.join(subject)
-        property = qc_blocks[0][3]
+        predicate = qc_blocks[0][3]
         unit=qc_blocks[0][4]
         if format == 'new':
             q_jobj['value'] = {}
             q_jobj['value']['subject']=subject
-            q_jobj['value']['property']=property
+            q_jobj['value']['predicate']=predicate
             q_jobj['value']['unit']=unit
         else:
-            q_jobj['value']="{} [OF] {} [IN] {}".format(property,subject,unit)
+            q_jobj['value']="{} [OF] {} [IN] {}".format(predicate,subject,unit)
 
     elif qc_blocks[0][0] == 'chemical_equation' or \
             qc_blocks[0][0] == 'chemical_formula':
