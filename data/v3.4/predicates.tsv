@@ -1,0 +1,747 @@
+Partial Pressure	partial_pressure
+PH	ph
+Heat energy	heat_energy
+Kw	kw
+Pressure1	pressure
+Heat2	heat_energy
+Molar enthalpy of vaporization	molar_enthalpy_of_vaporization
+m/v	mass_concentration
+absorptivity	absorptivity
+Amount of energy	heat_energy
+Molar mass	molar_mass
+Time2	time
+O.N	o.n
+pH1	ph
+Heat released	heat_energy
+Cg	cp
+Prcentage	percent
+Molarity1	molarity
+Ka2	ka
+Weight2	mass
+Molar quantities	mole
+value	value
+Removed heat	heat_energy
+Yield	percent_yield
+Osmotic pressure1	osmotic_pressure
+Temperture	temperature
+DeltaG^0	deltag^0
+Avogadro constant	avogadro constant
+Concentration	concentration
+Total Pressure	total pressure
+Steric number	steric_number
+oxidation number	oxidation number
+Coefficient	coefficient
+confined volume	volume
+Increased temperature	temperature
+Enthalpy of formation	enthalpy_of_formation
+Percentage	percent
+Barometric pressure2	barometric pressure
+Amount of heat needed	heat_energy
+Path length	path_length
+Temperature raised	temperature
+Equivalent weight	equivalent_weight
+Number1	number
+Standard EMF	standard emf
+Percent	percent
+Volume1	volume
+Oxidation state	oxidation_state
+completed time	time
+Percentage3	percent
+MM	molar_mass
+Partial pressure2	partial pressure
+weight	mass
+Molar heat	molar_heat
+Time1	time
+density	density
+Molar concentration	molarity
+Specific heat	specific_heat
+Charge1	charge
+Percentage2	percent
+Enthalpy	enthalpy
+volume2	volume
+Heat given off	heat_energy
+molarity	molarity
+Mass3	mass
+Composition by mass	composition_by_mass
+Kelvin temperature2	temperature
+Mole2	mole
+Molarity percent1	molarity_percent
+Required heat	heat_energy
+Changed temperature	temperature
+Increased boiling point	boiling_point_temperature
+Total pressure	total_pressure
+Total number	number
+Percentage yield	percent_yield
+Value	value
+Percent2	percent
+Charge2	charge
+Kf	kf
+Oxidation number	oxidation_number
+Density	density
+Required energy	energy
+kinetic energy	kinetic_energy
+Maximum amount	maximum_amount
+percent yield	percent_yield
+required energy	energy
+Morality	molarity
+Total volume	volume
+Released energy1	heat_energy
+Temperature3	temperature
+osmolarity	osmolarity
+Absorberd heat	heat_energy
+PH2	ph
+Heat capacity	heat_capacity
+Energy took	energy
+Minimum energy	energy
+Standard enthalpy change	standard_enthalpy_change
+Percent concentration	molarity_percent
+Osmotic pressure	osmotic_pressure
+Molar ratio	molar_ratio
+Current	electric_current
+Time	time
+Enthalpy of sublimation	enthalpy_of_sublimation
+Percentage2 by mass	mass_percent
+Mass1	mass
+Tf	freezing_point_temperature
+Concentration3	concentration
+effused time	time
+%	percent
+Constant k	equilibrium_constant_k
+Energy value	energy
+concentration2	concentration
+Added energy	energy
+Specific heat capacity	specific_heat_capacity
+Equilibrium constant	equilibrium_constant_k
+Temperature	temperature
+Concentration2	concentration
+Amount	mass
+Molecular mass	molecular_weight
+Percent yield	percent_yield
+theoretical yield	theoretical_yield
+Pressure	pressure
+quantity	quantity
+acid concentration	acid_concentration
+Pressure at the surface	pressure
+Percent ionization	percent_ionization
+Needed energy	energy
+Longest wavelength	longest_wavelength
+Temperature4	temperature
+Normality	normality
+Volume3	volume
+Kp	kp
+Taken heat	heat_energy
+C_{{p}}	heat_capacity_ratio
+Raised PPM	concentration
+Needed heat	heat_energy
+specific heat	specific_heat
+Molecular weight	molecular_weight
+Dosage	mass
+Depth	depth
+Released energy2	heat_energy
+Rate constant	reaction_rate_constant
+Number	number
+Reaction enthalpy	reaction_enthalpy
+Weight1	mass
+Added heat	heat_energy
+Concentration in percent by mass	mass_percent
+Percentage increase	percent
+Increased temperature1	temperature
+Heat needed	heat_energy
+deltaH	deltah
+Barometric pressure	barometric_pressure
+molar mass	molar mass
+Enthalpy of fusion	enthalpy_of_fusion
+rate constant	reaction_rate_constant
+Rate	percent
+Standard enthalpy	standard_enthalpy
+Volume4	volume
+Voltage	voltage
+Energy absorbed	heat_energy
+Kb	kb
+Degree of dissociation	degree_of_dissociation
+Equilibrium concentration	equilibrium_concentration
+Heat1	heat_energy
+Velocity	velocity
+Mass	mass
+Enthalpy of vaporization	enthalpy_of_vaporization
+Heat	heat_energy
+DeltaH	deltah
+Ionization energy	ionization_energy
+Concentration1	concentration
+Ksp	equilibrium_constant_k
+Vapor pressure	vapor_pressure
+Evaporated volume	volume
+n	state_n
+PH1	ph
+Kinetic energy	kinetic_energy
+Mass %	mass_percent
+Half-life	half-life
+concentration	concentration
+Energy	energy
+Osmotic pressure2	osmotic_pressure
+mass	mass
+DeltaH3	deltah
+Total pressure1	total pressure
+rate law	rate_law
+Atomic mass	atomic_mass
+mole	mole
+Mass2	mass
+mole fraction	mole_fraction
+[H3O+]	[h3o+]
+Heat energy absorbed	heat_energy
+needed heat	heat_energy
+Released heat	heat_energy
+Initial temperature1	initial_temperature
+Temperature1	temperature
+Raised temperature	temperature
+losted mole3	mole
+standard atmospheric pressure	standard_atmospheric_pressure
+Mass percent2	mass percent
+Theoretical yield	theoretical_yield
+Total pressure2	total pressure
+Concentration4	concentration
+Absorb heat	heat_energy
+Increased concentration	concentration
+Number2	number
+DeltaH(rxn)	deltah(rxn)
+temperature2	temperature
+Temprature2	temperature
+volume	volume
+Boiling point	boiling_point_temperature
+w/v	mass_concentration
+path length	path_length
+DeltaH4	deltah
+Original volume	volume
+Time consumed	time
+required heat	heat_energy
+Percent1	percent
+Mole ratio	mole_fraction
+Formula mass	molecular_weight
+temperature1	temperature
+Partial pressure	partial_pressure
+Electric current	electric_current
+ph	ph
+deltaH^{0}_{f}	deltah^{0}_{f}
+Solubility	solubility
+DeltaH2	deltah
+Molarity	molarity
+Constant pressure	pressure
+take time	time
+Solubility product	solubility_product
+Charge	charge
+Mass percent1	mass percent
+ka	ka
+Quantity	quantity
+Absorbed energy	heat_energy
+equilibrium concentration	equilibrium_concentration
+Vapour pressure	vapor_pressure
+vapor pressure	vapor_pressure
+maximum mass	mass
+percent composition	percent_composition
+Percentage composition	percent_composition
+Temprature1	temperature
+pressure2	pressure
+Cp	cp
+concentration1	concentration
+Change in pH	ph
+equilibrium constant K	equilibrium_constant_k
+Percent composition	percent_composition
+Heat required	heat_energy
+pKa	pka
+Freezing point	freezing_point_temperature
+vapour pressure	vapor_pressure
+Solubility2	solubility
+Ratio	ratio
+Percent composition by mass	mass_percent
+w/w	w/w
+Percentage1 by mass	mass_percent
+actual yield	actual_yield
+Percent by mass	mass_percent
+Oxidation states	oxidation_state
+Freezing point Changed	freezing_point_temperature
+Heat added	heat_energy
+Percentage1	percent
+raised temperature	temperature
+Barometric pressure1	barometric pressure
+melted time	melted_time
+formula mass	molecular_weight
+Percentage by mass	mass_percent
+pOH	poh
+pH	ph
+Weight	mass
+Radius	radius
+Percentage by weight	mass_percent
+Temperature changed	temperature
+Volume	volume
+absorbance reading	absorbance_reading
+Keq	equilibrium_constant_k
+Pressure2	pressure
+Mass percentage	mass_percent
+Needed heat1	heat_energy
+WeighT	mass
+Molarity2	molarity
+Temperature2	temperature
+Heat evolved	heat_energy
+DeltaH1	deltah
+Ka	ka
+Number of moles	mole
+Final volume	volume
+Proportion	ratio
+Change in enthalpy	enthalpy
+Mole	mole
+Released energy	heat_energy
+Temperature increased	temperature
+The rate constant (K)	equilibrium_constant_k
+Liberated heat	heat_energy
+number	number
+Molality	molality
+Multiplier	multiplier
+temperature	temperature
+Actual yield	actual_yield
+Average content	mass
+Avogadro constant L	avogadro_constant
+Molecular	molar_mass
+Gram formula mass	molar_mass
+Molarity3	molarity
+Heat absorbed	heat_energy
+Mass%	mass_percent
+total pressure	total pressure
+molality	molality
+Thermal energy	thermal_energy
+Gauge pressure	gauge_pressure
+osmotic pressure	osmotic_pressure
+velocity	velocity
+Osmolarity	osmolarity
+specific heat capacity	specific heat capacity
+Atomic weight	atomic_mass
+partial pressure	partial_pressure
+pH2	ph
+Percent3	percent
+Pressure exerted	pressure
+Number lost or gained	number
+Volume2	volume
+pressure1	pressure
+Diameter	diameter
+[H+]	[h+]
+Applied heat	heat_energy
+DeltaH^{0}_{f}	deltah^{0}_{f}
+Ka1	ka
+Increased temperature2	temperature
+Surface tension	surface_tension
+Mole1	mole
+standard enthalpy	standard_enthalpy
+Mole fraction	mole_fraction
+Absorbed heat	heat_energy
+Solubility1	solubility
+kf	kf
+Dilute factor	dilution_factor
+Molarity percent2	molarity_percent
+Molar solubility	molar_solubility
+Avogadro's constant	avogadro_constant
+Speed	velocity
+Standard emf	standard_emf
+Mass percent	mass_percent
+Added heat energy	heat_energy
+Hardness	hardness
+Activation barrier	activation_barrier
+Absorbed thermal energy	heat_energy
+Atomic number	number
+k2	equilibrium_constant_k
+Molar ratios	molar_ratio
+[NH4+]	[nh4+]
+Used energy	heat_energy
+mass/volume percent	mass/volume_percent
+K	equilibrium_constant_k
+Rms speed	rms_speed
+Lowest possible melting point	melting_point_temperature
+Changed factor	changed_factor
+Angle of the reflected beam	angle_of_the_reflected_beam
+Total area	area
+Exerted pressure	pressure
+Heat of fusion	enthalpy_of_fusion
+Molal solubility	molal_solubility
+Absorbed energy1	heat_energy
+Generated energy	heat_energy
+Strength	strength
+Average oxidation number	average_oxidation_number
+Standard heat of formation	standard_enthalpy_formation
+Ksp value	equilibrium_constant_k
+Value of [OH-]	[oh-]
+Added mole	mole
+Gram-formula mass	molar_mass
+Ea	activation_barrier
+Lost heat	heat_energy
+C	specific_heat_capacity
+Valume	volume
+pKb	pkb
+k	equilibrium_constant_k
+Power	power
+concentration by % (m/v)	density
+[CH3COOH]	[ch3cooh]
+Mass to volume ratio	density
+Change in the freezing point	freezing_point_temperature
+k1	equilibrium_constant_k
+Reaction quotient Q	reaction_quotient_q
+Evaporated mass	mass
+Molar enthalpy of dissolution	molar_enthalpy_of_dissolution
+Partial pressures	partial_pressure
+molecular mass	molecular_weight
+Value of Keq	equilibrium_constant_k
+Tb	boiling_point_temperature
+Added mass	mass
+Changed boiling point2	boiling_point_temperature
+Taken energy	heat_energy
+Average mass	mass
+Value of Ka	ka
+Activation enthalpy	activation_barrier
+Mass ratio	mass_percent
+Raised boiling point1	boiling_point_temperature
+Coordination number	coordination_number
+Degree of ionization	percent_ionization
+Applied energy	heat_energy
+Wavelength	wavelength
+Release heat	heat_energy
+Fraction	ratio
+λ	λ
+Ecell	ecell
+Required heat2	heat_energy
+Molar fraction	molar_ratio
+Mass/mass percent concentration	mass_percent
+Total molarity	molarity
+Change in heat content	heat_capacity
+Height2	height
+Required heat energy	heat_energy
+Completion percentage1	completion_percent
+Size	size
+Times	times
+Cell potential	cell_potential
+Latent heat of fusion	enthalpy_of_fusion
+Supplied heat	heat_energy
+Remained mass	mass
+Constant R	constant_r
+DeltaG	deltag
+Absorbed energy2	heat_energy
+Level of combination by mass	mass_percent
+Numerical value	number
+Completion percentage 2	completion_percent
+Kbp	kbp
+Molal concentration	molality
+threshold odor number	threshold_odor_number
+DeltaHf^0	deltahf^0
+Tem[erature1	temperature
+Total amount	mass
+Dissociation constant	equilibrium_constant_k
+Percent by volume	volume_percent
+Enthalpy associated with the formation	enthalpy_of_formation
+Celsius temperature2	temperature
+Celsius temperature1	temperature
+Cs	specific_heat_capacity
+Absorbance2	absorbance
+Lonic product	ionic_product
+Themochemical eq.	thermochemical_equation
+[OH-]	[oh-]
+Vapour density	vapour_density
+P	pressure
+Desity	density
+percent composition by mass	mass_percent
+Necessary heat	heat_energy
+Added volume	volume
+Electronic configuration	electron_configuration
+Delta_{vap}H	delta_{vap}h
+Activation energy	activation_barrier
+Air pressure	pressure
+Added thermal energy	heat_energy
+Rate of energy transfer	energy_transfer_rate
+Average kinetic energy	kinetic_energy
+Molar heat of fusion	molar_heat
+Given off energy	heat_energy
+Molar heat capacity	molar_heat
+Formula weight	formula_weight
+DeltaH^0 combustion	deltah^0
+Rate constant2	constant_r
+Losed heat	heat_energy
+Altitude2	altitude
+Entropy2	entropy
+Empirical formula weight	formula_weight
+Molar volume	molar_volume
+Melting point	melting_point_temperature
+Trasmittance1	trasmittance
+[OH-] concentration	[oh-]
+Mw	molecular_weight
+pKa value	pka
+Evolved volume	volume
+Preesure2	pressure
+M	molar_mass
+Distance	distance
+Formal charge	charge
+Tm	melting_point_temperature
+v/v	volume_percent
+Given off heat	heat_energy
+Average concentration	concentration
+ρ	density
+Enthalpies of formation	enthalpy_of_formation
+Value of the activation barrier	activation_barrier
+Concentration in molarity	molarity
+Standard change in enthalpy of formation	standard_enthalpy_change
+E^0_{cell}	ecell
+Relative molecular mass	relative_molecular_weight
+Entropy3	entropy
+Changed pH	ph
+Heat change	heat_energy
+Separation	distance
+Boiling constant	boiling_point_temperature
+PSI	pressure
+maximum possible yield	maximum_possible_yield
+Kh	kh
+Percentage composition by mass	mass_percent
+Molal freezing point constant	freezing_point_temperature
+DeltaS	deltas
+Molar enthalpy of combustion	molar_heat
+Produced energy	heat_energy
+[HO-]	[oh-]
+[OH−]	[oh-]
+Precise concentration	concentration
+Solubility product constant	equilibrium_constant_ktant
+equilibrium concentration Kc	equilibrium_constant_k
+Necessary energy	heat_energy
+First ionisation energy	first_ionisation_energy
+Arrhenius constant	constant_r
+Frequency factor	pre-exponential_factor
+mol.wt	molecular_weight
+Decreased temperature	temperature
+experimental molar mass	molar_mass
+absolute pressure1	pressure
+Average enthalpy	enthalpy
+Total heat capacity	heat_capacity
+DeltaGf	deltagf
+Preesure1	pressure
+Percentage concentration by mass	mass_percent
+Mwt	molecular_weight
+Van't Hoff factor	van_t_hoff_factor
+Theoretical mass	theoretical_yield
+Lost mole	mole
+mass/volume %	mass/volume_percent
+Produced heat	heat_energy
+Reactant time	time
+Initial pH	ph
+pre-exponential factor A	pre-exponential_factor
+Absolute pressure	pressure
+Average volume	volume
+Gram molecular mass	molecular weight
+Hvap	molar_enthalpy_of_vaporization
+Hfus	enthalpy_of_fusion
+Heat of combustion	enthalpy_of_combustion
+Standard enthalpy of formation	standard_enthalpy_formation
+Heat of vaporization	enthalpy_of_vaporization
+Concentrations	concentration
+Consumed time	time
+Percent by weight	mass_percent
+Change in volume	volume
+Minimum concentration	concentration
+DeltaH value	deltah
+Absorbed heat energy	heat_energy
+Degree	temperature
+produced mass1	mass
+Volume/volume %	volume_percent
+Boiling point elevation	boiling_point_temperature
+Calorific value	heat_energy
+Area	area
+Rate constant1	constant_r
+DeltaH^0	deltah^0
+Times greater	times
+Free energy of formation	standard_free_energy
+c	specific_heat_capacity
+Released heat energy	heat_energy
+Equilibrium constant Kc	equilibrium_constant_k
+Rate2	percent
+DeltaGf1	deltagf
+Enthalpy change	enthalpy
+Standard state free energy	standard_free_energy
+Added Volume	volume
+Ionization constant	equilibrium_constant_k
+Enthalpy of combustion	enthalpy_of_combustion
+Gage pressure	pressure
+Value of [H3O+]	[h3o+]
+Increased mass	mass
+Mass/mass	mass_percent
+Kc	equilibrium_constant_k
+[H2SO4]	[h2so4]
+R	constant_r
+Molairty	molarity
+[NH3]	[nh3]
+Rate1	percent
+Entropy1	entropy
+Equilibrium pressure	pressure
+i value	van_t_hoff_factor
+[ch3cooh]	[ch3cooh]
+[h+]	[h+]
+[h2so4]	[h2so4]
+[h3o+]	[h3o+]
+[nh3]	[nh3]
+[nh4+]	[nh4+]
+[oh-]	[oh-]
+absorbance	absorbance
+absorbance_reading	absorbance_reading
+absorptivity	absorptivity
+acid_concentration	acid_concentration
+activation_barrier	activation_barrier
+actual_yield	actual_yield
+altitude	altitude
+angle_of_the_reflected_beam	angle_of_the_reflected_beam
+area	area
+atomic_mass	atomic_mass
+average_oxidation_number	average_oxidation_number
+avogadro_constant	avogadro_constant
+barometric_pressure	barometric_pressure
+boiling_point_temperature	boiling_point_temperature
+cell_potential	cell_potential
+changed_factor	changed_factor
+charge	charge
+coefficient	coefficient
+completion_percent	completion_percent
+composition_by_mass	composition_by_mass
+concentration	concentration
+constant_r	constant_r
+coordination_number	coordination_number
+cp	cp
+degree_of_dissociation	degree_of_dissociation
+delta_{vap}h	delta_{vap}h
+deltag	deltag
+deltag^0	deltag^0
+deltagf	deltagf
+deltah	deltah
+deltah(rxn)	deltah(rxn)
+deltah^0	deltah^0
+deltah^{0}_{f}	deltah^{0}_{f}
+deltahf^0	deltahf^0
+deltas	deltas
+density	density
+depth	depth
+diameter	diameter
+dilution_factor	dilution_factor
+distance	distance
+ecell	ecell
+electric_current	electric_current
+electron_configuration	electron_configuration
+energy	energy
+energy_transfer_rate	energy_transfer_rate
+enthalpy	enthalpy
+enthalpy_of_combustion	enthalpy_of_combustion
+enthalpy_of_formation	enthalpy_of_formation
+enthalpy_of_fusion	enthalpy_of_fusion
+enthalpy_of_sublimation	enthalpy_of_sublimation
+enthalpy_of_vaporization	enthalpy_of_vaporization
+entropy	entropy
+equilibrium_concentration	equilibrium_concentration
+equilibrium_constant_k	equilibrium_constant_k
+equilibrium_constant_ktant	equilibrium_constant_ktant
+equivalent_weight	equivalent_weight
+first_ionisation_energy	first_ionisation_energy
+formula_weight	formula_weight
+freezing_point_temperature	freezing_point_temperature
+gauge_pressure	gauge_pressure
+half-life	half-life
+hardness	hardness
+heat_capacity	heat_capacity
+heat_capacity_ratio	heat_capacity_ratio
+heat_energy	heat_energy
+height	height
+initial_temperature	initial_temperature
+ionic_product	ionic_product
+ionization_energy	ionization_energy
+ka	ka
+kb	kb
+kbp	kbp
+kf	kf
+kh	kh
+kinetic_energy	kinetic_energy
+kp	kp
+kw	kw
+longest_wavelength	longest_wavelength
+mass	mass
+mass/volume_percent	mass/volume_percent
+mass_concentration	mass_concentration
+mass_percent	mass_percent
+maximum_amount	maximum_amount
+maximum_possible_yield	maximum_possible_yield
+melted_time	melted_time
+melting_point_temperature	melting_point_temperature
+molal_solubility	molal_solubility
+molality	molality
+molar_enthalpy_of_dissolution	molar_enthalpy_of_dissolution
+molar_enthalpy_of_vaporization	molar_enthalpy_of_vaporization
+molar_heat	molar_heat
+molar_mass	molar_mass
+molar_ratio	molar_ratio
+molar_solubility	molar_solubility
+molar_volume	molar_volume
+molarity	molarity
+molarity_percent	molarity_percent
+mole	mole
+mole_fraction	mole_fraction
+molecular_weight	molecular_weight
+multiplier	multiplier
+normality	normality
+number	number
+o.n	o.n
+osmolarity	osmolarity
+osmotic_pressure	osmotic_pressure
+oxidation_number	oxidation_number
+oxidation_state	oxidation_state
+partial_pressure	partial_pressure
+path_length	path_length
+percent	percent
+percent_composition	percent_composition
+percent_ionization	percent_ionization
+percent_yield	percent_yield
+ph	ph
+pka	pka
+pkb	pkb
+poh	poh
+power	power
+pre-exponential_factor	pre-exponential_factor
+pressure	pressure
+quantity	quantity
+radius	radius
+rate_law	rate_law
+ratio	ratio
+reaction_enthalpy	reaction_enthalpy
+reaction_quotient_q	reaction_quotient_q
+reaction_rate_constant	reaction_rate_constant
+relative_molecular_weight	relative_molecular_weight
+rms_speed	rms_speed
+size	size
+solubility	solubility
+solubility_product	solubility_product
+specific_heat	specific_heat
+specific_heat_capacity	specific_heat_capacity
+standard_atmospheric_pressure	standard_atmospheric_pressure
+standard_emf	standard_emf
+standard_enthalpy	standard_enthalpy
+standard_enthalpy_change	standard_enthalpy_change
+standard_enthalpy_formation	standard_enthalpy_formation
+standard_free_energy	standard_free_energy
+state_n	state_n
+steric_number	steric_number
+strength	strength
+surface_tension	surface_tension
+temperature	temperature
+theoretical_yield	theoretical_yield
+thermal_energy	thermal_energy
+thermochemical_equation	thermochemical_equation
+threshold_odor_number	threshold_odor_number
+time	time
+times	times
+total_pressure	total_pressure
+trasmittance	trasmittance
+value	value
+van_t_hoff_factor	van_t_hoff_factor
+vapor_pressure	vapor_pressure
+vapour_density	vapour_density
+velocity	velocity
+voltage	voltage
+volume	volume
+volume_percent	volume_percent
+w/w	w/w
+wavelength	wavelength
+λ	λ
