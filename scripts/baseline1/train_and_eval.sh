@@ -45,6 +45,6 @@ python ../../examples/run_chemistry_parser.py --data_dir $DATA_DIR/ --output_dir
 --do_train=True --per_gpu_train_batch_size=8 --do_evaluate=True --trained_checkpoints $OUTPUT_DIR/bert_output --decoding_type=decoding --num_train_epochs=$TRAIN_EPOCH
 --encoder_lr=$LR  --decoder_lr=$LR
 
-python scorer.py $DATA_DIR/train.tsv $OUTPUT_DIR/bert_output/dev.res >> $OUTPUT_DIR/log
+python scorer.py $DATA_DIR/dev.ans $OUTPUT_DIR/bert_output/dev.res >> $OUTPUT_DIR/log
 
 

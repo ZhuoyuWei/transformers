@@ -7,7 +7,7 @@ lines=[]
 with codecs.open(sys.argv[1],'r','utf-8') as f:
     for line in f:
         ss=line.strip().split('\t')
-        if len(ss) == 3:
+        if len(ss) >= 3:
             answers.append(ss[2])
             lines.append(ss)
 
