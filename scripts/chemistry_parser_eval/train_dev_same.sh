@@ -45,6 +45,6 @@ python ../../examples/run_chemistry_parser_v2.py --data_dir $DATA_DIR/ --output_
     --decoder_version=v2 --encoder_model_name_or_path=$MODEL_DIR/encoder \
     --decoder_model_name_or_path=$MODEL_DIR/decoder --encoder_lr=$LR --decoder_lr=$LR \
     --decoding_type=decoding --trained_checkpoints=$OUTPUT_DIR/bert_output
-python scorer.py $DATA_DIR/train.tsv $OUTPUT_DIR/bert_output/dev.res >> $OUTPUT_DIR/log
-python cal_ave_for_cv.res.py $OUTPUT_DIR/log $OUTPUT_DIR/metrics
+python scorer.py $DATA_DIR/dev.tsv $OUTPUT_DIR/bert_output/dev.res >> $OUTPUT_DIR/log
+#python cal_ave_for_cv.res.py $OUTPUT_DIR/log $OUTPUT_DIR/metrics
 
